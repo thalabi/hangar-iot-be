@@ -3,8 +3,6 @@ package com.kerneldc.hangariot.mqtt.service;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -30,6 +28,7 @@ import com.kerneldc.hangariot.mqtt.result.timer.TimersResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.springconfig.MqttConfig.MessageSender;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

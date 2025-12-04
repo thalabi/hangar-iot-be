@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -29,11 +27,12 @@ import com.kerneldc.hangariot.mqtt.service.DeviceService;
 import com.kerneldc.hangariot.mqtt.service.SenderService;
 import com.kerneldc.hangariot.task.ScheduledTasks;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("hangarIotController")
+@RequestMapping("/protected/hangarIotController")
 @RequiredArgsConstructor
 @Slf4j
 public class HangarIotController {
@@ -177,8 +176,14 @@ public class HangarIotController {
     @GetMapping("/getDeviceList")
 	public ResponseEntity<List<DeviceResponse>> getDeviceList() {
     	LOGGER.info("Begin ...");
-    	var authorizedDeviceNames = getAuthorizedDeviceNames();
-    	var deviceResponseList = deviceService.getDeviceList().stream().filter(device -> authorizedDeviceNames.contains(device.getName())).map(device -> {
+//    	var authorizedDeviceNames = getAuthorizedDeviceNames();
+//    	var deviceResponseList = deviceService.getDeviceList().stream().filter(device -> authorizedDeviceNames.contains(device.getName())).map(device -> {
+    	//
+    	// TODO 
+    	// need to rewrite but for now return all devices fir all users
+    	//
+       	var deviceResponseList = deviceService.getDeviceList().stream().map(
+       			device -> {
     		var deviceResponse = new DeviceResponse();
     		deviceResponse.setDevice(device);
     		return deviceResponse;

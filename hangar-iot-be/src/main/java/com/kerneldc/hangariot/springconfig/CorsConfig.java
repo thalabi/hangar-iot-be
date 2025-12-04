@@ -1,12 +1,16 @@
 package com.kerneldc.hangariot.springconfig;
 
+
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-public class CorsConfig implements WebMvcConfigurer/*, RepositoryRestConfigurer*/ {
+public class CorsConfig {
 
     @Value("${application.security.corsFilter.corsUrlsToAllow}")
     private String[] corsUrlsToAllow;
@@ -14,25 +18,20 @@ public class CorsConfig implements WebMvcConfigurer/*, RepositoryRestConfigurer*
     @Value("${application.security.corsFilter.corsMaxAgeInSecs:3600}")
     private long corsMaxAgeInSecs;
 
-    // configure application
-    @Override
-    public void addCorsMappings(CorsRegistry corsRegistry) {
-    	configCorsRegistry(corsRegistry);
-    }
-    
-    // configure data rest
-    /*
-    @Override
-    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry corsRegistry) {
-    	configCorsRegistry(corsRegistry);
-    }
-    */
-    
-    private void configCorsRegistry(CorsRegistry corsRegistry) {
-		corsRegistry.addMapping("/**").allowedOrigins(corsUrlsToAllow).maxAge(corsMaxAgeInSecs)
-		.allowedMethods("GET", "HEAD", "POST", "DELETE") // by default GET, HEAD, and POST are allowed
-		//.allowedHeaders("Content-Disposition").exposedHeaders("Content-Disposition")
-		.allowedHeaders("*").exposedHeaders("*")
-		;
+	@Bean
+	UrlBasedCorsConfigurationSource corsConfigurationSource() {
+      final var configuration = new CorsConfiguration();
+
+      configuration.setAllowedOrigins(Arrays.asList(corsUrlsToAllow));
+      configuration.setMaxAge(corsMaxAgeInSecs);
+
+      configuration.setAllowedMethods(Arrays.asList("GET", "HEAD", "POST", "DELETE", "PUT", "PATCH"));
+      configuration.setAllowedHeaders(Arrays.asList("*"));
+      configuration.setExposedHeaders(Arrays.asList("*"));
+      
+      final var source = new UrlBasedCorsConfigurationSource();
+      source.registerCorsConfiguration("/**", configuration);
+
+      return source;
     }
 }

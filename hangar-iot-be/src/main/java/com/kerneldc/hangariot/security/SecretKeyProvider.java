@@ -3,13 +3,13 @@ package com.kerneldc.hangariot.security;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 @Component

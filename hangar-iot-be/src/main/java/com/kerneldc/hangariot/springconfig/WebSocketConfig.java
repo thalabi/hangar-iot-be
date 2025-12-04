@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	@Value("${websocket.endpoint:/hangar-iot-websocket}")
+	@Value("${websocket.endpoint:/protected/hangar-iot-websocket}")
 	private String WEBSOCKET_ENDPOINT;
 	
 	@Value("${websocket.topics.prefix:/topic}")

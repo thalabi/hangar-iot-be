@@ -1,85 +1,97 @@
 package com.kerneldc.hangariot.springconfig;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.kerneldc.hangariot.security.JwtAuthenticationFilter;
-import com.kerneldc.hangariot.security.service.CustomUserDetailsService;
+import org.springframework.security.oauth2.server.resource.authentication.DelegatingJwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Configuration
 @EnableWebSecurity
 @Slf4j
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 	
 	@Value("${application.security.disableSecurity:false}")
 	private boolean disableSecurity;
+	@Value("${application.security.actuator.username}")
+	private String actuatorUsername;
+	@Value("${application.security.actuator.password}")
+	private String actuatorPassword;
 
-    
-	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
-	@Autowired
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
-	@Autowired
-	private UnauthorizedHandler unauthorizedHandler;
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, KeycloakJwtRolesConverter keycloakJwtRolesConverter)
+			throws Exception {
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-	
-	/**
-	 * Configure AuthenticationManager to use our CustomUserDetailsService and PasswordEncoder
-	 */
-	@Override
-    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
-    }
+		DelegatingJwtGrantedAuthoritiesConverter authoritiesConverter =
+				// Using the delegating converter multiple converters can be combined
+				new DelegatingJwtGrantedAuthoritiesConverter(
+						// First add the default converter
+						new JwtGrantedAuthoritiesConverter(),
+						// Second add our custom Keycloak specific converter
+						keycloakJwtRolesConverter);
 
-	@Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity
-			.cors()
-				.and()
-	    	.csrf().disable()
-	    	.exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
-	    		.and()
-	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		// Set up http security to use the JWT converter defined above
+		httpSecurity.oauth2ResourceServer((oauth2) -> oauth2
+				.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConv -> new JwtAuthenticationToken(jwtConv,
+						authoritiesConverter.convert(jwtConv), keycloakJwtRolesConverter.getUsername(jwtConv)))));
 
 		if (disableSecurity) {
 			LOGGER.warn("*** appliction security is currently disabled ***");
 			LOGGER.warn("*** to enable set application.security.disableSecurity to false ***");
-			httpSecurity.authorizeRequests().anyRequest().permitAll();
-			return;
+			httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.anyRequest().permitAll());
+		} else {
+			httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+			.requestMatchers("/appInfoController/*", "/pingController/*",
+					//
+					// TODO secure websocket requests
+					//
+					"/protected/hangar-iot-websocket*").permitAll());
+			httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+			.requestMatchers("/actuator/*").hasRole("ACTUATOR")).httpBasic(Customizer.withDefaults());
+			httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.anyRequest().authenticated());
 		}
 		
-		httpSecurity.authorizeRequests()
-				.mvcMatchers("/appInfoController/*", "/securityController/authenticate",
-						"/webSocketStatsConfigController/changeLoggingPeriod",
-						
-						// TODO temporarily disable security on Websocket
-						"/hangar-iot-websocket*",
-						
-						/*"/data-rest/*",*/ "/actuator/*").permitAll()
-				.anyRequest().authenticated();
+		httpSecurity.exceptionHandling(
+						exception -> exception.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+								.accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
 
-		// Add our jwtAuthenticationFilter
-		httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+		httpSecurity.csrf(csrf -> csrf.disable());
+		httpSecurity.cors(Customizer.withDefaults());
+				
+		httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		
+		return httpSecurity.build();
 	}
+	
+	@Bean
+	public UserDetailsService userDetailsService() {
+	    UserDetails admin = User.withUsername(actuatorUsername)
+	        .password(passwordEncoder().encode(actuatorPassword))
+	        .roles("ACTUATOR")  // this adds ROLE_ADMIN
+	        .build();
+
+	    return new InMemoryUserDetailsManager(admin);
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+	    return new BCryptPasswordEncoder(); // or NoOpPasswordEncoder for testing only
+	}	
+	
 }

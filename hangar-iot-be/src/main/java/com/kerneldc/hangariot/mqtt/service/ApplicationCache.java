@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +16,7 @@ import com.kerneldc.hangariot.mqtt.message.StateMessage;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.CommandEnum;
 
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

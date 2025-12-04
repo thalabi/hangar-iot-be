@@ -1,11 +1,10 @@
 package com.kerneldc.hangariot.controller;
 
 
-import javax.validation.constraints.NotBlank;
-
 import com.kerneldc.hangariot.mqtt.command.Timer;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

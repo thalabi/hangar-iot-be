@@ -8,17 +8,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import com.kerneldc.hangariot.security.CustomUserDetails;
 import com.kerneldc.hangariot.security.domain.user.User;
 import com.kerneldc.hangariot.security.service.repository.UserRepository;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
-@RequiredArgsConstructor
+//@Service
+//@RequiredArgsConstructor
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
