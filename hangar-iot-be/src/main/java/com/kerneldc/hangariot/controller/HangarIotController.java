@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -176,14 +175,9 @@ public class HangarIotController {
     @GetMapping("/getDeviceList")
 	public ResponseEntity<List<DeviceResponse>> getDeviceList() {
     	LOGGER.info("Begin ...");
-//    	var authorizedDeviceNames = getAuthorizedDeviceNames();
-//    	var deviceResponseList = deviceService.getDeviceList().stream().filter(device -> authorizedDeviceNames.contains(device.getName())).map(device -> {
-    	//
-    	// TODO 
-    	// need to rewrite but for now return all devices fir all users
-    	//
-       	var deviceResponseList = deviceService.getDeviceList().stream().map(
-       			device -> {
+    	var authorizedDeviceNames = getAuthorizedDeviceNames();
+    	LOGGER.info("authorizedDeviceNames: [{}]", authorizedDeviceNames);
+    	var deviceResponseList = deviceService.getDeviceList().stream().filter(device -> authorizedDeviceNames.contains(device.getName())).map(device -> {
     		var deviceResponse = new DeviceResponse();
     		deviceResponse.setDevice(device);
     		return deviceResponse;
@@ -248,7 +242,8 @@ public class HangarIotController {
     private List<String> getAuthorizedDeviceNames() {
     	var authentication = getAuthentication();
     	if (authentication != null) {
-    		return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+    		return authentication.getAuthorities().stream().filter(grantedAuthority -> grantedAuthority.getAuthority().startsWith("ROLE_realm_device:")).
+    		map(grantedAuthority -> grantedAuthority.getAuthority().substring(18)).toList();
     	} else {
     		return Collections.emptyList();
     	}
