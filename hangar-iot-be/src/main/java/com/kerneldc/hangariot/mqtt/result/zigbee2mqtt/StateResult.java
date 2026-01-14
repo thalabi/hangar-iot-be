@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.result.tasmota;
+package com.kerneldc.hangariot.mqtt.result.zigbee2mqtt;
 
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 
@@ -8,7 +8,7 @@ import lombok.ToString;
 
 @Getter @Setter
 @ToString(callSuper = true)
-public class TimezoneResult extends AbstractBaseResult {
+public class StateResult extends AbstractBaseResult {
 
-	private String timezone;
+	private String power;
 }

@@ -1,8 +1,7 @@
 package com.kerneldc.hangariot.mqtt.service;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,9 +11,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
-import com.kerneldc.hangariot.mqtt.message.StateMessage;
+import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
-import com.kerneldc.hangariot.mqtt.result.CommandEnum;
+import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ApplicationCache {
 	
 	private final ObjectMapper objectMapper;
-	private Map<DeviceNameAndCommandEnum, AbstractBaseResult> resultTopicCache = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, StateMessage> deviceConnectionStateCache = new HashMap<>();
+	private Map<DeviceNameAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
+	private Map<String, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
 	
 	private record DeviceNameAndCommandEnum(String deviceName, CommandEnum commandEnum) {}
+	
+	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
 
 	public void setCommandResult(String topic, String message) throws JsonProcessingException {
 		var deviceName = extractDeviceName(topic);
@@ -56,9 +57,10 @@ public class ApplicationCache {
 		}
 	}
 
+	private static final Pattern TOPIC_PATTERN = Pattern.compile(".+/(.+)/(RESULT|LwtMessage)");
+
 	private String extractDeviceName(String topic) {
-		var p = Pattern.compile(".+/(.+)/(RESULT|LwtMessage)");
-		var m = p.matcher(topic);
+		var m = TOPIC_PATTERN.matcher(topic);
 		if (m.matches() && StringUtils.isNotEmpty(m.group(1))) {
 			return m.group(1);
 		} else {
@@ -67,30 +69,51 @@ public class ApplicationCache {
 	}
 
 	public void dumpCache() {
-		LOGGER.info("Dump of resultTopicCache:");
-		for (var entry: resultTopicCache.entrySet()) {
-			LOGGER.info("key: [{}], value: [{}]", entry.getKey(), entry.getValue());
-		}
+	    LOGGER.info("Dump of resultTopicCache:");
+	    resultTopicCache.forEach((key, value) ->
+	        LOGGER.info("key: [{}], value: [{}]", key, value)
+	    );
 	}
+
 	
-	public StateMessage getConnectionState(String deviceName) {
+	public ConnectionStateMessage getConnectionState(String deviceName) {
 		return deviceConnectionStateCache.get(deviceName);
 	}
 
-	public void setConnectionState(String deviceName, StateMessage stateMessage) {
-		deviceConnectionStateCache.put(deviceName, stateMessage);
+	public void setConnectionState(String deviceName, ConnectionStateMessage connectionStateMessage) {
+		deviceConnectionStateCache.put(deviceName, connectionStateMessage);
 	}
 
 	public boolean isDeviceOnLine(String deviceName) {
 		var stateMessage = getConnectionState(deviceName);
-		return stateMessage.getState() == ConnectionStateEnum.ONLINE;
+		return stateMessage != null && stateMessage.getState() == ConnectionStateEnum.ONLINE;
 	}
 	
+	public String getTopicMessage(String topic) {
+		return topicMessageCache.get(topic);
+	}
 	
+	/**
+	 * Puts an entry only if topic is not in the map or if the message is not the same
+	 * @param topic
+	 * @param message
+	 * @return true only if entry is made
+	 */
+	public boolean setTopicMessage(String topic, String message) {
+		var value = topicMessageCache.get(topic);
+		if (value != null && value.equals(message)) {
+			return false;
+		} else {
+			topicMessageCache.put(topic, message);
+			return true;
+		}
+	}
+
 	@PreDestroy
 	public void terminate() {
 		resultTopicCache.clear();
 		deviceConnectionStateCache.clear();
+		topicMessageCache.clear();
 	}
 
 	

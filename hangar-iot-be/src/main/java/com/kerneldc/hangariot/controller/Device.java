@@ -7,6 +7,11 @@ import lombok.Data;
 @Data
 public class Device {
 
+	public enum BridgeEnum {
+		TASMOTA,
+		ZIGBEE2MQTT
+	};
+	
 	private enum DeviceTypeEnum {PLUG}
 	
 	private String name;
@@ -19,7 +24,7 @@ public class Device {
 	private Boolean enableDataSaver;
 	private DeviceConfigData config;
 	private DeviceGroupEnum group;
-	
+	private BridgeEnum bridge;
 	
 	private ReentrantLock lock = new ReentrantLock();
 }

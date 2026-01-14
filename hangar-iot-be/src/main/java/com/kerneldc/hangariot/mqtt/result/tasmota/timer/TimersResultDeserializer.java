@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.result.timer;
+package com.kerneldc.hangariot.mqtt.result.tasmota.timer;
 
 import java.io.IOException;
 import java.util.Spliterator;

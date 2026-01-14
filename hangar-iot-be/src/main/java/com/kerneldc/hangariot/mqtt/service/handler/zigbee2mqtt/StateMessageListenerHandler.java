@@ -1,37 +1,39 @@
-package com.kerneldc.hangariot.mqtt.service.handler.tasmota;
+package com.kerneldc.hangariot.mqtt.service.handler.zigbee2mqtt;
 
-import org.springframework.core.NestedExceptionUtils;
-import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
-import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ResultMessageListenerHandler extends AbstractMessageListenerHandler {
+public class StateMessageListenerHandler extends AbstractMessageListenerHandler {
 
-	public ResultMessageListenerHandler(ApplicationCache applicationCache, ObjectMapper objectMapper,
+	public StateMessageListenerHandler(ApplicationCache applicationCache, ObjectMapper objectMapper,
 			SimpMessagingTemplate webSocket, TopicHelper topicHelper) {
 		super(applicationCache, objectMapper, webSocket, topicHelper);
 	}
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return isTasmotaTopic(fullTopic) && getTopicSuffix(fullTopic).equals(TopicSuffixEnum.RESULT);
+		return isZigbee2mqttTopic(fullTopic);
 	}
 
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
 
-		LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
+		var notDuplicate = applicationCache.setTopicMessage(fullTopic, message);
+		if (notDuplicate) {
+			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
+		} else {
+			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate and ignored***", fullTopic, timestamp, message);
+		}
+/*
 		try {
 			message = addTimeStampToMessage(timestamp, message);
 		} catch (JsonProcessingException e) {
@@ -44,7 +46,7 @@ public class ResultMessageListenerHandler extends AbstractMessageListenerHandler
 		} catch (JsonProcessingException e) {
 			throw new MessagingException("Failed to add message to cache.", e);
 		}
-
+*/
 	}
 
 }

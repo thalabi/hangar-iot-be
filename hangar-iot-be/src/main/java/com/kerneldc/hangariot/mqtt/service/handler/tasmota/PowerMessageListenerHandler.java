@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.service.handler;
+package com.kerneldc.hangariot.mqtt.service.handler.tasmota;
 
 import java.util.Date;
 
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.mqtt.message.PowerMessage;
 import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
+import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
 
@@ -21,7 +22,7 @@ public class PowerMessageListenerHandler extends AbstractMessageListenerHandler 
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return getTopicSuffix(fullTopic).equals(TopicSuffixEnum.POWER);
+		return isTasmotaTopic(fullTopic) && getTopicSuffix(fullTopic).equals(TopicSuffixEnum.POWER);
 	}
 
 	@Override

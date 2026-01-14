@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class StateMessage {
+public class ConnectionStateMessage {
 	private ConnectionStateEnum state;
 	private Long timestamp;
 }

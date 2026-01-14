@@ -1,4 +1,6 @@
-package com.kerneldc.hangariot.mqtt.result;
+package com.kerneldc.hangariot.mqtt.result.tasmota;
+
+import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 
 import lombok.Getter;
 import lombok.Setter;

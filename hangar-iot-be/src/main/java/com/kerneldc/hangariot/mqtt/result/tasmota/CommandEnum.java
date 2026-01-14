@@ -1,9 +1,13 @@
-package com.kerneldc.hangariot.mqtt.result;
+package com.kerneldc.hangariot.mqtt.result.tasmota;
 
-import com.kerneldc.hangariot.mqtt.result.timer.TimerResult;
-import com.kerneldc.hangariot.mqtt.result.timer.TimersResult;
+import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 
 public enum CommandEnum {
+	/*
+	 * Tasmota commands
+	 */
 	POWER("power", PowerResult.class),
 	TIMEZONE("timezone", TimezoneResult.class),
 	TIMEDST("timedst", TimeDstResult.class),
@@ -30,7 +34,11 @@ public enum CommandEnum {
 	TIMER14("timer14", TimerResult.class),
 	TIMER15("timer15", TimerResult.class),
 	TIMER16("timer16", TimerResult.class),
-	BACKLOG("backlog", null);
+	BACKLOG("backlog", null),
+	/*
+	 * Zigbee2mqtt command
+	 */
+	STATE("state", PowerResult.class);
 	
 	String command;
 	Class<? extends AbstractBaseResult> resultType;

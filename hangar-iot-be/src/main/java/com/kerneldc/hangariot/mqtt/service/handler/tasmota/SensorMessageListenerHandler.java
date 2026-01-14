@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.service.handler;
+package com.kerneldc.hangariot.mqtt.service.handler.tasmota;
 
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.messaging.MessagingException;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
+import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
 
@@ -21,7 +22,7 @@ public class SensorMessageListenerHandler extends AbstractMessageListenerHandler
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return getTopicSuffix(fullTopic).equals(TopicSuffixEnum.SENSOR);
+		return isTasmotaTopic(fullTopic) && getTopicSuffix(fullTopic).equals(TopicSuffixEnum.SENSOR);
 	}
 
 	@Override

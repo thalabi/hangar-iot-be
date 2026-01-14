@@ -31,6 +31,13 @@ public abstract class AbstractMessageListenerHandler implements IMessageListener
 	
 	protected String lineSeparator = System.getProperty("line.separator");
 
+	protected boolean isTasmotaTopic(String topic) {
+		return topic.startsWith("stat/");
+	}
+	protected boolean isZigbee2mqttTopic(String topic) {
+		return topic.startsWith("zigbee2mqtt/");
+	}
+	
 	protected TopicSuffixEnum getTopicSuffix(String topic) {
 		var pattern = Pattern.compile("^(.+)/(.+)/(.+)$");
 		var matcher = pattern.matcher(topic);

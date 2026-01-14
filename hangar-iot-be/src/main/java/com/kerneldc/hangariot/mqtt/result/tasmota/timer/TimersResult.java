@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.result.timer;
+package com.kerneldc.hangariot.mqtt.result.tasmota.timer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.kerneldc.hangariot.mqtt.command.Timer;

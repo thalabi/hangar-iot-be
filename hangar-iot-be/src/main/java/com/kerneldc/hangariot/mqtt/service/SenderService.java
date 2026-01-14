@@ -17,14 +17,14 @@ import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
 import com.kerneldc.hangariot.exception.UnexpectedCommandResultException;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
-import com.kerneldc.hangariot.mqtt.message.StateMessage;
+import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
-import com.kerneldc.hangariot.mqtt.result.CommandEnum;
-import com.kerneldc.hangariot.mqtt.result.PowerResult;
-import com.kerneldc.hangariot.mqtt.result.TelePeriodResult;
-import com.kerneldc.hangariot.mqtt.result.TimezoneResult;
-import com.kerneldc.hangariot.mqtt.result.timer.TimerResult;
-import com.kerneldc.hangariot.mqtt.result.timer.TimersResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
+import com.kerneldc.hangariot.mqtt.result.tasmota.PowerResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.TelePeriodResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.TimezoneResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.springconfig.MqttConfig.MessageSender;
 
@@ -200,7 +200,7 @@ public class SenderService {
 		if (count == maxNumberOfTries) {
 			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", commandEnum, deviceName);
 			LOGGER.warn("Marking device [{}] as UNREACHABLE", deviceName);
-			var stateMessage = new StateMessage(ConnectionStateEnum.UNREACHABLE, new Date().getTime());
+			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.UNREACHABLE, new Date().getTime());
 			applicationCache.setConnectionState(deviceName, stateMessage);
 			triggerPublishConnectionState(deviceName);
 			throw new DeviceOfflineException();
@@ -210,7 +210,7 @@ public class SenderService {
 
 
     public void triggerPublishConnectionState(String deviceName) {
-    	LOGGER.info("Publishing StateMessage message [{}] of device [{}]", applicationCache.getConnectionState(deviceName), deviceName);
+    	LOGGER.info("Publishing ConnectionStateMessage message [{}] of device [{}]", applicationCache.getConnectionState(deviceName), deviceName);
     	var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + topicHelper.getStateTopic(deviceName);
     	webSocket.convertAndSend(webSocketTopic, applicationCache.getConnectionState(deviceName));
     }
