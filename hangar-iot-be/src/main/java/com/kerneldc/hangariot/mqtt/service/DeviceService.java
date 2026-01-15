@@ -11,15 +11,20 @@ import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.springconfig.DeviceListPropertyHolder;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeviceService {
 
 	private final DeviceListPropertyHolder deviceListPropertyHolder;
+
 	@Value("${client-exposed.mqtt.commands}")
 	private String[] commands;
-	
+	@Value("${websocket.topics.prefix:/topic}")
+	private String websocketTopicsPrefix;
+
 	public List<Device> getDeviceList() {
 		return deviceListPropertyHolder.getDeviceList();
 	}
@@ -35,4 +40,5 @@ public class DeviceService {
 	public List<String> getCommandList() {
 		return Arrays.asList(commands);
 	}
+	
 }

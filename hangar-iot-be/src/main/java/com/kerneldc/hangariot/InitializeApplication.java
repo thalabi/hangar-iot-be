@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("!test")
 public class InitializeApplication implements ApplicationRunner {
 
-//	private final SenderService senderService;
+//	private final MqttSenderService senderService;
 	private final DeviceService deviceService;
 	
 	@Override

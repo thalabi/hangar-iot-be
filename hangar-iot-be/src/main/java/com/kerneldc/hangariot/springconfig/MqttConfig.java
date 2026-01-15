@@ -102,7 +102,7 @@ public class MqttConfig {
     }
 	
 	@MessagingGateway(defaultRequestChannel = "mqttOutboundChannel")
-    public interface MessageSender {
+    public interface MqqtGateway {
 
         void sendMessage(@Header(MqttHeaders.TOPIC) String topic, String message);
 

@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class StateMessageListenerHandler extends AbstractMessageListenerHandler {
+public class Z2mPowerMessageListenerHandler extends AbstractMessageListenerHandler {
 
-	public StateMessageListenerHandler(ApplicationCache applicationCache, ObjectMapper objectMapper,
+	public Z2mPowerMessageListenerHandler(ApplicationCache applicationCache, ObjectMapper objectMapper,
 			SimpMessagingTemplate webSocket, TopicHelper topicHelper) {
 		super(applicationCache, objectMapper, webSocket, topicHelper);
 	}

@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -26,7 +25,7 @@ import com.kerneldc.hangariot.mqtt.result.tasmota.TimezoneResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
-import com.kerneldc.hangariot.springconfig.MqttConfig.MessageSender;
+import com.kerneldc.hangariot.springconfig.MqttConfig.MqqtGateway;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -35,16 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SenderService {
+public class MqttSenderService {
 
 	// MQTT messages
-	private final MessageSender messageSender;
+	private final MqqtGateway mqqtGateway;
 	// WebSocket messages
-	private final SimpMessagingTemplate webSocket;
 	private final TopicHelper topicHelper;
 	private final ApplicationCache applicationCache;
 	private final ObjectMapper objectMapper;
 	private final DeviceService deviceService;
+	private final WebSocketSenderService webSocketSenderService;
 	
 	@Value("${command.execution.timeout:5}")
 	private Integer commandExecutionTimeout;
@@ -177,7 +176,7 @@ public class SenderService {
 
 	private void sendMessage(String topic, String message) {
 		LOGGER.info("Sending message [{}] to [{}] topic", message, topic);
-		messageSender.sendMessage(topic, message);
+		mqqtGateway.sendMessage(topic, message);
 	}
 
 	private static final int SLEEP_MILLISECONDS = 100;
@@ -186,7 +185,7 @@ public class SenderService {
 	public void init () {
 		maxNumberOfTries = commandExecutionTimeout * 1000 / SLEEP_MILLISECONDS;
 	}
-	public AbstractBaseResult waitForCommandToExecute(String deviceName, CommandEnum commandEnum, long commandTimestamp) throws InterruptedException, DeviceOfflineException {
+	private AbstractBaseResult waitForCommandToExecute(String deviceName, CommandEnum commandEnum, long commandTimestamp) throws InterruptedException, DeviceOfflineException {
     	AbstractBaseResult result;
     	int count = 0;
     	LOGGER.info("Waiting for command to finish execution ...");
@@ -202,17 +201,26 @@ public class SenderService {
 			LOGGER.warn("Marking device [{}] as UNREACHABLE", deviceName);
 			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.UNREACHABLE, new Date().getTime());
 			applicationCache.setConnectionState(deviceName, stateMessage);
-			triggerPublishConnectionState(deviceName);
+			webSocketSenderService.triggerPublishConnectionState(deviceName);
 			throw new DeviceOfflineException();
 		}
 		return result;
     }
 
-
-    public void triggerPublishConnectionState(String deviceName) {
-    	LOGGER.info("Publishing ConnectionStateMessage message [{}] of device [{}]", applicationCache.getConnectionState(deviceName), deviceName);
-    	var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + topicHelper.getStateTopic(deviceName);
-    	webSocket.convertAndSend(webSocketTopic, applicationCache.getConnectionState(deviceName));
-    }
+/*
+ * Moved to DeviceService
+ */
+//    public void triggerPublishConnectionState(String deviceName) {
+//    	LOGGER.info("Publishing ConnectionStateMessage message [{}] of device [{}]", applicationCache.getConnectionState(deviceName), deviceName);
+//    	switch (deviceService.getDevice(deviceName).getBridge()) {
+//    	case TASMOTA -> {
+//    		var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + topicHelper.getStateTopic(deviceName);
+//    		webSocket.convertAndSend(webSocketTopic, applicationCache.getConnectionState(deviceName));
+//    	}
+//    	case ZIGBEE2MQTT -> {
+//    		
+//    	}
+//    	}
+//    }
 
 }

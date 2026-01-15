@@ -23,7 +23,8 @@ import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
-import com.kerneldc.hangariot.mqtt.service.SenderService;
+import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
+import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.task.ScheduledTasks;
 
 import jakarta.validation.Valid;
@@ -36,7 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HangarIotController {
 
-	private final SenderService senderService;
+	private final MqttSenderService mqttSenderService;
+	private final WebSocketSenderService webSocketSenderService;
 	private final DeviceService deviceService;
 	private final ApplicationCache applicationCache;
 	private final ScheduledTasks scheduledTasks;
@@ -55,7 +57,7 @@ public class HangarIotController {
 	public ResponseEntity<String> togglePower(@Valid @RequestBody TogglePowerRequest togglePowerRequest) throws InterruptedException, ApplicationException {
     	LOGGER.info("Begin ...");
     	validateDeviceName(togglePowerRequest.getDeviceName());
-   		senderService.togglePower(togglePowerRequest.getDeviceName(), togglePowerRequest.getPowerStateRequested());
+   		mqttSenderService.togglePower(togglePowerRequest.getDeviceName(), togglePowerRequest.getPowerStateRequested());
     	
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -67,7 +69,7 @@ public class HangarIotController {
 	public ResponseEntity<String> triggerPublishSensorData(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, ApplicationException {
     	LOGGER.info("Begin ...");
     	validateDeviceName(deviceRequest.getDeviceName());
-   		senderService.triggerPublishSensorData(deviceRequest.getDeviceName());
+   		mqttSenderService.triggerPublishSensorData(deviceRequest.getDeviceName());
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -77,7 +79,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	validateDeviceName(deviceRequest.getDeviceName());
     	
-		senderService.triggerPublishPowerState(deviceRequest.getDeviceName());
+		mqttSenderService.triggerPublishPowerState(deviceRequest.getDeviceName());
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -87,7 +89,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	validateDeviceName(deviceRequest.getDeviceName());
     	
-		senderService.triggerTimezoneValue(deviceRequest.getDeviceName());
+		mqttSenderService.triggerTimezoneValue(deviceRequest.getDeviceName());
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -98,7 +100,7 @@ public class HangarIotController {
     	var deviceName = timezoneRequest.getDeviceName();
     	validateDeviceName(deviceName);
     	
-		senderService.setTelePeriod(deviceName, timezoneRequest.getTelePeriod());
+		mqttSenderService.setTelePeriod(deviceName, timezoneRequest.getTelePeriod());
     	
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
@@ -109,7 +111,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	var deviceName = timezoneRequest.getDeviceName();
     	validateDeviceName(deviceName);
-		senderService.setTimezoneOffset(deviceName, timezoneRequest.getTimezoneOffset());
+		mqttSenderService.setTimezoneOffset(deviceName, timezoneRequest.getTimezoneOffset());
     	
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
@@ -123,7 +125,7 @@ public class HangarIotController {
     	validateDeviceName(deviceName);
 
 //    	try {
-			senderService.setTimeStdt(deviceName, timeStdRequest);
+			mqttSenderService.setTimeStdt(deviceName, timeStdRequest);
 //		} catch (ApplicationException e) {
 //			e.printStackTrace();
 //			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(NestedExceptionUtils.getMostSpecificCause(e).getMessage());
@@ -138,7 +140,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	validateDeviceName(deviceName);
     	
-		var	result = senderService.getTimers(deviceName);
+		var	result = mqttSenderService.getTimers(deviceName);
 
 		LOGGER.info("End ...");
     	return ResponseEntity.ok(result);
@@ -150,7 +152,7 @@ public class HangarIotController {
     	var deviceName = timersRequest.getDeviceName();
     	validateDeviceName(deviceName);
 
-		senderService.setTimers(timersRequest);
+		mqttSenderService.setTimers(timersRequest);
     	
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
@@ -163,7 +165,7 @@ public class HangarIotController {
     	validateDeviceName(deviceName);
 
     	var commandEnum = CommandEnum.valueOf(freeFormatCommandRequest.getCommand().toUpperCase());
-    	var abstractBaseResult = senderService.executeCommand(freeFormatCommandRequest.getDeviceName(), commandEnum,
+    	var abstractBaseResult = mqttSenderService.executeCommand(freeFormatCommandRequest.getDeviceName(), commandEnum,
 					freeFormatCommandRequest.getArguments());
 		LOGGER.info("abstractBaseResult: [{}]", abstractBaseResult);
 		var result = commandEnum.getResultType().cast(abstractBaseResult);
@@ -220,7 +222,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	validateDeviceName(deviceRequest.getDeviceName());
     	
-    	senderService.triggerPublishConnectionState(deviceRequest.getDeviceName());
+    	webSocketSenderService.triggerPublishConnectionState(deviceRequest.getDeviceName());
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }

@@ -24,15 +24,12 @@ public class MessageListenerRouter implements MessageHandler {
 
 	private final Collection<IMessageListenerHandler> messageListenerHandlerCollection;
 	
-//	private String lineSeparator = System.getProperty("line.separator");
-	
 	@Override
 	public void handleMessage(Message<?> messageObject) throws MessagingException {
 		var fullTopic = (String)messageObject.getHeaders().get(MqttHeaders.RECEIVED_TOPIC);
 		var timestamp = (long)messageObject.getHeaders().get(MessageHeaders.TIMESTAMP); 
 		var message = (String)messageObject.getPayload();
 		
-//		LOGGER.info("Message [{}]{} arrived in topic [{}]", message, lineSeparator, fullTopic);
 		LOGGER.info("Message [{}] arrived in topic [{}] at [{}]", message, fullTopic, timestamp);
 			
 		for (IMessageListenerHandler handler: messageListenerHandlerCollection) {

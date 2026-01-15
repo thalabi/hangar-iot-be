@@ -12,7 +12,7 @@ import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
-import com.kerneldc.hangariot.mqtt.service.SenderService;
+import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class ScheduledTasks {
 	private String decreaseTelemetryPeriod;
 	
 	private final DeviceService deviceService;
-	private final SenderService senderService;
+	private final MqttSenderService mqttSenderService;
 
 	
 	@Scheduled(cron = "${telemetry.scheduler.increase-task.cron-expression}")
@@ -40,7 +40,7 @@ public class ScheduledTasks {
 			if (Boolean.TRUE.equals(device.getEnableDataSaver())) {
 				LOGGER.info("Increasing telePeriod for device [{}] to [{}]", device.getName(), increaseTelemetryPeriod);
 				try {
-					senderService.executeCommand(device.getName(), CommandEnum.TELEPERIOD, increaseTelemetryPeriod);
+					mqttSenderService.executeCommand(device.getName(), CommandEnum.TELEPERIOD, increaseTelemetryPeriod);
 				} catch (DeviceOfflineException e) {
 			    	LOGGER.error("Unable to increaseTelemetryPeriod for device {}", device.getName(),NestedExceptionUtils.getMostSpecificCause(e).getMessage());
 				}
@@ -55,7 +55,7 @@ public class ScheduledTasks {
 			if (Boolean.TRUE.equals(device.getEnableDataSaver())) {
 				LOGGER.info("Decreasing telePeriod for device [{}] to [{}]", device.getName(), decreaseTelemetryPeriod);
 				try {
-					senderService.executeCommand(device.getName(), CommandEnum.TELEPERIOD, decreaseTelemetryPeriod);
+					mqttSenderService.executeCommand(device.getName(), CommandEnum.TELEPERIOD, decreaseTelemetryPeriod);
 				} catch (DeviceOfflineException e) {
 					LOGGER.error("Unable to restoreTelemetryPeriod for device {}", device.getName(),
 							NestedExceptionUtils.getMostSpecificCause(e).getMessage());
