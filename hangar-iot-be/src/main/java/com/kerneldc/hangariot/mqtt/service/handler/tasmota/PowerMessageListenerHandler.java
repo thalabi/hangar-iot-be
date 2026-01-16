@@ -2,12 +2,12 @@ package com.kerneldc.hangariot.mqtt.service.handler.tasmota;
 
 import java.util.Date;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.mqtt.message.PowerMessage;
-import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
+import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
+import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
@@ -15,14 +15,14 @@ import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
 @Service
 public class PowerMessageListenerHandler extends AbstractMessageListenerHandler {
 
-	public PowerMessageListenerHandler(ApplicationCache applicationCache, ObjectMapper objectMapper,
-			SimpMessagingTemplate webSocket, TopicHelper topicHelper) {
-		super(applicationCache, objectMapper, webSocket, topicHelper);
+	public PowerMessageListenerHandler(ApplicationContext applicationContext, ObjectMapper objectMapper,
+			WebSocketSenderService webSocketSenderService, TopicHelper topicHelper) {
+		super(applicationContext, objectMapper, webSocketSenderService, topicHelper);
 	}
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return isTasmotaTopic(fullTopic) && getTopicSuffix(fullTopic).equals(TopicSuffixEnum.POWER);
+		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(TopicSuffixEnum.POWER);
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class PowerMessageListenerHandler extends AbstractMessageListenerHandler 
 		
 		var powerMessage = new PowerMessage(message, new Date().getTime());
 
-		publishMessageToWebSocket(fullTopic, powerMessage);
+		webSocketSenderService.publishMessageToWebSocket(fullTopic, powerMessage);
 	}
 
 }

@@ -1,10 +1,10 @@
 package com.kerneldc.hangariot.mqtt.service.handler.zigbee2mqtt;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
+import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
+import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 
@@ -14,20 +14,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Z2mPowerMessageListenerHandler extends AbstractMessageListenerHandler {
 
-	public Z2mPowerMessageListenerHandler(ApplicationCache applicationCache, ObjectMapper objectMapper,
-			SimpMessagingTemplate webSocket, TopicHelper topicHelper) {
-		super(applicationCache, objectMapper, webSocket, topicHelper);
+	public Z2mPowerMessageListenerHandler(ApplicationContext applicationContext, ObjectMapper objectMapper,
+			WebSocketSenderService webSocketSenderService, TopicHelper topicHelper) {
+		super(applicationContext, objectMapper, webSocketSenderService, topicHelper);
 	}
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return isZigbee2mqttTopic(fullTopic);
+		return topicHelper.isZigbee2mqttTopic(fullTopic);
 	}
 
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
 
-		var notDuplicate = applicationCache.setTopicMessage(fullTopic, message);
+		var notDuplicate = applicationContext.setTopicMessage(fullTopic, message);
 		if (notDuplicate) {
 			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
 		} else {
@@ -42,7 +42,7 @@ public class Z2mPowerMessageListenerHandler extends AbstractMessageListenerHandl
 		}		
 
 		try {
-			applicationCache.setCommandResult(fullTopic, message);
+			applicationContext.setCommandResult(fullTopic, message);
 		} catch (JsonProcessingException e) {
 			throw new MessagingException("Failed to add message to cache.", e);
 		}

@@ -2,18 +2,18 @@ package com.kerneldc.hangariot.mqtt.service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
+import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -22,29 +22,33 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ApplicationCache {
+public class ApplicationContext {
 	
 	private final ObjectMapper objectMapper;
+//	private final DeviceService deviceService;
+	private final TopicHelper topicHelper;
 	private Map<DeviceNameAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
-	private Map<String, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
+	private Map<Device, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
 	
-	private record DeviceNameAndCommandEnum(String deviceName, CommandEnum commandEnum) {}
+	private record DeviceNameAndCommandEnum(Device device, CommandEnum commandEnum) {}
 	
 	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
 
 	public void setCommandResult(String topic, String message) throws JsonProcessingException {
-		var deviceName = extractDeviceName(topic);
+		//var deviceName = extractDeviceName(topic);
+//		var device = extractDevice(topic);
+		var device = topicHelper.getDevice(topic);
 	    var commandEnum = getCommandEnum(message);
 	    if (commandEnum == null) {
 	    	LOGGER.warn("Message type of [{}] is not supported. Can't add it to cache", message);
 	    	return;
 	    }
 		var result = objectMapper.readValue(message, commandEnum.getResultType());
-		resultTopicCache.put(new DeviceNameAndCommandEnum(deviceName, commandEnum), result);
+		resultTopicCache.put(new DeviceNameAndCommandEnum(device, commandEnum), result);
 	}
 
-	public AbstractBaseResult getCommandResult(String deviceName, CommandEnum commandEnum) {
-		return resultTopicCache.get(new DeviceNameAndCommandEnum(deviceName, commandEnum));
+	public AbstractBaseResult getCommandResult(Device device, CommandEnum commandEnum) {
+		return resultTopicCache.get(new DeviceNameAndCommandEnum(device, commandEnum));
 	}
 
 	private CommandEnum getCommandEnum(String message) throws JsonProcessingException {
@@ -57,16 +61,17 @@ public class ApplicationCache {
 		}
 	}
 
-	private static final Pattern TOPIC_PATTERN = Pattern.compile(".+/(.+)/(RESULT|LwtMessage)");
-
-	private String extractDeviceName(String topic) {
-		var m = TOPIC_PATTERN.matcher(topic);
-		if (m.matches() && StringUtils.isNotEmpty(m.group(1))) {
-			return m.group(1);
-		} else {
-			throw new IllegalStateException(String.format("Could not extract device name from topic [%s]", topic)); 
-		}
-	}
+//	private static final Pattern TOPIC_PATTERN = Pattern.compile(".+/(.+)/(RESULT|LwtMessage)");
+//
+//	private Device extractDevice(String topic) {
+//		var m = TOPIC_PATTERN.matcher(topic);
+//		if (m.matches() && StringUtils.isNotEmpty(m.group(1))) {
+//			var deviceName = m.group(1);
+//			return deviceService.getDevice(deviceName);
+//		} else {
+//			throw new IllegalStateException(String.format("Could not extract device name from topic [%s]", topic)); 
+//		}
+//	}
 
 	public void dumpCache() {
 	    LOGGER.info("Dump of resultTopicCache:");
@@ -76,16 +81,16 @@ public class ApplicationCache {
 	}
 
 	
-	public ConnectionStateMessage getConnectionState(String deviceName) {
-		return deviceConnectionStateCache.get(deviceName);
+	public ConnectionStateMessage getConnectionState(Device device) {
+		return deviceConnectionStateCache.get(device);
 	}
 
-	public void setConnectionState(String deviceName, ConnectionStateMessage connectionStateMessage) {
-		deviceConnectionStateCache.put(deviceName, connectionStateMessage);
+	public void setConnectionState(Device device, ConnectionStateMessage connectionStateMessage) {
+		deviceConnectionStateCache.put(device, connectionStateMessage);
 	}
 
-	public boolean isDeviceOnLine(String deviceName) {
-		var stateMessage = getConnectionState(deviceName);
+	public boolean isDeviceOnLine(Device device) {
+		var stateMessage = getConnectionState(device);
 		return stateMessage != null && stateMessage.getState() == ConnectionStateEnum.ONLINE;
 	}
 	

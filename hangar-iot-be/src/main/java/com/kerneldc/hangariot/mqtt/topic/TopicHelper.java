@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 
@@ -41,6 +42,7 @@ public class TopicHelper {
 	
 	// ZIGBEE2MQTT
 	private static final String ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
+	private static final String ZIGBEE2MQTT_GET_TOPIC_TEMPLATE = "zigbee2mqtt/<device>/get";
 	
 	private final DeviceService deviceService;
 	
@@ -49,9 +51,18 @@ public class TopicHelper {
 		return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, deviceName)
 				.replace("<command>", commandEnum.getCommand());
 	}
+	public String getCommandTopic(CommandEnum commandEnum, Device device) {
+		return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName())
+				.replace("<command>", commandEnum.getCommand());
+	}
 
-	public String getStateTopic(String deviceName) {
-		return CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, deviceName);
+	public String getStateTopic(Device device) {
+		return switch (device.getBridge()) {
+		case TASMOTA ->
+			CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+		case ZIGBEE2MQTT -> 
+			CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+		};
 	}
 
 
@@ -72,6 +83,7 @@ public class TopicHelper {
 				// TODO
 				LOGGER.info("Device [{}] bridge is [{}]", device.getName(), device.getBridge());
 				topicList.add(ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+				
 			}
 			}
 		}
@@ -79,17 +91,39 @@ public class TopicHelper {
 		return topicList;
 	}
 
-	public String getDeviceName(String topic) {
-		var p = Pattern.compile("^.*/(.*)/.*$");
-		var m = p.matcher(topic);
+	private static final Pattern TOPIC_PATTERN = Pattern.compile(".+/(.+)/.+");
+
+	public Device getDevice(String topic) {
+		//var p = Pattern.compile("^.*/(.*)/.*$");
+		//var m = p.matcher(topic);
+		var m = TOPIC_PATTERN.matcher(topic);
 		if (m.matches() && StringUtils.isNotEmpty(m.group(1))) {
-				return m.group(1);
+			var deviceName = m.group(1);
+			return deviceService.getDevice(deviceName);
 		} else {
-			return StringUtils.EMPTY;
+			throw new IllegalStateException(String.format("Could not extract device name from topic [%s]", topic)); 
 		}
 	}
 	
 	public String transformLwtToState(String lwtTopic) {
 		return lwtTopic.replace("/LWT", "/STATE");
 	}
+	
+	public boolean isTasmotaTopic(String topic) {
+		return topic.startsWith("stat/") || topic.startsWith("tele/");
+	}
+	public boolean isZigbee2mqttTopic(String topic) {
+		return topic.startsWith("zigbee2mqtt/");
+	}
+	
+	public TopicSuffixEnum getTopicSuffix(String topic) {
+		var pattern = Pattern.compile("^(.+)/(.+)/(.+)$");
+		var matcher = pattern.matcher(topic);
+		if (! /* not */ matcher.matches()) {
+			throw new IllegalArgumentException(String.format("Could not get suffix from %s", topic));
+		}
+		return TopicSuffixEnum.valueOf(matcher.group(3));
+		
+	}
+
 }

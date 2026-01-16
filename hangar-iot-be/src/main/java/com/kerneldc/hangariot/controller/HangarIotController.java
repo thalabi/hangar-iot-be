@@ -21,7 +21,7 @@ import com.kerneldc.hangariot.exception.InvalidDeviceException;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
-import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
+import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
@@ -40,7 +40,7 @@ public class HangarIotController {
 	private final MqttSenderService mqttSenderService;
 	private final WebSocketSenderService webSocketSenderService;
 	private final DeviceService deviceService;
-	private final ApplicationCache applicationCache;
+	private final ApplicationContext applicationContext;
 	private final ScheduledTasks scheduledTasks;
 	
     @GetMapping("/ping")
@@ -56,8 +56,9 @@ public class HangarIotController {
     @PostMapping("/togglePower")
 	public ResponseEntity<String> togglePower(@Valid @RequestBody TogglePowerRequest togglePowerRequest) throws InterruptedException, ApplicationException {
     	LOGGER.info("Begin ...");
-    	validateDeviceName(togglePowerRequest.getDeviceName());
-   		mqttSenderService.togglePower(togglePowerRequest.getDeviceName(), togglePowerRequest.getPowerStateRequested());
+    	var deviceName = togglePowerRequest.getDeviceName();
+    	validateDeviceName(deviceName);
+   		mqttSenderService.togglePower(deviceService.getDevice(deviceName), togglePowerRequest.getPowerStateRequested());
     	
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -68,8 +69,9 @@ public class HangarIotController {
     @PostMapping("/triggerPublishSensorData")
 	public ResponseEntity<String> triggerPublishSensorData(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, ApplicationException {
     	LOGGER.info("Begin ...");
-    	validateDeviceName(deviceRequest.getDeviceName());
-   		mqttSenderService.triggerPublishSensorData(deviceRequest.getDeviceName());
+    	var deviceName = deviceRequest.getDeviceName();
+    	validateDeviceName(deviceName);
+   		mqttSenderService.triggerPublishSensorData(deviceService.getDevice(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -77,9 +79,10 @@ public class HangarIotController {
     @PostMapping("/triggerPublishPowerState")
 	public ResponseEntity<String> triggerPublishPowerState(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, JsonProcessingException, ApplicationException {
     	LOGGER.info("Begin ...");
-    	validateDeviceName(deviceRequest.getDeviceName());
+    	var deviceName = deviceRequest.getDeviceName();
+    	validateDeviceName(deviceName);
     	
-		mqttSenderService.triggerPublishPowerState(deviceRequest.getDeviceName());
+		mqttSenderService.triggerPublishPowerState(deviceService.getDevice(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -87,9 +90,10 @@ public class HangarIotController {
     @PostMapping("/triggerTimezoneValue")
 	public ResponseEntity<String> triggerTimezoneValue(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, JsonProcessingException, ApplicationException {
     	LOGGER.info("Begin ...");
-    	validateDeviceName(deviceRequest.getDeviceName());
+    	var deviceName = deviceRequest.getDeviceName();
+    	validateDeviceName(deviceName);
     	
-		mqttSenderService.triggerTimezoneValue(deviceRequest.getDeviceName());
+		mqttSenderService.triggerTimezoneValue(deviceService.getDevice(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -100,7 +104,7 @@ public class HangarIotController {
     	var deviceName = timezoneRequest.getDeviceName();
     	validateDeviceName(deviceName);
     	
-		mqttSenderService.setTelePeriod(deviceName, timezoneRequest.getTelePeriod());
+		mqttSenderService.setTelePeriod(deviceService.getDevice(deviceName), timezoneRequest.getTelePeriod());
     	
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
@@ -111,7 +115,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	var deviceName = timezoneRequest.getDeviceName();
     	validateDeviceName(deviceName);
-		mqttSenderService.setTimezoneOffset(deviceName, timezoneRequest.getTimezoneOffset());
+		mqttSenderService.setTimezoneOffset(deviceService.getDevice(deviceName), timezoneRequest.getTimezoneOffset());
     	
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
@@ -140,7 +144,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	validateDeviceName(deviceName);
     	
-		var	result = mqttSenderService.getTimers(deviceName);
+		var	result = mqttSenderService.getTimers(deviceService.getDevice(deviceName));
 
 		LOGGER.info("End ...");
     	return ResponseEntity.ok(result);
@@ -165,7 +169,7 @@ public class HangarIotController {
     	validateDeviceName(deviceName);
 
     	var commandEnum = CommandEnum.valueOf(freeFormatCommandRequest.getCommand().toUpperCase());
-    	var abstractBaseResult = mqttSenderService.executeCommand(freeFormatCommandRequest.getDeviceName(), commandEnum,
+    	var abstractBaseResult = mqttSenderService.executeCommand(deviceService.getDevice(deviceName), commandEnum,
 					freeFormatCommandRequest.getArguments());
 		LOGGER.info("abstractBaseResult: [{}]", abstractBaseResult);
 		var result = commandEnum.getResultType().cast(abstractBaseResult);
@@ -204,7 +208,7 @@ public class HangarIotController {
     @GetMapping("/dumpCache")
 	public ResponseEntity<Void> dumpCache() {
     	LOGGER.info("Begin ...");
-    	applicationCache.dumpCache();
+    	applicationContext.dumpCache();
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(null);
     }
@@ -220,9 +224,10 @@ public class HangarIotController {
     @PostMapping("/triggerPublishConnectionState")
     public ResponseEntity<String> triggerPublishConnectionState(@Valid @RequestBody DeviceRequest deviceRequest) throws ApplicationException {
     	LOGGER.info("Begin ...");
-    	validateDeviceName(deviceRequest.getDeviceName());
+    	var deviceName = deviceRequest.getDeviceName();
+    	validateDeviceName(deviceName);
     	
-    	webSocketSenderService.triggerPublishConnectionState(deviceRequest.getDeviceName());
+    	webSocketSenderService.publishConnectionState(deviceService.getDevice(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }

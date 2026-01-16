@@ -2,13 +2,13 @@ package com.kerneldc.hangariot.mqtt.service.handler.tasmota;
 
 import java.util.Date;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
-import com.kerneldc.hangariot.mqtt.service.ApplicationCache;
+import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
+import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
@@ -17,14 +17,14 @@ import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
 @Service
 public class LwtMessageListenerHandler extends AbstractMessageListenerHandler {
 
-	public LwtMessageListenerHandler(ApplicationCache applicationCache, ObjectMapper objectMapper,
-			SimpMessagingTemplate webSocket, TopicHelper topicHelper) {
-		super(applicationCache, objectMapper, webSocket, topicHelper);
+	public LwtMessageListenerHandler(ApplicationContext applicationContext, ObjectMapper objectMapper,
+			WebSocketSenderService webSocketSenderService, TopicHelper topicHelper) {
+		super(applicationContext, objectMapper, webSocketSenderService, topicHelper);
 	}
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return isTasmotaTopic(fullTopic) && getTopicSuffix(fullTopic).equals(TopicSuffixEnum.LWT);
+		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(TopicSuffixEnum.LWT);
 	}
 
 	/**
@@ -35,9 +35,9 @@ public class LwtMessageListenerHandler extends AbstractMessageListenerHandler {
 		
 		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.valueOf(message.toUpperCase()), new Date().getTime());
 
-		applicationCache.setConnectionState(topicHelper.getDeviceName(fullTopic), stateMessage);
+		applicationContext.setConnectionState(topicHelper.getDevice(fullTopic), stateMessage);
 
-		publishMessageToWebSocket(topicHelper.transformLwtToState(fullTopic), stateMessage);
+		webSocketSenderService.publishMessageToWebSocket(topicHelper.transformLwtToState(fullTopic), stateMessage);
 	}
 
 }

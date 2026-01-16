@@ -24,12 +24,21 @@ public class InitializeApplication implements ApplicationRunner {
 		
 		var deviceList = deviceService.getDeviceNameList();
 		LOGGER.info("Managing devices: {}", String.join(", ", deviceList));
+		
+		setConnectionStateOfZ2mDevices();
 
 //		LOGGER.info("Getting power state and sensor data for devices");
 //		for (var device: deviceService.getDeviceNameList()) {
 //			senderService.getPowerState(device);
 //			senderService.triggerSensorData(device);
 //		}
+	}
+
+	private void setConnectionStateOfZ2mDevices() {
+		deviceService.getDeviceList().forEach(device -> {
+			
+		});
+		
 	}
 
 }
