@@ -30,7 +30,6 @@ public class SensorMessageListenerHandler extends AbstractMessageListenerHandler
 
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
-LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
 		try {
 			message = addTimeStampToMessage(timestamp, message);
 		} catch (JsonProcessingException e) {

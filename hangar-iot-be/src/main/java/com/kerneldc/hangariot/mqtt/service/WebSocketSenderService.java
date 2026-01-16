@@ -29,7 +29,7 @@ public class WebSocketSenderService {
 	@Value("${websocket.topics.prefix:/topic}")
 	private String websocketTopicsPrefix;
 
-	protected void publishMessageToWebSocket(String fullTopic, String messageString) {
+	public void publishMessageToWebSocket(String fullTopic, String messageString) {
 		var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + fullTopic;
 		webSocket.convertAndSend(webSocketTopic, messageString);
 		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", messageString, fullTopic, webSocketTopic);
