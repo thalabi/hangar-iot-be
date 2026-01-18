@@ -12,10 +12,7 @@ import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandle
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service
-@Slf4j
 public class PowerMessageListenerHandler extends AbstractMessageListenerHandler {
 
 	public PowerMessageListenerHandler(ApplicationContext applicationContext, ObjectMapper objectMapper,
@@ -30,11 +27,10 @@ public class PowerMessageListenerHandler extends AbstractMessageListenerHandler 
 
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
-		LOGGER.info("handle()");
 		
 		var powerMessage = new PowerMessage(message, new Date().getTime());
 
-		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+		webSocketSenderService.publishMessageToWebSocket(fullTopic, powerMessage);
 	}
 
 }
