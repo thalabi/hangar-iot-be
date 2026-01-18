@@ -9,7 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
+import com.kerneldc.hangariot.mqtt.message.PowerMessage;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
+import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
@@ -38,41 +40,36 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 
 		var isDuplicate = applicationContext.setTopicMessage(fullTopic, message);
 		if (isDuplicate) {
-			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate and ignored ***", fullTopic, timestamp, message);
+
+			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
 			var stateResult = applicationContext.getCommandResult(device, CommandEnum.ZIGBEE2MQTT_STATE);
-			LOGGER.info("stateResult [{}]", stateResult);
 			stateResult.setTimestamp(new Date().getTime());
-			var stateResult2 = applicationContext.getCommandResult(device, CommandEnum.ZIGBEE2MQTT_STATE);
-			LOGGER.info("stateResult2 [{}]", stateResult2);
+			
 			return;
 		}
+		
 		LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
+		StateResult stateResult;
 		try {
 			message = addTimeStampToMessage(timestamp, message);
-			applicationContext.setCommandResult(fullTopic, message);
+			stateResult = (StateResult)applicationContext.setCommandResult(fullTopic, message);
+			LOGGER.info("trace 1. stateResult [{}]", stateResult);
 		} catch (JsonProcessingException e) {
 			throw new MessagingException("Failed to add message to cache.", e);
 		}
 
+		// connection state
 		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, new Date().getTime());
 		applicationContext.setConnectionState(device, stateMessage);
-
 		webSocketSenderService.publishConnectionState(device);
 
-/*
-		try {
-			message = addTimeStampToMessage(timestamp, message);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			throw new MessagingException("Error adding timestamp field to json string", NestedExceptionUtils.getMostSpecificCause(e));
-		}		
-
-		try {
-			applicationContext.setCommandResult(fullTopic, message);
-		} catch (JsonProcessingException e) {
-			throw new MessagingException("Failed to add message to cache.", e);
-		}
-*/
+		// power state
+		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), new Date().getTime());
+		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+	}
+	
+	private void power() {
+		
 	}
 
 }

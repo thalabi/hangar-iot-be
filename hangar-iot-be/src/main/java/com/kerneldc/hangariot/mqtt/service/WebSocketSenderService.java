@@ -54,7 +54,7 @@ public class WebSocketSenderService {
 		} catch (JsonProcessingException e) {
 			throw new MessagingException("Error serializing LWT object to string", NestedExceptionUtils.getMostSpecificCause(e));
 		}
-		var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + fullTopic;
+		var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getDevice(fullTopic).getName() + "/power"; 
 		webSocket.convertAndSend(webSocketTopic, messageString);
 		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", messageString, fullTopic, webSocketTopic);
 	}

@@ -25,27 +25,25 @@ public class InitializeApplication implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 		
 		var deviceList = deviceService.getDeviceNameList();
-		LOGGER.info("Managing devices: {}", String.join(", ", deviceList));
 		
-		setConnectionStateOfZ2mDevices();
-
-//		LOGGER.info("Getting power state and sensor data for devices");
-//		for (var device: deviceService.getDeviceNameList()) {
-//			senderService.getPowerState(device);
-//			senderService.triggerSensorData(device);
-//		}
+		LOGGER.info("Managing devices: {}", String.join(", ", deviceList));
+		var i = 0;
+		for (var device: deviceService.getDeviceList()) {
+			LOGGER.info("{} - device [{}] ({})", String.format("%2d", ++i), device.getName(), device.getBridge());
+		}
+		
+		connectionStateOfZ2mDevices();
 	}
 
-	private void setConnectionStateOfZ2mDevices() {
+	private void connectionStateOfZ2mDevices() {
 		LOGGER.info("Finding out the connection state of Zigbee2Mqtt devices:");
-		deviceService.getDeviceList().stream().filter(device -> device.getBridge() == BridgeEnum.ZIGBEE2MQTT)
-		.peek(
-	device -> LOGGER.info("device [{}]", device.getName()))
-		.forEach(
-			
-	mqttSenderService::triggerPublishConnectionState
-		);
-		
+		var i = 0;
+		for (var device: deviceService.getDeviceList()) {
+			if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
+				LOGGER.info("{} - device [{}]", String.format("%2d", ++i), device.getName());
+				mqttSenderService.triggerPublishConnectionState(device);
+			}
+		}
 	}
 
 }

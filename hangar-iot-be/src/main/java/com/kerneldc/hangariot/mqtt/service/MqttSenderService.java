@@ -89,8 +89,6 @@ public class MqttSenderService {
 	}
 
 	public void triggerPublishConnectionState(Device device) {
-//		var topic = topicHelper.getZ2mConnectionStateTopic(device);
-//		mqqtGateway.sendMessage(topic, STATE_PAYLOAD);
 		try {
 			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
 		} catch (InterruptedException _) {
@@ -183,20 +181,15 @@ public class MqttSenderService {
 			device.getLock().lock();
 			if (wait) {
 				var commandTimestamp = new Date().getTime();
-				sendMessage(topic, stringArgument);
+				mqqtGateway.sendMessage(topic, stringArgument);
 				return waitForMessageSendToComplete(device, commandEnum, commandTimestamp); 
 			} else {
-				sendMessage(topic, stringArgument);
+				mqqtGateway.sendMessage(topic, stringArgument);
 				return null;
 			}
 		} finally {
 			device.getLock().unlock();
 		}
-	}
-
-	private void sendMessage(String topic, String message) {
-		LOGGER.info("Sending message [{}] to [{}] topic", message, topic);
-		mqqtGateway.sendMessage(topic, message);
 	}
 
 	private static final int SLEEP_MILLISECONDS = 100;
@@ -205,7 +198,7 @@ public class MqttSenderService {
 	public void init () {
 		maxNumberOfTries = commandExecutionTimeout * 1000 / SLEEP_MILLISECONDS;
 	}
-	private AbstractBaseResult waitForMessageSendToComplete(Device device, CommandEnum commandEnum, long commandTimestamp) throws InterruptedException, DeviceOfflineException {
+	private AbstractBaseResult waitForMessageSendToComplete(Device device, CommandEnum commandEnum, long commandIssuedTimestamp) throws InterruptedException, DeviceOfflineException {
     	AbstractBaseResult result;
     	int count = 0;
     	LOGGER.info("Waiting for message send to complete ...");
@@ -213,7 +206,8 @@ public class MqttSenderService {
 			TimeUnit.MILLISECONDS.sleep(SLEEP_MILLISECONDS);
 			count++;
 			result = applicationContext.getCommandResult(device, commandEnum);
-		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandTimestamp && count < maxNumberOfTries));
+//			LOGGER.info("result [{}]", result);
+		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandIssuedTimestamp && count < maxNumberOfTries));
 		LOGGER.info("Waited [{}] seconds", count * SLEEP_MILLISECONDS / 1000f);
 		
 		if (count == maxNumberOfTries) {

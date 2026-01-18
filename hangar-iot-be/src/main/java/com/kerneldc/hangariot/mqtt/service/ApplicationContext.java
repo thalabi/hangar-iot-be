@@ -31,9 +31,17 @@ public class ApplicationContext {
 	private Map<Device, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
 	
 	private record DeviceAndCommandEnum(Device device, CommandEnum commandEnum) {}
+	
+	// Used to detect duplicates
 	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
 
-	public void setCommandResult(String topic, String message) throws JsonProcessingException {
+	/**
+	 * @param topic
+	 * @param message
+	 * @return the stateResult as a json
+	 * @throws JsonProcessingException
+	 */
+	public AbstractBaseResult setCommandResult(String topic, String message) throws JsonProcessingException {
 		//var deviceName = extractDeviceName(topic);
 //		var device = extractDevice(topic);
 		var device = topicHelper.getDevice(topic);
@@ -44,11 +52,11 @@ public class ApplicationContext {
 			commandEnum = getTasmotaCommandEnum(message);
 		}
 	    if (commandEnum == null) {
-	    	LOGGER.warn("Message type of [{}] is not supported. Can't add it to cache", message);
-	    	return;
+	    	throw new IllegalArgumentException(String.format("Message type of [%s] is not supported. Can't add it to cache", message));
 	    }
 		var result = objectMapper.readValue(message, commandEnum.getResultType());
 		resultTopicCache.put(new DeviceAndCommandEnum(device, commandEnum), result);
+		return result;
 	}
 
 	public AbstractBaseResult getCommandResult(Device device, CommandEnum commandEnum) {
