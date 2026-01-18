@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.controller.Device.BridgeEnum;
 import com.kerneldc.hangariot.controller.TimeStdRequest;
 import com.kerneldc.hangariot.controller.TimersRequest;
 import com.kerneldc.hangariot.exception.ApplicationException;
@@ -53,43 +54,59 @@ public class MqttSenderService {
 	private String websocketTopicsPrefix;
 
 	private static final String UNEXPECTED_RESULT_MESSAGE_FORMAT = "Executing [%s] command with argument [%s] failed. Result came back as [%s], expected [%s]";
+	private static final String STATE_PAYLOAD = """
+			{"state": ""}
+			""";
 
 	public void togglePower(Device device, String powerStateExpected) throws InterruptedException, ApplicationException, DeviceOfflineException {
-		var result = (PowerResult)executeCommand(device, CommandEnum.POWER, "2"); // 2 toggles power
+		var result = (PowerResult)sendMessage(device, CommandEnum.POWER, "2"); // 2 toggles power
 		if (! /* not */ StringUtils.equalsIgnoreCase(powerStateExpected, result.getPower())) {
 			throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.POWER, "2", result.getPower(), powerStateExpected));
 		}
 	}
 
 	public void triggerPublishPowerState(Device device) throws InterruptedException, DeviceOfflineException {
-		executeCommand(device, CommandEnum.POWER);
+		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
+			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE,STATE_PAYLOAD);
+		} else {
+			sendMessage(device, CommandEnum.POWER);
+		}
 	}
 
 	public void triggerPublishSensorData(Device device) throws InterruptedException, ApplicationException {
 		checkDeviceOnline(device);
 		// issue the command without an argument to get the teleperiod value
-		var result = (TelePeriodResult)executeCommand(device, CommandEnum.TELEPERIOD);
+		var result = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD);
 		// issue the command again with the retrieved argument to trigger an update on the SENSOR topic
-		var result2 = (TelePeriodResult)executeCommand(device, CommandEnum.TELEPERIOD, String.valueOf(result.getTelePeriod()));
+		var result2 = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD, String.valueOf(result.getTelePeriod()));
 		if (! /* not */ result.getTelePeriod().equals(result2.getTelePeriod())) {
 			throw new UnexpectedCommandResultException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.TELEPERIOD, result.getTelePeriod(), result2.getTelePeriod(), result.getTelePeriod()));
 		}
 	}
 
+	public void triggerTimezoneValue(Device device) throws InterruptedException, DeviceOfflineException {
+		sendMessage(device, CommandEnum.TIMEZONE);
+	}
 
+	public void triggerPublishConnectionState(Device device) {
+//		var topic = topicHelper.getZ2mConnectionStateTopic(device);
+//		mqqtGateway.sendMessage(topic, STATE_PAYLOAD);
+		try {
+			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
+		} catch (InterruptedException _) {
+			Thread.currentThread().interrupt();
+		} catch (DeviceOfflineException e) {
+			LOGGER.warn("Exception [{}] thrown. Device state will be set as UNREACHABLE.", e.getClass().getSimpleName());
+		}
+	}
 	private void checkDeviceOnline(Device device) throws DeviceOfflineException {
-//		if (! /* not */ applicationContext.isDeviceOnLine(deviceName)) {
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {
 			throw new DeviceOfflineException();
 		}
 	}
 
-	public void triggerTimezoneValue(Device device) throws InterruptedException, DeviceOfflineException {
-		executeCommand(device, CommandEnum.TIMEZONE);
-	}
-
 	public void setTelePeriod(Device device, String telePeriod) throws InterruptedException, ApplicationException, DeviceOfflineException {
-		var result = (TelePeriodResult)executeCommand(device, CommandEnum.TELEPERIOD, telePeriod);
+		var result = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD, telePeriod);
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {			
 			return;
 		}
@@ -99,7 +116,7 @@ public class MqttSenderService {
 	}
 
 	public void setTimezoneOffset(Device device, String timezoneOffset) throws InterruptedException, ApplicationException, DeviceOfflineException {
-		var result = (TimezoneResult)executeCommand(device, CommandEnum.TIMEZONE, timezoneOffset);
+		var result = (TimezoneResult)sendMessage(device, CommandEnum.TIMEZONE, timezoneOffset);
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {
 			return;
 		}
@@ -121,7 +138,7 @@ public class MqttSenderService {
 
 		for (int i=0; i<16; i++) {
 			if (Boolean.TRUE.equals(timersRequest.getTimerModifiedArray()[i])) {
-				var timer1Result = (TimerResult)executeCommand(device, CommandEnum.valueOf("TIMER"+(i+1)), objectMapper.writeValueAsString(timersRequest.getTimerArray()[i]));
+				var timer1Result = (TimerResult)sendMessage(device, CommandEnum.valueOf("TIMER"+(i+1)), objectMapper.writeValueAsString(timersRequest.getTimerArray()[i]));
 				if (! /* not */ timer1Result.getTimerXX().equals(timersRequest.getTimerArray()[i])) {
 					applicationException.addMessage(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, "TIMER"+(i+1), timersRequest.getTimerArray()[i], timer1Result.getTimerXX(), timersRequest.getTimerArray()[i]));			
 				}
@@ -129,7 +146,7 @@ public class MqttSenderService {
 		}
 		
 		if (Boolean.TRUE.equals(timersRequest.getTimersModified())) {
-			var timersResult = (TimersResult)executeCommand(device, CommandEnum.TIMERS,timersRequest.getTimers());
+			var timersResult = (TimersResult)sendMessage(device, CommandEnum.TIMERS,timersRequest.getTimers());
 			if (! /* not */ StringUtils.equals(timersRequest.getTimers(), timersResult.getTimers())) {
 				applicationException.addMessage(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.TIMERS, timersRequest, timersResult, timersRequest));
 			}
@@ -141,7 +158,7 @@ public class MqttSenderService {
 	}
 	
 	public TimersResult getTimers(Device device) throws InterruptedException, DeviceOfflineException {
-		return (TimersResult)executeCommand(device, CommandEnum.TIMERS);
+		return (TimersResult)sendMessage(device, CommandEnum.TIMERS);
 
 	}
 
@@ -151,23 +168,25 @@ public class MqttSenderService {
 	}
 	
 	
-	private AbstractBaseResult executeCommand(Device device, CommandEnum commandEnum) throws InterruptedException, DeviceOfflineException {
-		return executeCommand(device, commandEnum, StringUtils.EMPTY, true);
+	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum) throws InterruptedException, DeviceOfflineException {
+		return sendMessage(device, commandEnum, StringUtils.EMPTY, true);
 		
 	}
-	public AbstractBaseResult executeCommand(Device device, CommandEnum commandEnum, String stringArgument) throws InterruptedException, DeviceOfflineException {
-		return executeCommand(device, commandEnum, stringArgument, true);
+	public AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument) throws InterruptedException, DeviceOfflineException {
+		return sendMessage(device, commandEnum, stringArgument, true);
 	}
 	
-	private AbstractBaseResult executeCommand(Device device, CommandEnum commandEnum, String stringArgument, boolean wait) throws InterruptedException, DeviceOfflineException {
+	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument, boolean wait) throws InterruptedException, DeviceOfflineException {
+		var topic = topicHelper.getCommandTopic(commandEnum, device);
+		LOGGER.info("Sending mqtt message [{}] to topic [{}]", stringArgument, topic);
 		try {
 			device.getLock().lock();
 			if (wait) {
 				var commandTimestamp = new Date().getTime();
-				sendMessage(topicHelper.getCommandTopic(commandEnum, device), stringArgument);
-				return waitForCommandToExecute(device, commandEnum, commandTimestamp); 
+				sendMessage(topic, stringArgument);
+				return waitForMessageSendToComplete(device, commandEnum, commandTimestamp); 
 			} else {
-				sendMessage(topicHelper.getCommandTopic(commandEnum, device), stringArgument);
+				sendMessage(topic, stringArgument);
 				return null;
 			}
 		} finally {
@@ -186,10 +205,10 @@ public class MqttSenderService {
 	public void init () {
 		maxNumberOfTries = commandExecutionTimeout * 1000 / SLEEP_MILLISECONDS;
 	}
-	private AbstractBaseResult waitForCommandToExecute(Device device, CommandEnum commandEnum, long commandTimestamp) throws InterruptedException, DeviceOfflineException {
+	private AbstractBaseResult waitForMessageSendToComplete(Device device, CommandEnum commandEnum, long commandTimestamp) throws InterruptedException, DeviceOfflineException {
     	AbstractBaseResult result;
     	int count = 0;
-    	LOGGER.info("Waiting for command to finish execution ...");
+    	LOGGER.info("Waiting for message send to complete ...");
 		do {
 			TimeUnit.MILLISECONDS.sleep(SLEEP_MILLISECONDS);
 			count++;
@@ -207,21 +226,5 @@ public class MqttSenderService {
 		}
 		return result;
     }
-
-/*
- * Moved to DeviceService
- */
-//    public void triggerPublishConnectionState(String deviceName) {
-//    	LOGGER.info("Publishing ConnectionStateMessage message [{}] of device [{}]", applicationContext.getConnectionState(deviceName), deviceName);
-//    	switch (deviceService.getDevice(deviceName).getBridge()) {
-//    	case TASMOTA -> {
-//    		var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + topicHelper.getStateTopic(deviceName);
-//    		webSocket.convertAndSend(webSocketTopic, applicationContext.getConnectionState(deviceName));
-//    	}
-//    	case ZIGBEE2MQTT -> {
-//    		
-//    	}
-//    	}
-//    }
 
 }

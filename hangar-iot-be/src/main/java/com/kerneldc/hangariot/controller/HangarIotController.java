@@ -21,7 +21,6 @@ import com.kerneldc.hangariot.exception.InvalidDeviceException;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
-import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
@@ -40,7 +39,6 @@ public class HangarIotController {
 	private final MqttSenderService mqttSenderService;
 	private final WebSocketSenderService webSocketSenderService;
 	private final DeviceService deviceService;
-	private final ApplicationContext applicationContext;
 	private final ScheduledTasks scheduledTasks;
 	
     @GetMapping("/ping")
@@ -169,7 +167,7 @@ public class HangarIotController {
     	validateDeviceName(deviceName);
 
     	var commandEnum = CommandEnum.valueOf(freeFormatCommandRequest.getCommand().toUpperCase());
-    	var abstractBaseResult = mqttSenderService.executeCommand(deviceService.getDevice(deviceName), commandEnum,
+    	var abstractBaseResult = mqttSenderService.sendMessage(deviceService.getDevice(deviceName), commandEnum,
 					freeFormatCommandRequest.getArguments());
 		LOGGER.info("abstractBaseResult: [{}]", abstractBaseResult);
 		var result = commandEnum.getResultType().cast(abstractBaseResult);
@@ -203,14 +201,6 @@ public class HangarIotController {
     	}).toList();
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(commandList);
-    }
-    
-    @GetMapping("/dumpCache")
-	public ResponseEntity<Void> dumpCache() {
-    	LOGGER.info("Begin ...");
-    	applicationContext.dumpCache();
-    	LOGGER.info("End ...");
-    	return ResponseEntity.ok(null);
     }
     
     @PostMapping("/increaseTelemetryPeriod")

@@ -5,7 +5,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import com.kerneldc.hangariot.controller.Device.BridgeEnum;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
+import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Profile("!test")
 public class InitializeApplication implements ApplicationRunner {
 
-//	private final MqttSenderService senderService;
+	private final MqttSenderService mqttSenderService;
 	private final DeviceService deviceService;
 	
 	@Override
@@ -35,9 +37,14 @@ public class InitializeApplication implements ApplicationRunner {
 	}
 
 	private void setConnectionStateOfZ2mDevices() {
-		deviceService.getDeviceList().forEach(device -> {
+		LOGGER.info("Finding out the connection state of Zigbee2Mqtt devices:");
+		deviceService.getDeviceList().stream().filter(device -> device.getBridge() == BridgeEnum.ZIGBEE2MQTT)
+		.peek(
+	device -> LOGGER.info("device [{}]", device.getName()))
+		.forEach(
 			
-		});
+	mqttSenderService::triggerPublishConnectionState
+		);
 		
 	}
 

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.controller.Device.BridgeEnum;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TopicHelper {
 	
-	public enum TopicSuffixEnum {
+	public enum MqttTopicSuffixEnum {
 		LWT, STATE, POWER, SENSOR, RESULT
 	}
 
@@ -31,37 +32,45 @@ public class TopicHelper {
 	private static final String COMMAND_TOPIC_TEMPLATE = "cmnd/<device>/<command>";
 	
 	// received from MQTT and published on WebSocket
-	private static final String LAST_WILL_AND_TESTAMENT_TOPIC_TEMPLATE = "tele/<device>/" + TopicSuffixEnum.LWT;
-	private static final String CONNECTION_STATE_TOPIC_TEMPLATE = "tele/<device>/" + TopicSuffixEnum.STATE;
+	private static final String LAST_WILL_AND_TESTAMENT_TOPIC_TEMPLATE = "tele/<device>/" + MqttTopicSuffixEnum.LWT;
+	
+//	private static final String WS_CONNECTION_STATE_TOPIC_TEMPLATE = "tele/<device>/" + MqttTopicSuffixEnum.STATE;
+	private static final String WS_CONNECTION_STATE_TOPIC_TEMPLATE = "<device>/state";
 	// received from MQTT and published on WebSocket
-	private static final String POWER_TOPIC_TEMPLATE = "stat/<device>/" + TopicSuffixEnum.POWER;
+	private static final String POWER_TOPIC_TEMPLATE = "stat/<device>/" + MqttTopicSuffixEnum.POWER;
 	// received from MQTT and published on WebSocket
-	private static final String SENSOR_TOPIC_TEMPLATE = "tele/<device>/" + TopicSuffixEnum.SENSOR;
+	private static final String SENSOR_TOPIC_TEMPLATE = "tele/<device>/" + MqttTopicSuffixEnum.SENSOR;
 	// received from MQTT
-	private static final String RESULT_TOPIC_TEMPLATE = "stat/<device>/" + TopicSuffixEnum.RESULT;
+	private static final String RESULT_TOPIC_TEMPLATE = "stat/<device>/" + MqttTopicSuffixEnum.RESULT;
 	
 	// ZIGBEE2MQTT
-	private static final String ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
-	private static final String ZIGBEE2MQTT_GET_TOPIC_TEMPLATE = "zigbee2mqtt/<device>/get";
+	private static final String MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
+	private static final String MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE = "zigbee2mqtt/<device>/get";
 	
 	private final DeviceService deviceService;
 	
 
-	public String getCommandTopic(CommandEnum commandEnum, String deviceName) {
-		return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, deviceName)
-				.replace("<command>", commandEnum.getCommand());
-	}
+//	public String getCommandTopic(CommandEnum commandEnum, String deviceName) {
+//		return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, deviceName)
+//				.replace("<command>", commandEnum.getCommand());
+//	}
 	public String getCommandTopic(CommandEnum commandEnum, Device device) {
-		return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName())
-				.replace("<command>", commandEnum.getCommand());
+		var bridge = device.getBridge();
+		if (bridge == BridgeEnum.ZIGBEE2MQTT && (commandEnum == CommandEnum.ZIGBEE2MQTT_STATE || commandEnum == CommandEnum.POWER)) {
+			return MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+		}
+		if (bridge == BridgeEnum.TASMOTA) {
+			return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()).replace("<command>", commandEnum.getCommand());
+		}
+		throw new IllegalStateException();
 	}
 
-	public String getStateTopic(Device device) {
+	public String getWsStateTopic(Device device) {
 		return switch (device.getBridge()) {
 		case TASMOTA ->
-			CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+			WS_CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
 		case ZIGBEE2MQTT -> 
-			CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+			WS_CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
 		};
 	}
 
@@ -82,7 +91,7 @@ public class TopicHelper {
 			case ZIGBEE2MQTT -> {
 				// TODO
 				LOGGER.info("Device [{}] bridge is [{}]", device.getName(), device.getBridge());
-				topicList.add(ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+				topicList.add(MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
 				
 			}
 			}
@@ -91,18 +100,23 @@ public class TopicHelper {
 		return topicList;
 	}
 
-	private static final Pattern TOPIC_PATTERN = Pattern.compile(".+/(.+)/.+");
+	// The first pattern is for TASMOTA topics and the second is for ZIGBEE2MQTT topics
+	private static final Pattern TOPIC_PATTERN = Pattern.compile("(.+/(.+)/.+)|(zigbee2mqtt/(.+))");
 
 	public Device getDevice(String topic) {
-		//var p = Pattern.compile("^.*/(.*)/.*$");
-		//var m = p.matcher(topic);
-		var m = TOPIC_PATTERN.matcher(topic);
-		if (m.matches() && StringUtils.isNotEmpty(m.group(1))) {
-			var deviceName = m.group(1);
-			return deviceService.getDevice(deviceName);
-		} else {
-			throw new IllegalStateException(String.format("Could not extract device name from topic [%s]", topic)); 
+		var matcher = TOPIC_PATTERN.matcher(topic);
+
+		if (! /* not */ matcher.matches()) {
+			throw new IllegalArgumentException(String.format("Topic [%s] does not match any known patterns", topic));
 		}
+
+		// If the first (TASMOTA) pattern matched, group(2) will have the value
+		// If the second (ZIGBEE2MQTT) pattern matched, group(4) will have the value
+		var deviceName = (matcher.group(2) != null) ? matcher.group(2) : matcher.group(4);
+		if (StringUtils.isEmpty(deviceName)) {
+			throw new IllegalStateException(String.format("Could not extract device name from topic [%s]", topic));
+		}
+		return deviceService.getDevice(deviceName);
 	}
 	
 	public String transformLwtToState(String lwtTopic) {
@@ -116,14 +130,17 @@ public class TopicHelper {
 		return topic.startsWith("zigbee2mqtt/");
 	}
 	
-	public TopicSuffixEnum getTopicSuffix(String topic) {
+	public MqttTopicSuffixEnum getTopicSuffix(String topic) {
 		var pattern = Pattern.compile("^(.+)/(.+)/(.+)$");
 		var matcher = pattern.matcher(topic);
 		if (! /* not */ matcher.matches()) {
 			throw new IllegalArgumentException(String.format("Could not get suffix from %s", topic));
 		}
-		return TopicSuffixEnum.valueOf(matcher.group(3));
+		return MqttTopicSuffixEnum.valueOf(matcher.group(3));
 		
+	}
+	public String getZ2mConnectionStateTopic(Device device) {
+		return MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
 	}
 
 }

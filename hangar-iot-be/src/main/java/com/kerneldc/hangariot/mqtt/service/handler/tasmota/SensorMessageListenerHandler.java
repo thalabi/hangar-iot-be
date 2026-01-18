@@ -10,7 +10,7 @@ import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
-import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
+import com.kerneldc.hangariot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +25,7 @@ public class SensorMessageListenerHandler extends AbstractMessageListenerHandler
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(TopicSuffixEnum.SENSOR);
+		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(MqttTopicSuffixEnum.SENSOR);
 	}
 
 	@Override

@@ -47,16 +47,27 @@ public class WebSocketSenderService {
 		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", messageString, fullTopic, webSocketTopic);
 	}
 
+	public void publishPowerState(String fullTopic, Object messageObject) {
+		String messageString;
+		try {
+			messageString = objectMapper.writeValueAsString(messageObject);
+		} catch (JsonProcessingException e) {
+			throw new MessagingException("Error serializing LWT object to string", NestedExceptionUtils.getMostSpecificCause(e));
+		}
+		var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + fullTopic;
+		webSocket.convertAndSend(webSocketTopic, messageString);
+		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", messageString, fullTopic, webSocketTopic);
+	}
+
 	public void publishConnectionState(Device device) {
 		LOGGER.info("Publishing ConnectionStateMessage message [{}] of device [{}]", applicationContext.getConnectionState(device), device.getName());
 		switch (device.getBridge()) {
 		case TASMOTA -> {
-			var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/" + topicHelper.getStateTopic(device);
+			var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getWsStateTopic(device);
 			webSocket.convertAndSend(webSocketTopic, applicationContext.getConnectionState(device));
 		}
 		case ZIGBEE2MQTT -> {
-			var webSocketTopic = websocketTopicsPrefix + "/state-and-telemetry/"
-					+ topicHelper.getStateTopic(device);
+			var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getWsStateTopic(device);
 			webSocket.convertAndSend(webSocketTopic, applicationContext.getConnectionState(device));
 
 		}

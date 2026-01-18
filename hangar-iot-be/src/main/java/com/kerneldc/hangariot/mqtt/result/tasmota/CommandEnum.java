@@ -3,6 +3,7 @@ package com.kerneldc.hangariot.mqtt.result.tasmota;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
+import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 
 public enum CommandEnum {
 	/*
@@ -38,7 +39,8 @@ public enum CommandEnum {
 	/*
 	 * Zigbee2mqtt command
 	 */
-	STATE("state", PowerResult.class);
+	ZIGBEE2MQTT_STATE("state", StateResult.class),
+	;
 	
 	String command;
 	Class<? extends AbstractBaseResult> resultType;

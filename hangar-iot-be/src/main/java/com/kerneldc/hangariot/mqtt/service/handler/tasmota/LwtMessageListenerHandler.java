@@ -11,7 +11,7 @@ import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
-import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
+import com.kerneldc.hangariot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
 
 
 @Service
@@ -24,7 +24,7 @@ public class LwtMessageListenerHandler extends AbstractMessageListenerHandler {
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(TopicSuffixEnum.LWT);
+		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(MqttTopicSuffixEnum.LWT);
 	}
 
 	/**

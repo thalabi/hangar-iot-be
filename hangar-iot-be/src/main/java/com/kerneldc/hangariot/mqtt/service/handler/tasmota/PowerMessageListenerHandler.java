@@ -10,9 +10,12 @@ import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
-import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
+import com.kerneldc.hangariot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class PowerMessageListenerHandler extends AbstractMessageListenerHandler {
 
 	public PowerMessageListenerHandler(ApplicationContext applicationContext, ObjectMapper objectMapper,
@@ -22,15 +25,16 @@ public class PowerMessageListenerHandler extends AbstractMessageListenerHandler 
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(TopicSuffixEnum.POWER);
+		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(MqttTopicSuffixEnum.POWER);
 	}
 
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
+		LOGGER.info("handle()");
 		
 		var powerMessage = new PowerMessage(message, new Date().getTime());
 
-		webSocketSenderService.publishMessageToWebSocket(fullTopic, powerMessage);
+		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 	}
 
 }

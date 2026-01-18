@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.controller.Device.BridgeEnum;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
@@ -25,33 +26,38 @@ import lombok.extern.slf4j.Slf4j;
 public class ApplicationContext {
 	
 	private final ObjectMapper objectMapper;
-//	private final DeviceService deviceService;
 	private final TopicHelper topicHelper;
-	private Map<DeviceNameAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
+	private Map<DeviceAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
 	private Map<Device, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
 	
-	private record DeviceNameAndCommandEnum(Device device, CommandEnum commandEnum) {}
-	
+	private record DeviceAndCommandEnum(Device device, CommandEnum commandEnum) {}
 	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
 
 	public void setCommandResult(String topic, String message) throws JsonProcessingException {
 		//var deviceName = extractDeviceName(topic);
 //		var device = extractDevice(topic);
 		var device = topicHelper.getDevice(topic);
-	    var commandEnum = getCommandEnum(message);
+		CommandEnum commandEnum; 
+		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
+			commandEnum = CommandEnum.ZIGBEE2MQTT_STATE;
+		} else {
+			commandEnum = getTasmotaCommandEnum(message);
+		}
 	    if (commandEnum == null) {
 	    	LOGGER.warn("Message type of [{}] is not supported. Can't add it to cache", message);
 	    	return;
 	    }
 		var result = objectMapper.readValue(message, commandEnum.getResultType());
-		resultTopicCache.put(new DeviceNameAndCommandEnum(device, commandEnum), result);
+		resultTopicCache.put(new DeviceAndCommandEnum(device, commandEnum), result);
 	}
 
 	public AbstractBaseResult getCommandResult(Device device, CommandEnum commandEnum) {
-		return resultTopicCache.get(new DeviceNameAndCommandEnum(device, commandEnum));
+		return resultTopicCache.get(new DeviceAndCommandEnum(device, commandEnum));
 	}
 
-	private CommandEnum getCommandEnum(String message) throws JsonProcessingException {
+	// Tasmota message
+	private CommandEnum getTasmotaCommandEnum(String message) throws JsonProcessingException {
+		
 		var jsonObject = objectMapper.readValue(message, ObjectNode.class);
 		try {
 			return CommandEnum.valueOf(jsonObject.fieldNames().next().toUpperCase());
@@ -60,26 +66,6 @@ public class ApplicationContext {
 			return null;
 		}
 	}
-
-//	private static final Pattern TOPIC_PATTERN = Pattern.compile(".+/(.+)/(RESULT|LwtMessage)");
-//
-//	private Device extractDevice(String topic) {
-//		var m = TOPIC_PATTERN.matcher(topic);
-//		if (m.matches() && StringUtils.isNotEmpty(m.group(1))) {
-//			var deviceName = m.group(1);
-//			return deviceService.getDevice(deviceName);
-//		} else {
-//			throw new IllegalStateException(String.format("Could not extract device name from topic [%s]", topic)); 
-//		}
-//	}
-
-	public void dumpCache() {
-	    LOGGER.info("Dump of resultTopicCache:");
-	    resultTopicCache.forEach((key, value) ->
-	        LOGGER.info("key: [{}], value: [{}]", key, value)
-	    );
-	}
-
 	
 	public ConnectionStateMessage getConnectionState(Device device) {
 		return deviceConnectionStateCache.get(device);
@@ -102,15 +88,15 @@ public class ApplicationContext {
 	 * Puts an entry only if topic is not in the map or if the message is not the same
 	 * @param topic
 	 * @param message
-	 * @return true only if entry is made
+	 * @return true if duplicate entry
 	 */
 	public boolean setTopicMessage(String topic, String message) {
 		var value = topicMessageCache.get(topic);
 		if (value != null && value.equals(message)) {
-			return false;
+			return true;
 		} else {
 			topicMessageCache.put(topic, message);
-			return true;
+			return false;
 		}
 	}
 
@@ -121,5 +107,21 @@ public class ApplicationContext {
 		topicMessageCache.clear();
 	}
 
-	
+	public void dumpCache() {
+	    LOGGER.info("Dump of resultTopicCache:");
+	    resultTopicCache.forEach((key, value) ->
+	        LOGGER.info("key: [{}], value: [{}]", key, value)
+	    );
+
+	    LOGGER.info("Dump of deviceConnectionStateCache:");
+	    deviceConnectionStateCache.forEach((key, value) ->
+	        LOGGER.info("key: [{}], value: [{}]", key, value)
+	    );
+
+	    LOGGER.info("Dump of topicMessageCache:");
+	    topicMessageCache.forEach((key, value) ->
+	        LOGGER.info("key: [{}], value: [{}]", key, value)
+	    );
+	}
+
 }

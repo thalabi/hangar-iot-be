@@ -10,7 +10,7 @@ import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
-import com.kerneldc.hangariot.mqtt.topic.TopicHelper.TopicSuffixEnum;
+import com.kerneldc.hangariot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,11 +25,12 @@ public class ResultMessageListenerHandler extends AbstractMessageListenerHandler
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(TopicSuffixEnum.RESULT);
+		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(MqttTopicSuffixEnum.RESULT);
 	}
 
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
+		LOGGER.info("handle()");
 
 		LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
 		try {
