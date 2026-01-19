@@ -39,7 +39,7 @@ public enum CommandEnum {
 	/*
 	 * Zigbee2mqtt command
 	 */
-	ZIGBEE2MQTT_STATE("state", StateResult.class),
+	ZIGBEE2MQTT_STATE("", StateResult.class),
 	;
 	
 	String command;

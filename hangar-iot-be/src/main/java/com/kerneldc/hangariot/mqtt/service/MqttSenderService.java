@@ -26,6 +26,7 @@ import com.kerneldc.hangariot.mqtt.result.tasmota.TelePeriodResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.TimezoneResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
+import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.springconfig.MqttConfig.MqqtGateway;
 
@@ -57,11 +58,21 @@ public class MqttSenderService {
 	private static final String STATE_PAYLOAD = """
 			{"state": ""}
 			""";
+	private static final String STATE_TOGGLE_PAYLOAD = """
+			{"state": "toggle"}
+			""";
 
 	public void togglePower(Device device, String powerStateExpected) throws InterruptedException, ApplicationException, DeviceOfflineException {
-		var result = (PowerResult)sendMessage(device, CommandEnum.POWER, "2"); // 2 toggles power
-		if (! /* not */ StringUtils.equalsIgnoreCase(powerStateExpected, result.getPower())) {
-			throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.POWER, "2", result.getPower(), powerStateExpected));
+		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
+			var result = (StateResult)sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_TOGGLE_PAYLOAD);
+			if (! /* not */ StringUtils.equalsIgnoreCase(powerStateExpected, result.getState())) {
+				throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.ZIGBEE2MQTT_STATE, STATE_TOGGLE_PAYLOAD, result.getState(), powerStateExpected));
+			}
+		} else {
+			var result = (PowerResult)sendMessage(device, CommandEnum.POWER, "2"); // 2 toggles power
+			if (! /* not */ StringUtils.equalsIgnoreCase(powerStateExpected, result.getPower())) {
+				throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.POWER, "2", result.getPower(), powerStateExpected));
+			}
 		}
 	}
 

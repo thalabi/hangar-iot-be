@@ -46,6 +46,7 @@ public class TopicHelper {
 	// ZIGBEE2MQTT
 	private static final String MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
 	private static final String MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE = "zigbee2mqtt/<device>/get";
+	private static final String MQTT_ZIGBEE2MQTT_SET_TOPIC_TEMPLATE = "zigbee2mqtt/<device>/set";
 	
 	private final DeviceService deviceService;
 	
@@ -56,8 +57,12 @@ public class TopicHelper {
 //	}
 	public String getCommandTopic(CommandEnum commandEnum, Device device) {
 		var bridge = device.getBridge();
-		if (bridge == BridgeEnum.ZIGBEE2MQTT && (commandEnum == CommandEnum.ZIGBEE2MQTT_STATE || commandEnum == CommandEnum.POWER)) {
-			return MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+		if (bridge == BridgeEnum.ZIGBEE2MQTT) {
+			if (commandEnum == CommandEnum.ZIGBEE2MQTT_STATE) { // TODO how to determine if this a get or a set state operation?
+				return MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+			} else {
+				return MQTT_ZIGBEE2MQTT_SET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+			}
 		}
 		if (bridge == BridgeEnum.TASMOTA) {
 			return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()).replace("<command>", commandEnum.getCommand());
