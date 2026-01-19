@@ -44,11 +44,11 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 
 			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
 			var stateResult = (StateResult)applicationContext.getCommandResult(device, CommandEnum.ZIGBEE2MQTT_STATE);
-			stateResult.setTimestamp(new Date().getTime());
+			stateResult.setTimestamp(System.currentTimeMillis());
 //
 //			// publish connection state and power state
 			webSocketSenderService.publishConnectionState(device);
-			var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), new Date().getTime());
+			var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
 			webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 
 			return;
@@ -65,23 +65,23 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 		}
 
 		// connection state
-		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, new Date().getTime());
+		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
 		applicationContext.setConnectionState(device, stateMessage);
 		webSocketSenderService.publishConnectionState(device);
 
 		// power state
-		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), new Date().getTime());
+		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
 		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 	}
 	
 	private void publishWebSocketStates(Device device, StateResult stateResult, String fullTopic) {
 		// connection state
-		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, new Date().getTime());
+		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
 		applicationContext.setConnectionState(device, stateMessage);
 		webSocketSenderService.publishConnectionState(device);
 
 		// power state
-		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), new Date().getTime());
+		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
 		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 		
 	}

@@ -33,7 +33,7 @@ public class LwtMessageListenerHandler extends AbstractMessageListenerHandler {
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
 		
-		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.valueOf(message.toUpperCase()), new Date().getTime());
+		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.valueOf(message.toUpperCase()), System.currentTimeMillis());
 
 		applicationContext.setConnectionState(topicHelper.getDevice(fullTopic), stateMessage);
 

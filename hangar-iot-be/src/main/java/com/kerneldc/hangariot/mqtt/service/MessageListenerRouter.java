@@ -26,6 +26,7 @@ public class MessageListenerRouter implements MessageHandler {
 	
 	@Override
 	public void handleMessage(Message<?> messageObject) throws MessagingException {
+		LOGGER.info("messageObject [{}]", messageObject);
 		var fullTopic = (String)messageObject.getHeaders().get(MqttHeaders.RECEIVED_TOPIC);
 		var timestamp = (long)messageObject.getHeaders().get(MessageHeaders.TIMESTAMP); 
 		var message = (String)messageObject.getPayload();

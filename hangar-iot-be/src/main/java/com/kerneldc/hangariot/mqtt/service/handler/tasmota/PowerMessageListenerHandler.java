@@ -27,7 +27,7 @@ public class PowerMessageListenerHandler extends AbstractMessageListenerHandler 
 
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
-		var powerMessage = new PowerMessage(message.toLowerCase(), new Date().getTime());
+		var powerMessage = new PowerMessage(message.toLowerCase(), System.currentTimeMillis());
 
 		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 	}

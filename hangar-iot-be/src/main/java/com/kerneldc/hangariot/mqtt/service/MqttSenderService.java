@@ -192,7 +192,7 @@ public class MqttSenderService {
 		try {
 			device.getLock().lock();
 			if (wait) {
-				var commandTimestamp = new Date().getTime();
+				var commandTimestamp = System.currentTimeMillis();
 				mqqtGateway.sendMessage(topic, stringArgument);
 				return waitForMessageSendToComplete(device, commandEnum, commandTimestamp); 
 			} else {
@@ -225,7 +225,7 @@ public class MqttSenderService {
 		if (count == maxNumberOfTries) {
 			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", commandEnum, device.getName());
 			LOGGER.warn("Marking device [{}] as UNREACHABLE", device.getName());
-			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.UNREACHABLE, new Date().getTime());
+			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.UNREACHABLE, System.currentTimeMillis());
 			applicationContext.setConnectionState(device, stateMessage);
 			webSocketSenderService.publishConnectionState(device);
 			throw new DeviceOfflineException();
