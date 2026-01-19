@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.message.PowerMessage;
@@ -42,9 +43,14 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 		if (isDuplicate) {
 
 			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
-			var stateResult = applicationContext.getCommandResult(device, CommandEnum.ZIGBEE2MQTT_STATE);
+			var stateResult = (StateResult)applicationContext.getCommandResult(device, CommandEnum.ZIGBEE2MQTT_STATE);
 			stateResult.setTimestamp(new Date().getTime());
-			
+//
+//			// publish connection state and power state
+//			webSocketSenderService.publishConnectionState(device);
+//			var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), new Date().getTime());
+//			webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+
 			return;
 		}
 		
@@ -68,7 +74,15 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 	}
 	
-	private void power() {
+	private void publishWebSocketStates(Device device, StateResult stateResult, String fullTopic) {
+		// connection state
+		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, new Date().getTime());
+		applicationContext.setConnectionState(device, stateMessage);
+		webSocketSenderService.publishConnectionState(device);
+
+		// power state
+		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), new Date().getTime());
+		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 		
 	}
 

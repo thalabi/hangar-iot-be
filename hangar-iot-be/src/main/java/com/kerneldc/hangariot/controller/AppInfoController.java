@@ -31,11 +31,12 @@ public class AppInfoController {
 	}
 	
     @GetMapping("/dumpCache")
-	public ResponseEntity<Void> dumpCache() {
+	public ResponseEntity<Object> dumpCache() {
     	LOGGER.info("Begin ...");
-    	applicationContext.dumpCache();
+//    	applicationContext.dumpCache();
+    	var cacheDump = applicationContext.dumpCacheToJson();
     	LOGGER.info("End ...");
-    	return ResponseEntity.ok(null);
+    	return ResponseEntity.ok(cacheDump);
     }
     
 

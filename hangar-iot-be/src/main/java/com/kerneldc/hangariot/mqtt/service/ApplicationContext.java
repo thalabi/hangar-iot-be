@@ -3,6 +3,7 @@ package com.kerneldc.hangariot.mqtt.service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -130,6 +131,44 @@ public class ApplicationContext {
 	    topicMessageCache.forEach((key, value) ->
 	        LOGGER.info("key: [{}], value: [{}]", key, value)
 	    );
+	}
+	public ObjectNode dumpCacheToJson() {
+		var applicationContextCache = objectMapper.createObjectNode();
+
+		var resultTopicCacheEntries = objectMapper.createArrayNode();
+	    resultTopicCache.forEach((key, value) -> {
+	    	var resultTopicCacheEntry = objectMapper.createObjectNode();
+	        resultTopicCacheEntry.put("deviceAndCommandEnum", key.toString());
+	        StringUtils.uncapitalize(value.getClass().getSimpleName());
+	        resultTopicCacheEntry.put(StringUtils.uncapitalize(value.getClass().getSimpleName()), value.toString());
+	        resultTopicCacheEntries.add(resultTopicCacheEntry);
+	    }
+	    );
+	    applicationContextCache.set("resultTopicCache", resultTopicCacheEntries);
+
+	    
+	    var deviceConnectionStateCacheEntries = objectMapper.createArrayNode();
+	    deviceConnectionStateCache.forEach((key, value) -> {
+	    	var deviceConnectionStateEntry = objectMapper.createObjectNode();
+	        deviceConnectionStateEntry.put("device", key.toString());
+	        deviceConnectionStateEntry.put("connectionStateMessage", value.toString());
+	        deviceConnectionStateCacheEntries.add(deviceConnectionStateEntry);
+	    }
+	    );
+	    applicationContextCache.set("deviceConnectionStateCache", deviceConnectionStateCacheEntries);
+	    
+	    
+	    var topicMessageCacheEntries = objectMapper.createArrayNode();
+	    topicMessageCache.forEach((key, value) -> {
+	    	var topicMessageCacheEntry = objectMapper.createObjectNode();
+	    	topicMessageCacheEntry.put("topic", key);
+	    	topicMessageCacheEntry.put("message", value);
+	    	topicMessageCacheEntries.add(topicMessageCacheEntry);
+	    }
+	    );
+	    applicationContextCache.set("topicMessageCache", topicMessageCacheEntries);
+	    
+	    return applicationContextCache;
 	}
 
 }

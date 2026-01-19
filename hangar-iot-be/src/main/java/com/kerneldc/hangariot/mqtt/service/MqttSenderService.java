@@ -67,6 +67,7 @@ public class MqttSenderService {
 
 	public void triggerPublishPowerState(Device device) throws InterruptedException, DeviceOfflineException {
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
+			LOGGER.info("triggerPublishPowerState(\"{}\")", device.getName());
 			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE,STATE_PAYLOAD);
 		} else {
 			sendMessage(device, CommandEnum.POWER);
@@ -206,7 +207,7 @@ public class MqttSenderService {
 			TimeUnit.MILLISECONDS.sleep(SLEEP_MILLISECONDS);
 			count++;
 			result = applicationContext.getCommandResult(device, commandEnum);
-//			LOGGER.info("result [{}]", result);
+			LOGGER.info("result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]", result, count, maxNumberOfTries, (result != null ? result.getTimestamp() : ""), commandIssuedTimestamp);
 		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandIssuedTimestamp && count < maxNumberOfTries));
 		LOGGER.info("Waited [{}] seconds", count * SLEEP_MILLISECONDS / 1000f);
 		
