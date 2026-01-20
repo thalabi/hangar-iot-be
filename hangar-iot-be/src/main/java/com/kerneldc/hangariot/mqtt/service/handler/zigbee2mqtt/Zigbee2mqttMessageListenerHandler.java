@@ -5,15 +5,15 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
-import com.kerneldc.hangariot.mqtt.message.PowerMessage;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
+import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
+import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
+import com.kerneldc.hangariot.websocket.message.PowerMessage;
 
 import lombok.extern.slf4j.Slf4j;
 

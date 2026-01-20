@@ -11,11 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.controller.Device.BridgeEnum;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
+import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
+import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
 
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;

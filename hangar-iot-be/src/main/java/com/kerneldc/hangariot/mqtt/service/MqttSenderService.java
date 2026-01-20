@@ -17,8 +17,6 @@ import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.ApplicationRuntimeException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
 import com.kerneldc.hangariot.exception.UnexpectedCommandResultException;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.result.tasmota.PowerResult;
@@ -29,6 +27,8 @@ import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.springconfig.MqttConfig.MqqtGateway;
+import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
+import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

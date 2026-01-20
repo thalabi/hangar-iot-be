@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.message;
+package com.kerneldc.hangariot.websocket;
 
 public enum ConnectionStateEnum {
 		ONLINE, OFFLINE, UNREACHABLE

@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.message;
+package com.kerneldc.hangariot.websocket.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

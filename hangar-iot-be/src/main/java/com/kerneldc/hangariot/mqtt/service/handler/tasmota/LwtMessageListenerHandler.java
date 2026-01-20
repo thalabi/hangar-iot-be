@@ -5,13 +5,13 @@ import java.util.Date;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
-import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
+import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
+import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
 
 
 @Service
