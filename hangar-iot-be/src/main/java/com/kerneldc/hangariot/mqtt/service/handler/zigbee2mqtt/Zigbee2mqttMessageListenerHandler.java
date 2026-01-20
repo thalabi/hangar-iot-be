@@ -1,13 +1,10 @@
 package com.kerneldc.hangariot.mqtt.service.handler.zigbee2mqtt;
 
-import java.util.Date;
-
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateMessage;
 import com.kerneldc.hangariot.mqtt.message.PowerMessage;
@@ -37,6 +34,8 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 	@Override
 	public void handleMessage(String fullTopic, long timestamp, String message) {
 
+		LOGGER.info("Begin Zigbee2mqttMessageListenerHandler ...");
+		
 		var device = topicHelper.getDevice(fullTopic);
 
 		var isDuplicate = applicationContext.setTopicMessage(fullTopic, message);
@@ -45,45 +44,33 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
 			var stateResult = (StateResult)applicationContext.getCommandResult(device, CommandEnum.ZIGBEE2MQTT_STATE);
 			stateResult.setTimestamp(System.currentTimeMillis());
-//
+
 //			// publish connection state and power state
 			webSocketSenderService.publishConnectionState(device);
 			var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
 			webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 
-			return;
-		}
+		} else {
 		
-		LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
-		StateResult stateResult;
-		try {
-			message = addTimeStampToMessage(timestamp, message);
-			stateResult = (StateResult)applicationContext.setCommandResult(fullTopic, message);
-			LOGGER.info("trace 1. stateResult [{}]", stateResult);
-		} catch (JsonProcessingException e) {
-			throw new MessagingException("Failed to add message to cache.", e);
-		}
-
-		// connection state
-		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
-		applicationContext.setConnectionState(device, stateMessage);
-		webSocketSenderService.publishConnectionState(device);
-
-		// power state
-		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
-		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
-	}
+			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
+			StateResult stateResult;
+			try {
+				message = addTimeStampToMessage(timestamp, message);
+				stateResult = (StateResult)applicationContext.setCommandResult(fullTopic, message);
+			} catch (JsonProcessingException e) {
+				throw new MessagingException("Failed to add message to cache.", e);
+			}
 	
-	private void publishWebSocketStates(Device device, StateResult stateResult, String fullTopic) {
-		// connection state
-		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
-		applicationContext.setConnectionState(device, stateMessage);
-		webSocketSenderService.publishConnectionState(device);
-
-		// power state
-		var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
-		webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+			// connection state
+			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
+			applicationContext.setConnectionState(device, stateMessage);
+			webSocketSenderService.publishConnectionState(device);
+	
+			// power state
+			var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
+			webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+		}
 		
+		LOGGER.info("End Zigbee2mqttMessageListenerHandler ...");
 	}
-
 }

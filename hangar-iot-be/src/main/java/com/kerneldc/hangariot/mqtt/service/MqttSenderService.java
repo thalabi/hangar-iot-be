@@ -1,6 +1,5 @@
 package com.kerneldc.hangariot.mqtt.service;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +14,7 @@ import com.kerneldc.hangariot.controller.Device.BridgeEnum;
 import com.kerneldc.hangariot.controller.TimeStdRequest;
 import com.kerneldc.hangariot.controller.TimersRequest;
 import com.kerneldc.hangariot.exception.ApplicationException;
+import com.kerneldc.hangariot.exception.ApplicationRuntimeException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
 import com.kerneldc.hangariot.exception.UnexpectedCommandResultException;
 import com.kerneldc.hangariot.mqtt.message.ConnectionStateEnum;
@@ -76,13 +76,26 @@ public class MqttSenderService {
 		}
 	}
 
+	public void triggerPublishConnectionState(Device device) {
+		LOGGER.info("triggerPublishConnectionState(\"{}\") begin", device.getName());
+		try {
+			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
+		} catch (InterruptedException _) {
+			Thread.currentThread().interrupt();
+		} catch (DeviceOfflineException e) {
+			LOGGER.warn("Exception [{}] thrown. Device state will be set as UNREACHABLE.", e.getClass().getSimpleName());
+		}
+		LOGGER.info("triggerPublishConnectionState(\"{}\") end", device.getName());
+	}
+
 	public void triggerPublishPowerState(Device device) throws InterruptedException, DeviceOfflineException {
+		LOGGER.info("triggerPublishPowerState(\"{}\") begin", device.getName());
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
-			LOGGER.info("triggerPublishPowerState(\"{}\")", device.getName());
 			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE,STATE_PAYLOAD);
 		} else {
 			sendMessage(device, CommandEnum.POWER);
 		}
+		LOGGER.info("triggerPublishPowerState(\"{}\") end", device.getName());
 	}
 
 	public void triggerPublishSensorData(Device device) throws InterruptedException, ApplicationException {
@@ -100,15 +113,6 @@ public class MqttSenderService {
 		sendMessage(device, CommandEnum.TIMEZONE);
 	}
 
-	public void triggerPublishConnectionState(Device device) {
-		try {
-			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
-		} catch (InterruptedException _) {
-			Thread.currentThread().interrupt();
-		} catch (DeviceOfflineException e) {
-			LOGGER.warn("Exception [{}] thrown. Device state will be set as UNREACHABLE.", e.getClass().getSimpleName());
-		}
-	}
 	private void checkDeviceOnline(Device device) throws DeviceOfflineException {
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {
 			throw new DeviceOfflineException();
@@ -189,18 +193,23 @@ public class MqttSenderService {
 	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument, boolean wait) throws InterruptedException, DeviceOfflineException {
 		var topic = topicHelper.getCommandTopic(commandEnum, device);
 		LOGGER.info("Sending mqtt message [{}] to topic [{}]", stringArgument, topic);
+		var lock = device.getLock();
+		
+		if (!lock.tryLock(5, TimeUnit.SECONDS)) {
+	        throw new ApplicationRuntimeException("Could not acquire device lock after 5 seconds- system busy");
+	    }
+		
 		try {
-			device.getLock().lock();
+			var commandTimestamp = System.currentTimeMillis();
+	        mqqtGateway.sendMessage(topic, stringArgument);
+	        
 			if (wait) {
-				var commandTimestamp = System.currentTimeMillis();
-				mqqtGateway.sendMessage(topic, stringArgument);
 				return waitForMessageSendToComplete(device, commandEnum, commandTimestamp); 
 			} else {
-				mqqtGateway.sendMessage(topic, stringArgument);
 				return null;
 			}
 		} finally {
-			device.getLock().unlock();
+			lock.unlock();
 		}
 	}
 

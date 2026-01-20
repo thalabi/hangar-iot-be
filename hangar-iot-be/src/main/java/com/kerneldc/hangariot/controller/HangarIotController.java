@@ -51,6 +51,28 @@ public class HangarIotController {
     	return ResponseEntity.ok(pingResponse);
     }
     
+    @PostMapping("/publishConnectionState")
+    public ResponseEntity<String> publishConnectionState(@Valid @RequestBody DeviceRequest deviceRequest) throws ApplicationException {
+    	LOGGER.info("Begin ...");
+    	var deviceName = deviceRequest.getDeviceName();
+    	validateDeviceName(deviceName);
+    	
+    	webSocketSenderService.publishConnectionState(deviceService.getDevice(deviceName));
+    	LOGGER.info("End ...");
+    	return ResponseEntity.ok(StringUtils.EMPTY);
+    }
+
+    @PostMapping("/triggerPublishPowerState")
+	public ResponseEntity<String> triggerPublishPowerState(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, JsonProcessingException, ApplicationException {
+    	LOGGER.info("Begin ...");
+    	var deviceName = deviceRequest.getDeviceName();
+    	validateDeviceName(deviceName);
+    	
+		mqttSenderService.triggerPublishPowerState(deviceService.getDevice(deviceName));
+    	LOGGER.info("End ...");
+    	return ResponseEntity.ok(StringUtils.EMPTY);
+    }
+    
     @PostMapping("/togglePower")
 	public ResponseEntity<String> togglePower(@Valid @RequestBody TogglePowerRequest togglePowerRequest) throws InterruptedException, ApplicationException {
     	LOGGER.info("Begin ...");
@@ -70,17 +92,6 @@ public class HangarIotController {
     	var deviceName = deviceRequest.getDeviceName();
     	validateDeviceName(deviceName);
    		mqttSenderService.triggerPublishSensorData(deviceService.getDevice(deviceName));
-    	LOGGER.info("End ...");
-    	return ResponseEntity.ok(StringUtils.EMPTY);
-    }
-    
-    @PostMapping("/triggerPublishPowerState")
-	public ResponseEntity<String> triggerPublishPowerState(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, JsonProcessingException, ApplicationException {
-    	LOGGER.info("Begin ...");
-    	var deviceName = deviceRequest.getDeviceName();
-    	validateDeviceName(deviceName);
-    	
-		mqttSenderService.triggerPublishPowerState(deviceService.getDevice(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -209,17 +220,6 @@ public class HangarIotController {
     	scheduledTasks.increaseTelemetryPeriod();
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(null);
-    }
-
-    @PostMapping("/triggerPublishConnectionState")
-    public ResponseEntity<String> triggerPublishConnectionState(@Valid @RequestBody DeviceRequest deviceRequest) throws ApplicationException {
-    	LOGGER.info("Begin ...");
-    	var deviceName = deviceRequest.getDeviceName();
-    	validateDeviceName(deviceName);
-    	
-    	webSocketSenderService.publishConnectionState(deviceService.getDevice(deviceName));
-    	LOGGER.info("End ...");
-    	return ResponseEntity.ok(StringUtils.EMPTY);
     }
 
     private void validateDeviceName(String deviceName) throws InvalidDeviceException {
