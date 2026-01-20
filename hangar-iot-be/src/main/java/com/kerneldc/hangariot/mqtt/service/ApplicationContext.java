@@ -70,7 +70,7 @@ public class ApplicationContext {
 		var jsonObject = objectMapper.readValue(message, ObjectNode.class);
 		try {
 			return CommandEnum.valueOf(jsonObject.fieldNames().next().toUpperCase());
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException _) {
 			LOGGER.warn("Could not find a CommandEnum with value matching first field in [{}]", message);
 			return null;
 		}
