@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
-import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
+import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
 
@@ -40,7 +40,7 @@ public class ScheduledTasks {
 			if (Boolean.TRUE.equals(device.getEnableDataSaver())) {
 				LOGGER.info("Increasing telePeriod for device [{}] to [{}]", device.getName(), increaseTelemetryPeriod);
 				try {
-					mqttSenderService.sendMessage(device, CommandEnum.TELEPERIOD, increaseTelemetryPeriod);
+					mqttSenderService.sendMessage(device, TasmotaCommandEnum.TELEPERIOD, increaseTelemetryPeriod);
 				} catch (DeviceOfflineException e) {
 			    	LOGGER.error("Unable to increaseTelemetryPeriod for device {}", device.getName(),NestedExceptionUtils.getMostSpecificCause(e).getMessage());
 				}
@@ -55,7 +55,7 @@ public class ScheduledTasks {
 			if (Boolean.TRUE.equals(device.getEnableDataSaver())) {
 				LOGGER.info("Decreasing telePeriod for device [{}] to [{}]", device.getName(), decreaseTelemetryPeriod);
 				try {
-					mqttSenderService.sendMessage(device, CommandEnum.TELEPERIOD, decreaseTelemetryPeriod);
+					mqttSenderService.sendMessage(device, TasmotaCommandEnum.TELEPERIOD, decreaseTelemetryPeriod);
 				} catch (DeviceOfflineException e) {
 					LOGGER.error("Unable to restoreTelemetryPeriod for device {}", device.getName(),
 							NestedExceptionUtils.getMostSpecificCause(e).getMessage());

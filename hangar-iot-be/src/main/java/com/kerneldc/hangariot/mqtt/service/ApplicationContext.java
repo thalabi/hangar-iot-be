@@ -11,8 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.controller.Device.BridgeEnum;
+import com.kerneldc.hangariot.mqtt.command.ICommandEnum;
+import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
+import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
-import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
 import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
@@ -31,7 +33,7 @@ public class ApplicationContext {
 	private Map<DeviceAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
 	private Map<Device, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
 	
-	private record DeviceAndCommandEnum(Device device, CommandEnum commandEnum) {}
+	private record DeviceAndCommandEnum(Device device, ICommandEnum tasmotaCommandEnum) {}
 	
 	// Used to detect duplicates
 	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
@@ -46,9 +48,9 @@ public class ApplicationContext {
 		//var deviceName = extractDeviceName(topic);
 //		var device = extractDevice(topic);
 		var device = topicHelper.getDevice(topic);
-		CommandEnum commandEnum; 
+		ICommandEnum commandEnum; 
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
-			commandEnum = CommandEnum.ZIGBEE2MQTT_STATE;
+			commandEnum = Zigbee2MqttCommandEnum.STATE;
 		} else {
 			commandEnum = getTasmotaCommandEnum(message);
 		}
@@ -60,18 +62,26 @@ public class ApplicationContext {
 		return result;
 	}
 
-	public AbstractBaseResult getCommandResult(Device device, CommandEnum commandEnum) {
-		return resultTopicCache.get(new DeviceAndCommandEnum(device, commandEnum));
+	public AbstractBaseResult getCommandResult(Device device, ICommandEnum commandEnum) {
+		switch (commandEnum.handlesBridge()) {
+		case ZIGBEE2MQTT: {
+			return resultTopicCache.get(new DeviceAndCommandEnum(device, Zigbee2MqttCommandEnum.STATE));
+		}
+		case TASMOTA: {
+			return resultTopicCache.get(new DeviceAndCommandEnum(device, commandEnum));
+		}
+		}
+		return null;
 	}
 
 	// Tasmota message
-	private CommandEnum getTasmotaCommandEnum(String message) throws JsonProcessingException {
+	private TasmotaCommandEnum getTasmotaCommandEnum(String message) throws JsonProcessingException {
 		
 		var jsonObject = objectMapper.readValue(message, ObjectNode.class);
 		try {
-			return CommandEnum.valueOf(jsonObject.fieldNames().next().toUpperCase());
+			return TasmotaCommandEnum.valueOf(jsonObject.fieldNames().next().toUpperCase());
 		} catch (IllegalArgumentException _) {
-			LOGGER.warn("Could not find a CommandEnum with value matching first field in [{}]", message);
+			LOGGER.warn("Could not find a TasmotaCommandEnum with value matching first field in [{}]", message);
 			return null;
 		}
 	}

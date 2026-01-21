@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.InvalidDeviceException;
+import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
-import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
@@ -177,7 +177,7 @@ public class HangarIotController {
     	var deviceName = freeFormatCommandRequest.getDeviceName();
     	validateDeviceName(deviceName);
 
-    	var commandEnum = CommandEnum.valueOf(freeFormatCommandRequest.getCommand().toUpperCase());
+    	var commandEnum = TasmotaCommandEnum.valueOf(freeFormatCommandRequest.getCommand().toUpperCase());
     	var abstractBaseResult = mqttSenderService.sendMessage(deviceService.getDevice(deviceName), commandEnum,
 					freeFormatCommandRequest.getArguments());
 		LOGGER.info("abstractBaseResult: [{}]", abstractBaseResult);

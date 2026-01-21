@@ -1,11 +1,19 @@
-package com.kerneldc.hangariot.mqtt.result.tasmota;
+package com.kerneldc.hangariot.mqtt.command;
 
+import com.kerneldc.hangariot.controller.Device.BridgeEnum;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.LatitudeResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.LongitudeResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.PowerResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.TelePeriodResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.TimeDstResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.TimeResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.TimeStdResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.TimezoneResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
-import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 
-public enum CommandEnum {
+public enum TasmotaCommandEnum implements ICommandEnum {
 	/*
 	 * Tasmota commands
 	 */
@@ -39,13 +47,13 @@ public enum CommandEnum {
 	/*
 	 * Zigbee2mqtt command
 	 */
-	ZIGBEE2MQTT_STATE("", StateResult.class),
+//	ZIGBEE2MQTT_STATE("", StateResult.class),
 	;
 	
 	String command;
 	Class<? extends AbstractBaseResult> resultType;
 	
-	CommandEnum(String command, Class<? extends AbstractBaseResult> resultType) {
+	TasmotaCommandEnum(String command, Class<? extends AbstractBaseResult> resultType) {
 		this.command = command;
 		this.resultType = resultType;
 	}
@@ -54,8 +62,14 @@ public enum CommandEnum {
 		return command;
 	}
 
+	@Override
 	public Class<? extends AbstractBaseResult> getResultType() {
 		return resultType;
+	}
+	
+	@Override
+	public BridgeEnum handlesBridge () {
+		return BridgeEnum.TASMOTA;
 	}
 
 }

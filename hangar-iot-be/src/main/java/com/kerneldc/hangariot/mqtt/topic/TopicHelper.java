@@ -8,8 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.kerneldc.hangariot.controller.Device;
-import com.kerneldc.hangariot.controller.Device.BridgeEnum;
-import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
+import com.kerneldc.hangariot.mqtt.command.ICommandEnum;
+import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
+import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class TopicHelper {
 	}
 
 	private static final String DEVICE_ARG = "<device>";
+	private static final String COMMAND_ARG = "<command>";
 	
 	private static final String COMMAND_TOPIC_TEMPLATE = "cmnd/<device>/<command>";
 	
@@ -44,6 +46,7 @@ public class TopicHelper {
 	private static final String RESULT_TOPIC_TEMPLATE = "stat/<device>/" + MqttTopicSuffixEnum.RESULT;
 	
 	// ZIGBEE2MQTT
+	private static final String MQTT_ZIGBEE2MQTT_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
 	private static final String MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
 	private static final String MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE = "zigbee2mqtt/<device>/get";
 	private static final String MQTT_ZIGBEE2MQTT_SET_TOPIC_TEMPLATE = "zigbee2mqtt/<device>/set";
@@ -51,21 +54,32 @@ public class TopicHelper {
 	private final DeviceService deviceService;
 	
 
-//	public String getCommandTopic(CommandEnum commandEnum, String deviceName) {
+//	public String getCommandTopic(TasmotaCommandEnum tasmotaCommandEnum, String deviceName) {
 //		return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, deviceName)
-//				.replace("<command>", commandEnum.getCommand());
+//				.replace("<command>", tasmotaCommandEnum.getCommand());
 //	}
-	public String getCommandTopic(CommandEnum commandEnum, Device device) {
-		var bridge = device.getBridge();
-		if (bridge == BridgeEnum.ZIGBEE2MQTT) {
-			if (commandEnum == CommandEnum.ZIGBEE2MQTT_STATE) { // TODO how to determine if this a get or a set state operation?
-				return MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
-			} else {
-				return MQTT_ZIGBEE2MQTT_SET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
-			}
+//	public String getCommandTopicOld(TasmotaCommandEnum tasmotaCommandEnum, Device device) {
+//		var bridge = device.getBridge();
+//		if (bridge == BridgeEnum.ZIGBEE2MQTT) {
+//			if (tasmotaCommandEnum == TasmotaCommandEnum.ZIGBEE2MQTT_STATE) { // TODO how to determine if this a get or a set state operation?
+//				return MQTT_ZIGBEE2MQTT_GET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+//			} else {
+//				return MQTT_ZIGBEE2MQTT_SET_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+//			}
+//		}
+//		if (bridge == BridgeEnum.TASMOTA) {
+//			return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()).replace(COMMAND_ARG, tasmotaCommandEnum.getCommand());
+//		}
+//		throw new IllegalStateException();
+//	}
+	public String getCommandTopic(ICommandEnum commandEnum, Device device) {
+		switch (commandEnum.handlesBridge()) {
+		case ZIGBEE2MQTT: {
+			return MQTT_ZIGBEE2MQTT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()) + ((Zigbee2MqttCommandEnum)commandEnum).getSubTopic();
 		}
-		if (bridge == BridgeEnum.TASMOTA) {
-			return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()).replace("<command>", commandEnum.getCommand());
+		case TASMOTA: {
+			return COMMAND_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()).replace(COMMAND_ARG, ((TasmotaCommandEnum)commandEnum).getCommand());
+		}
 		}
 		throw new IllegalStateException();
 	}

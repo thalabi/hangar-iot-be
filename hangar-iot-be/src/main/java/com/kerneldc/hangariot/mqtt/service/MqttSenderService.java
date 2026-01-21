@@ -17,8 +17,10 @@ import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.ApplicationRuntimeException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
 import com.kerneldc.hangariot.exception.UnexpectedCommandResultException;
+import com.kerneldc.hangariot.mqtt.command.ICommandEnum;
+import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
+import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
-import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
 import com.kerneldc.hangariot.mqtt.result.tasmota.PowerResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.TelePeriodResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.TimezoneResult;
@@ -64,22 +66,28 @@ public class MqttSenderService {
 
 	public void togglePower(Device device, String powerStateExpected) throws ApplicationException, DeviceOfflineException {
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
-			var result = (StateResult)sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_TOGGLE_PAYLOAD);
+			var result = (StateResult)sendMessage(device, Zigbee2MqttCommandEnum.TOGGLE_POWER);
 			if (! /* not */ StringUtils.equalsIgnoreCase(powerStateExpected, result.getState())) {
-				throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.ZIGBEE2MQTT_STATE, STATE_TOGGLE_PAYLOAD, result.getState(), powerStateExpected));
+				throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, Zigbee2MqttCommandEnum.TOGGLE_POWER, StringUtils.EMPTY, result.getState(), powerStateExpected));
 			}
 		} else {
-			var result = (PowerResult)sendMessage(device, CommandEnum.POWER, "2"); // 2 toggles power
+			var result = (PowerResult)sendMessage(device, TasmotaCommandEnum.POWER, "2"); // 2 toggles power
 			if (! /* not */ StringUtils.equalsIgnoreCase(powerStateExpected, result.getPower())) {
-				throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.POWER, "2", result.getPower(), powerStateExpected));
+				throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, TasmotaCommandEnum.POWER, "2", result.getPower(), powerStateExpected));
 			}
 		}
 	}
 
+	
+	/**
+	 * Handles only Zigbee2mqtt devices
+	 * 
+	 * @param device
+	 */
 	public void triggerPublishConnectionState(Device device) {
 		LOGGER.info("triggerPublishConnectionState(\"{}\") begin", device.getName());
 		try {
-			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
+			sendMessage(device, Zigbee2MqttCommandEnum.GET_STATE);
 		} catch (DeviceOfflineException e) {
 			LOGGER.warn("Exception [{}] thrown. Device state will be set as UNREACHABLE.", e.getClass().getSimpleName());
 		}
@@ -89,9 +97,9 @@ public class MqttSenderService {
 	public void triggerPublishPowerState(Device device) throws DeviceOfflineException {
 		LOGGER.info("triggerPublishPowerState(\"{}\") begin", device.getName());
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
-			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
+			sendMessage(device, Zigbee2MqttCommandEnum.GET_STATE, STATE_PAYLOAD);
 		} else {
-			sendMessage(device, CommandEnum.POWER);
+			sendMessage(device, TasmotaCommandEnum.POWER);
 		}
 		LOGGER.info("triggerPublishPowerState(\"{}\") end", device.getName());
 	}
@@ -99,16 +107,16 @@ public class MqttSenderService {
 	public void triggerPublishSensorData(Device device) throws ApplicationException {
 		checkDeviceOnline(device);
 		// issue the command without an argument to get the teleperiod value
-		var result = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD);
+		var result = (TelePeriodResult)sendMessage(device, TasmotaCommandEnum.TELEPERIOD);
 		// issue the command again with the retrieved argument to trigger an update on the SENSOR topic
-		var result2 = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD, String.valueOf(result.getTelePeriod()));
+		var result2 = (TelePeriodResult)sendMessage(device, TasmotaCommandEnum.TELEPERIOD, String.valueOf(result.getTelePeriod()));
 		if (! /* not */ result.getTelePeriod().equals(result2.getTelePeriod())) {
-			throw new UnexpectedCommandResultException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.TELEPERIOD, result.getTelePeriod(), result2.getTelePeriod(), result.getTelePeriod()));
+			throw new UnexpectedCommandResultException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, TasmotaCommandEnum.TELEPERIOD, result.getTelePeriod(), result2.getTelePeriod(), result.getTelePeriod()));
 		}
 	}
 
 	public void triggerTimezoneValue(Device device) throws DeviceOfflineException {
-		sendMessage(device, CommandEnum.TIMEZONE);
+		sendMessage(device, TasmotaCommandEnum.TIMEZONE);
 	}
 
 	private void checkDeviceOnline(Device device) throws DeviceOfflineException {
@@ -118,17 +126,17 @@ public class MqttSenderService {
 	}
 
 	public void setTelePeriod(Device device, String telePeriod) throws ApplicationException, DeviceOfflineException {
-		var result = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD, telePeriod);
+		var result = (TelePeriodResult)sendMessage(device, TasmotaCommandEnum.TELEPERIOD, telePeriod);
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {			
 			return;
 		}
 		if (! /* not */ result.getTelePeriod().equals(Integer.valueOf(telePeriod))) {
-			throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.TELEPERIOD, telePeriod, result.getTelePeriod(), telePeriod));			
+			throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, TasmotaCommandEnum.TELEPERIOD, telePeriod, result.getTelePeriod(), telePeriod));			
 		}
 	}
 
 	public void setTimezoneOffset(Device device, String timezoneOffset) throws ApplicationException, DeviceOfflineException {
-		var result = (TimezoneResult)sendMessage(device, CommandEnum.TIMEZONE, timezoneOffset);
+		var result = (TimezoneResult)sendMessage(device, TasmotaCommandEnum.TIMEZONE, timezoneOffset);
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {
 			return;
 		}
@@ -139,7 +147,7 @@ public class MqttSenderService {
 		var resultTimezone = Integer.valueOf(result.getTimezone().replace(":", StringUtils.EMPTY));
 		var expectedTimezone = Integer.valueOf(timezoneOffset.replace(":", StringUtils.EMPTY));
 		if (! /* not */ resultTimezone.equals(expectedTimezone)) {
-			throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.TIMEZONE, timezoneOffset, result.getTimezone(), timezoneOffset));			
+			throw new ApplicationException(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, TasmotaCommandEnum.TIMEZONE, timezoneOffset, result.getTimezone(), timezoneOffset));			
 		}
 	}
 
@@ -150,7 +158,7 @@ public class MqttSenderService {
 
 		for (int i=0; i<16; i++) {
 			if (Boolean.TRUE.equals(timersRequest.getTimerModifiedArray()[i])) {
-				var timer1Result = (TimerResult)sendMessage(device, CommandEnum.valueOf("TIMER"+(i+1)), objectMapper.writeValueAsString(timersRequest.getTimerArray()[i]));
+				var timer1Result = (TimerResult)sendMessage(device, TasmotaCommandEnum.valueOf("TIMER"+(i+1)), objectMapper.writeValueAsString(timersRequest.getTimerArray()[i]));
 				if (! /* not */ timer1Result.getTimerXX().equals(timersRequest.getTimerArray()[i])) {
 					applicationException.addMessage(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, "TIMER"+(i+1), timersRequest.getTimerArray()[i], timer1Result.getTimerXX(), timersRequest.getTimerArray()[i]));			
 				}
@@ -158,9 +166,9 @@ public class MqttSenderService {
 		}
 		
 		if (Boolean.TRUE.equals(timersRequest.getTimersModified())) {
-			var timersResult = (TimersResult)sendMessage(device, CommandEnum.TIMERS,timersRequest.getTimers());
+			var timersResult = (TimersResult)sendMessage(device, TasmotaCommandEnum.TIMERS,timersRequest.getTimers());
 			if (! /* not */ StringUtils.equals(timersRequest.getTimers(), timersResult.getTimers())) {
-				applicationException.addMessage(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, CommandEnum.TIMERS, timersRequest, timersResult, timersRequest));
+				applicationException.addMessage(String.format(UNEXPECTED_RESULT_MESSAGE_FORMAT, TasmotaCommandEnum.TIMERS, timersRequest, timersResult, timersRequest));
 			}
 		}
 		
@@ -170,7 +178,7 @@ public class MqttSenderService {
 	}
 	
 	public TimersResult getTimers(Device device) throws DeviceOfflineException {
-		return (TimersResult)sendMessage(device, CommandEnum.TIMERS);
+		return (TimersResult)sendMessage(device, TasmotaCommandEnum.TIMERS);
 
 	}
 
@@ -180,15 +188,23 @@ public class MqttSenderService {
 	}
 	
 	
-	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum) throws DeviceOfflineException {
-		return sendMessage(device, commandEnum, StringUtils.EMPTY, true);
+	private AbstractBaseResult sendMessage(Device device, ICommandEnum commandEnum) throws DeviceOfflineException {
+		switch (commandEnum.handlesBridge()) {
+		case ZIGBEE2MQTT: {
+			return sendMessage(device, commandEnum, ((Zigbee2MqttCommandEnum)commandEnum).getPayload(), true);
+		}
+		case TASMOTA: {
+			return sendMessage(device, commandEnum, StringUtils.EMPTY, true);
+		}
+		}
+		return null;
 		
 	}
-	public AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument) throws DeviceOfflineException {
+	public AbstractBaseResult sendMessage(Device device, ICommandEnum commandEnum, String stringArgument) throws DeviceOfflineException {
 		return sendMessage(device, commandEnum, stringArgument, true);
 	}
 	
-	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument, boolean wait) throws DeviceOfflineException {
+	private AbstractBaseResult sendMessage(Device device, ICommandEnum commandEnum, String stringArgument, boolean wait) throws DeviceOfflineException {
 		var topic = topicHelper.getCommandTopic(commandEnum, device);
 		LOGGER.info("Sending mqtt message [{}] to topic [{}]", stringArgument, topic);
 		var lock = device.getLock();
@@ -223,7 +239,7 @@ public class MqttSenderService {
 	public void init () {
 		maxNumberOfTries = commandExecutionTimeout * 1000 / SLEEP_MILLISECONDS;
 	}
-	private AbstractBaseResult waitForMessageSendToComplete(Device device, CommandEnum commandEnum, long commandIssuedTimestamp) throws DeviceOfflineException {
+	private AbstractBaseResult waitForMessageSendToComplete(Device device, ICommandEnum tasmotaCommandEnum, long commandIssuedTimestamp) throws DeviceOfflineException {
     	AbstractBaseResult result;
     	int count = 0;
     	LOGGER.info("Waiting for message send to complete ...");
@@ -236,13 +252,13 @@ public class MqttSenderService {
 				throw new DeviceOfflineException();
 			}
 			count++;
-			result = applicationContext.getCommandResult(device, commandEnum);
+			result = applicationContext.getCommandResult(device, tasmotaCommandEnum);
 			LOGGER.info("result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]", result, count, maxNumberOfTries, (result != null ? result.getTimestamp() : ""), commandIssuedTimestamp);
 		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandIssuedTimestamp && count < maxNumberOfTries));
 		LOGGER.info("Waited [{}] seconds", count * SLEEP_MILLISECONDS / 1000f);
 		
 		if (count == maxNumberOfTries) {
-			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", commandEnum, device.getName());
+			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", tasmotaCommandEnum, device.getName());
 			markDeviceUnreachable(device);
 			throw new DeviceOfflineException();
 		}

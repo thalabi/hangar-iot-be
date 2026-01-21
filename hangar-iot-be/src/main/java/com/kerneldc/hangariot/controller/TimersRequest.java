@@ -1,8 +1,8 @@
 package com.kerneldc.hangariot.controller;
 
 
-import com.kerneldc.hangariot.mqtt.command.Timer;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.timer.Timer;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.hangariot.mqtt.result.tasmota.CommandEnum;
+import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;
 import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
@@ -42,7 +42,7 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 		if (isDuplicate) {
 
 			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
-			var stateResult = (StateResult)applicationContext.getCommandResult(device, CommandEnum.ZIGBEE2MQTT_STATE);
+			var stateResult = (StateResult)applicationContext.getCommandResult(device, Zigbee2MqttCommandEnum.STATE);
 			stateResult.setTimestamp(System.currentTimeMillis());
 
 //			// publish connection state and power state

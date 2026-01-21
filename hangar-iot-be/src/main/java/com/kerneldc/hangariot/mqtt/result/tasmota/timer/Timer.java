@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.command;
+package com.kerneldc.hangariot.mqtt.result.tasmota.timer;
 
 
 import org.hibernate.validator.constraints.Length;
