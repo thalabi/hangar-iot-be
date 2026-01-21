@@ -62,7 +62,7 @@ public class MqttSenderService {
 			{"state": "toggle"}
 			""";
 
-	public void togglePower(Device device, String powerStateExpected) throws InterruptedException, ApplicationException, DeviceOfflineException {
+	public void togglePower(Device device, String powerStateExpected) throws ApplicationException, DeviceOfflineException {
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
 			var result = (StateResult)sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_TOGGLE_PAYLOAD);
 			if (! /* not */ StringUtils.equalsIgnoreCase(powerStateExpected, result.getState())) {
@@ -80,25 +80,23 @@ public class MqttSenderService {
 		LOGGER.info("triggerPublishConnectionState(\"{}\") begin", device.getName());
 		try {
 			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
-		} catch (InterruptedException _) {
-			Thread.currentThread().interrupt();
 		} catch (DeviceOfflineException e) {
 			LOGGER.warn("Exception [{}] thrown. Device state will be set as UNREACHABLE.", e.getClass().getSimpleName());
 		}
 		LOGGER.info("triggerPublishConnectionState(\"{}\") end", device.getName());
 	}
 
-	public void triggerPublishPowerState(Device device) throws InterruptedException, DeviceOfflineException {
+	public void triggerPublishPowerState(Device device) throws DeviceOfflineException {
 		LOGGER.info("triggerPublishPowerState(\"{}\") begin", device.getName());
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
-			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE,STATE_PAYLOAD);
+			sendMessage(device, CommandEnum.ZIGBEE2MQTT_STATE, STATE_PAYLOAD);
 		} else {
 			sendMessage(device, CommandEnum.POWER);
 		}
 		LOGGER.info("triggerPublishPowerState(\"{}\") end", device.getName());
 	}
 
-	public void triggerPublishSensorData(Device device) throws InterruptedException, ApplicationException {
+	public void triggerPublishSensorData(Device device) throws ApplicationException {
 		checkDeviceOnline(device);
 		// issue the command without an argument to get the teleperiod value
 		var result = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD);
@@ -109,7 +107,7 @@ public class MqttSenderService {
 		}
 	}
 
-	public void triggerTimezoneValue(Device device) throws InterruptedException, DeviceOfflineException {
+	public void triggerTimezoneValue(Device device) throws DeviceOfflineException {
 		sendMessage(device, CommandEnum.TIMEZONE);
 	}
 
@@ -119,7 +117,7 @@ public class MqttSenderService {
 		}
 	}
 
-	public void setTelePeriod(Device device, String telePeriod) throws InterruptedException, ApplicationException, DeviceOfflineException {
+	public void setTelePeriod(Device device, String telePeriod) throws ApplicationException, DeviceOfflineException {
 		var result = (TelePeriodResult)sendMessage(device, CommandEnum.TELEPERIOD, telePeriod);
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {			
 			return;
@@ -129,7 +127,7 @@ public class MqttSenderService {
 		}
 	}
 
-	public void setTimezoneOffset(Device device, String timezoneOffset) throws InterruptedException, ApplicationException, DeviceOfflineException {
+	public void setTimezoneOffset(Device device, String timezoneOffset) throws ApplicationException, DeviceOfflineException {
 		var result = (TimezoneResult)sendMessage(device, CommandEnum.TIMEZONE, timezoneOffset);
 		if (! /* not */ applicationContext.isDeviceOnLine(device)) {
 			return;
@@ -146,7 +144,7 @@ public class MqttSenderService {
 	}
 
 	
-	public void setTimers(TimersRequest timersRequest) throws JsonProcessingException, InterruptedException, ApplicationException, DeviceOfflineException {
+	public void setTimers(TimersRequest timersRequest) throws JsonProcessingException, ApplicationException, DeviceOfflineException {
 		var applicationException = new ApplicationException();
 		var device = deviceService.getDevice(timersRequest.getDeviceName());
 
@@ -171,7 +169,7 @@ public class MqttSenderService {
 		}
 	}
 	
-	public TimersResult getTimers(Device device) throws InterruptedException, DeviceOfflineException {
+	public TimersResult getTimers(Device device) throws DeviceOfflineException {
 		return (TimersResult)sendMessage(device, CommandEnum.TIMERS);
 
 	}
@@ -182,22 +180,28 @@ public class MqttSenderService {
 	}
 	
 	
-	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum) throws InterruptedException, DeviceOfflineException {
+	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum) throws DeviceOfflineException {
 		return sendMessage(device, commandEnum, StringUtils.EMPTY, true);
 		
 	}
-	public AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument) throws InterruptedException, DeviceOfflineException {
+	public AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument) throws DeviceOfflineException {
 		return sendMessage(device, commandEnum, stringArgument, true);
 	}
 	
-	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument, boolean wait) throws InterruptedException, DeviceOfflineException {
+	private AbstractBaseResult sendMessage(Device device, CommandEnum commandEnum, String stringArgument, boolean wait) throws DeviceOfflineException {
 		var topic = topicHelper.getCommandTopic(commandEnum, device);
 		LOGGER.info("Sending mqtt message [{}] to topic [{}]", stringArgument, topic);
 		var lock = device.getLock();
 		
-		if (!lock.tryLock(5, TimeUnit.SECONDS)) {
-	        throw new ApplicationRuntimeException("Could not acquire device lock after 5 seconds- system busy");
-	    }
+		try {
+			if (!lock.tryLock(5, TimeUnit.SECONDS)) {
+			    throw new ApplicationRuntimeException("Could not acquire device lock after 5 seconds- system busy");
+			}
+		} catch (InterruptedException _) {
+			markDeviceUnreachable(device);
+			Thread.currentThread().interrupt();
+			throw new DeviceOfflineException();
+		}
 		
 		try {
 			var commandTimestamp = System.currentTimeMillis();
@@ -219,12 +223,18 @@ public class MqttSenderService {
 	public void init () {
 		maxNumberOfTries = commandExecutionTimeout * 1000 / SLEEP_MILLISECONDS;
 	}
-	private AbstractBaseResult waitForMessageSendToComplete(Device device, CommandEnum commandEnum, long commandIssuedTimestamp) throws InterruptedException, DeviceOfflineException {
+	private AbstractBaseResult waitForMessageSendToComplete(Device device, CommandEnum commandEnum, long commandIssuedTimestamp) throws DeviceOfflineException {
     	AbstractBaseResult result;
     	int count = 0;
     	LOGGER.info("Waiting for message send to complete ...");
 		do {
-			TimeUnit.MILLISECONDS.sleep(SLEEP_MILLISECONDS);
+			try {
+				TimeUnit.MILLISECONDS.sleep(SLEEP_MILLISECONDS);
+			} catch (InterruptedException _) {
+				markDeviceUnreachable(device);
+				Thread.currentThread().interrupt();
+				throw new DeviceOfflineException();
+			}
 			count++;
 			result = applicationContext.getCommandResult(device, commandEnum);
 			LOGGER.info("result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]", result, count, maxNumberOfTries, (result != null ? result.getTimestamp() : ""), commandIssuedTimestamp);
@@ -233,13 +243,16 @@ public class MqttSenderService {
 		
 		if (count == maxNumberOfTries) {
 			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", commandEnum, device.getName());
-			LOGGER.warn("Marking device [{}] as UNREACHABLE", device.getName());
-			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.UNREACHABLE, System.currentTimeMillis());
-			applicationContext.setConnectionState(device, stateMessage);
-			webSocketSenderService.publishConnectionState(device);
+			markDeviceUnreachable(device);
 			throw new DeviceOfflineException();
 		}
 		return result;
     }
+	private void markDeviceUnreachable(Device device) {
+		LOGGER.warn("Marking device [{}] as UNREACHABLE", device.getName());
+		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.UNREACHABLE, System.currentTimeMillis());
+		applicationContext.setConnectionState(device, stateMessage);
+		webSocketSenderService.publishConnectionState(device);
+	}
 
 }

@@ -63,7 +63,7 @@ public class HangarIotController {
     }
 
     @PostMapping("/triggerPublishPowerState")
-	public ResponseEntity<String> triggerPublishPowerState(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, JsonProcessingException, ApplicationException {
+	public ResponseEntity<String> triggerPublishPowerState(@Valid @RequestBody DeviceRequest deviceRequest) throws JsonProcessingException, ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = deviceRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -74,7 +74,7 @@ public class HangarIotController {
     }
     
     @PostMapping("/togglePower")
-	public ResponseEntity<String> togglePower(@Valid @RequestBody TogglePowerRequest togglePowerRequest) throws InterruptedException, ApplicationException {
+	public ResponseEntity<String> togglePower(@Valid @RequestBody TogglePowerRequest togglePowerRequest) throws ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = togglePowerRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -87,7 +87,7 @@ public class HangarIotController {
      * Should be used by devices that support sensor data like the Sonoff S-31 
      */
     @PostMapping("/triggerPublishSensorData")
-	public ResponseEntity<String> triggerPublishSensorData(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, ApplicationException {
+	public ResponseEntity<String> triggerPublishSensorData(@Valid @RequestBody DeviceRequest deviceRequest) throws ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = deviceRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -97,7 +97,7 @@ public class HangarIotController {
     }
     
     @PostMapping("/triggerTimezoneValue")
-	public ResponseEntity<String> triggerTimezoneValue(@Valid @RequestBody DeviceRequest deviceRequest) throws InterruptedException, JsonProcessingException, ApplicationException {
+	public ResponseEntity<String> triggerTimezoneValue(@Valid @RequestBody DeviceRequest deviceRequest) throws JsonProcessingException, ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = deviceRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -108,7 +108,7 @@ public class HangarIotController {
     }
     
     @PostMapping("/setTelePeriod")
-	public ResponseEntity<String> setTelePeriod(@Valid @RequestBody TelePeriodRequest timezoneRequest) throws InterruptedException, ApplicationException {
+	public ResponseEntity<String> setTelePeriod(@Valid @RequestBody TelePeriodRequest timezoneRequest) throws ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = timezoneRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -120,7 +120,7 @@ public class HangarIotController {
     }
     
     @PostMapping("/setTimezoneOffset")
-	public ResponseEntity<String> setTimezoneOffset(@Valid @RequestBody TimezoneRequest timezoneRequest) throws InterruptedException, ApplicationException {
+	public ResponseEntity<String> setTimezoneOffset(@Valid @RequestBody TimezoneRequest timezoneRequest) throws ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = timezoneRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -132,7 +132,7 @@ public class HangarIotController {
     
     // TODO not fully coded
     @PostMapping("/setTimeStd")
-	public ResponseEntity<String> setsetTimeStd(@Valid @RequestBody TimeStdRequest timeStdRequest) throws InterruptedException, ApplicationException {
+	public ResponseEntity<String> setsetTimeStd(@Valid @RequestBody TimeStdRequest timeStdRequest) throws ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = timeStdRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -149,7 +149,7 @@ public class HangarIotController {
     }
     
     @GetMapping("/getTimers")
-    public ResponseEntity<TimersResult> getTimers(@Valid String deviceName) throws JsonProcessingException, InterruptedException, ApplicationException {
+    public ResponseEntity<TimersResult> getTimers(@Valid String deviceName) throws JsonProcessingException, ApplicationException {
     	LOGGER.info("Begin ...");
     	validateDeviceName(deviceName);
     	
@@ -160,7 +160,7 @@ public class HangarIotController {
     }
 
     @PostMapping("/setTimers")
-    public ResponseEntity<String> setTimers(@Valid @RequestBody TimersRequest timersRequest) throws InterruptedException, JsonProcessingException, ApplicationException {    	
+    public ResponseEntity<String> setTimers(@Valid @RequestBody TimersRequest timersRequest) throws JsonProcessingException, ApplicationException {    	
     	LOGGER.info("Begin ...");
     	var deviceName = timersRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -172,7 +172,7 @@ public class HangarIotController {
     }
 
     @PostMapping("/executeFreeFormatCommand")
-	public ResponseEntity<AbstractBaseResult> executeFreeFormatCommand(@Valid @RequestBody FreeFormatCommandRequest freeFormatCommandRequest) throws InterruptedException, ApplicationException, JsonProcessingException {
+	public ResponseEntity<AbstractBaseResult> executeFreeFormatCommand(@Valid @RequestBody FreeFormatCommandRequest freeFormatCommandRequest) throws ApplicationException, JsonProcessingException {
     	LOGGER.info("Begin ...");
     	var deviceName = freeFormatCommandRequest.getDeviceName();
     	validateDeviceName(deviceName);
@@ -215,7 +215,7 @@ public class HangarIotController {
     }
     
     @PostMapping("/increaseTelemetryPeriod")
-	public ResponseEntity<Void> increaseTelemetryPeriod() throws InterruptedException, ApplicationException, JsonProcessingException {
+	public ResponseEntity<Void> increaseTelemetryPeriod() throws ApplicationException, JsonProcessingException {
     	LOGGER.info("Begin ...");
     	scheduledTasks.increaseTelemetryPeriod();
     	LOGGER.info("End ...");

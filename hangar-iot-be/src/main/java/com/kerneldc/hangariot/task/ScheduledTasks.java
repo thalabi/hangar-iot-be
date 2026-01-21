@@ -34,7 +34,7 @@ public class ScheduledTasks {
 
 	
 	@Scheduled(cron = "${telemetry.scheduler.increase-task.cron-expression}")
-	public void increaseTelemetryPeriod() throws InterruptedException, ApplicationException, JsonProcessingException {
+	public void increaseTelemetryPeriod() throws ApplicationException, JsonProcessingException {
 		var deviceList = deviceService.getDeviceList();
 		for (Device device: deviceList) {
 			if (Boolean.TRUE.equals(device.getEnableDataSaver())) {
