@@ -14,9 +14,7 @@ import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 
 public enum TasmotaCommandEnum implements ICommandEnum {
-	/*
-	 * Tasmota commands
-	 */
+
 	POWER("power", PowerResult.class),
 	TIMEZONE("timezone", TimezoneResult.class),
 	TIMEDST("timedst", TimeDstResult.class),
@@ -44,10 +42,6 @@ public enum TasmotaCommandEnum implements ICommandEnum {
 	TIMER15("timer15", TimerResult.class),
 	TIMER16("timer16", TimerResult.class),
 	BACKLOG("backlog", null),
-	/*
-	 * Zigbee2mqtt command
-	 */
-//	ZIGBEE2MQTT_STATE("", StateResult.class),
 	;
 	
 	String command;

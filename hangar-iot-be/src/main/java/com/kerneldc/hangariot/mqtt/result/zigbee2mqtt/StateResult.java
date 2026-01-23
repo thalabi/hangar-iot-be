@@ -1,8 +1,6 @@
 package com.kerneldc.hangariot.mqtt.result.zigbee2mqtt;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 
 import lombok.Getter;
@@ -15,9 +13,13 @@ import lombok.ToString;
 public class StateResult extends AbstractBaseResult {
 
 	private String state;
+	private Integer linkquality;
+	private Boolean occupancy;
 	
-	@JsonCreator
-    public StateResult(@JsonProperty(value = "state", required = true) String state) {
-        this.state = state;
-    }
+//	@JsonCreator // Need @JsonCreator because '@JsonProperty(required = true)' is only enforced during deserialization  
+//    public StateResult(@JsonProperty(required = true) String state, Integer linkquality, Boolean occupancy) {
+//        this.state = state;
+//        this.linkquality = linkquality;
+//        this.occupancy = occupancy;
+//    }
 }

@@ -1,5 +1,6 @@
 package com.kerneldc.hangariot.mqtt.service.handler.zigbee2mqtt;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 
@@ -45,10 +46,14 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 			var stateResult = (StateResult)applicationContext.getCommandResult(device, Zigbee2MqttCommandEnum.STATE);
 			stateResult.setTimestamp(System.currentTimeMillis());
 
-//			// publish connection state and power state
+			// publish connection state
 			webSocketSenderService.publishConnectionState(device);
-			var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
-			webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+			
+			// publish power state
+			if (BooleanUtils.isFalse(device.getPassive())) {
+				var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
+				webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+			}
 
 		} else {
 		
@@ -61,14 +66,16 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 				throw new MessagingException("Failed to add message to cache.", e);
 			}
 	
-			// connection state
+			// set and publish connection state
 			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
 			applicationContext.setConnectionState(device, stateMessage);
 			webSocketSenderService.publishConnectionState(device);
 	
 			// power state
-			var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
-			webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+			if (BooleanUtils.isFalse(device.getPassive())) {
+				var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
+				webSocketSenderService.publishPowerState(fullTopic, powerMessage);
+			}
 		}
 		
 		LOGGER.info("End Zigbee2mqttMessageListenerHandler ...");

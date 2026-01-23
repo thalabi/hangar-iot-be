@@ -9,13 +9,17 @@ import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 
 public enum Zigbee2MqttCommandEnum implements ICommandEnum {
 	STATE(StringUtils.EMPTY, StringUtils.EMPTY, StateResult.class),
-	GET_STATE("/get","{\"state\": \"\"}", StateResult.class),
-	TOGGLE_POWER("/set","{\"state\": \"toggle\"}", StateResult.class);
+	GET_STATE("/get", """
+			{"state": ""}
+			""", StateResult.class),
+	TOGGLE_POWER("/set","""
+			{"state": "toggle"}
+			""", StateResult.class);
 
 	String subTopic;
 	String payload;
 	Class<? extends AbstractBaseResult> resultType;
-
+	
 	Zigbee2MqttCommandEnum(String subTopic, String payload, Class<? extends AbstractBaseResult> resultType) {
 		this.subTopic = subTopic;
 		this.payload = payload;

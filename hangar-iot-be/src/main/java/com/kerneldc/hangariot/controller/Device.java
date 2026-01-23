@@ -12,7 +12,7 @@ public class Device {
 		ZIGBEE2MQTT
 	};
 	
-	private enum DeviceTypeEnum {PLUG}
+	private enum DeviceTypeEnum {PLUG, MOTION_SENSOR}
 	
 	private String name;
 	private String description;
@@ -25,6 +25,7 @@ public class Device {
 	private DeviceConfigData config;
 	private DeviceGroupEnum group;
 	private BridgeEnum bridge;
+	private Boolean passive; // or non-reporting of their 'state'
 	
 	private ReentrantLock lock = new ReentrantLock();
 }

@@ -33,7 +33,7 @@ public class ApplicationContext {
 	private Map<DeviceAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
 	private Map<Device, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
 	
-	private record DeviceAndCommandEnum(Device device, ICommandEnum tasmotaCommandEnum) {}
+	private record DeviceAndCommandEnum(Device device, ICommandEnum commandEnum) {}
 	
 	// Used to detect duplicates
 	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
@@ -45,8 +45,6 @@ public class ApplicationContext {
 	 * @throws JsonProcessingException
 	 */
 	public AbstractBaseResult setCommandResult(String topic, String message) throws JsonProcessingException {
-		//var deviceName = extractDeviceName(topic);
-//		var device = extractDevice(topic);
 		var device = topicHelper.getDevice(topic);
 		ICommandEnum commandEnum; 
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {

@@ -78,8 +78,9 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	var deviceName = togglePowerRequest.getDeviceName();
     	validateDeviceName(deviceName);
-   		mqttSenderService.togglePower(deviceService.getDevice(deviceName), togglePowerRequest.getPowerStateRequested());
     	
+   		mqttSenderService.togglePower(deviceService.getDevice(deviceName), togglePowerRequest.getPowerStateRequested());
+   		LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
 
@@ -227,6 +228,7 @@ public class HangarIotController {
     		throw new InvalidDeviceException(String.format("Device [%s] is invalid", deviceName));
     	}
     }
+
     private Authentication getAuthentication() {
     	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     	if (!(authentication instanceof AnonymousAuthenticationToken)) {
