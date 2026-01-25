@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.domain.device.Device;
 import com.kerneldc.hangariot.mqtt.command.ICommandEnum;
 import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
 import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;

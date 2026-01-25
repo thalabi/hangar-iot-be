@@ -11,6 +11,8 @@ import com.kerneldc.hangariot.domain.zone.Zone;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
@@ -27,6 +29,7 @@ public class Device extends AbstractPersistableEntity {
 	@Setter(AccessLevel.NONE)
 	private String name;
     private String description;
+	@Enumerated(EnumType.STRING)
     private DeviceTypeEnum deviceType;
     private Boolean telemetry;
     private String make;
@@ -35,6 +38,7 @@ public class Device extends AbstractPersistableEntity {
     @Embedded
     private DeviceConfigData deviceConfigData;
     private String location;
+	@Enumerated(EnumType.STRING)
     private BridgeEnum bridge;
     private Boolean passive; // or non-reporting of their 'state'
 	

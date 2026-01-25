@@ -9,7 +9,7 @@ import com.kerneldc.hangariot.domain.enums.DeviceTypeEnum;
 import lombok.Data;
 
 @Data
-public class Device {
+public class DeviceOld {
 	
 	private String name;
 	private String description;

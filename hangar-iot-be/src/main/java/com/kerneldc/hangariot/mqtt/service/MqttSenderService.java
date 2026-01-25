@@ -9,9 +9,9 @@ import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.hangariot.controller.Device;
 import com.kerneldc.hangariot.controller.TimeStdRequest;
 import com.kerneldc.hangariot.controller.TimersRequest;
+import com.kerneldc.hangariot.domain.device.Device;
 import com.kerneldc.hangariot.domain.enums.BridgeEnum;
 import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.ApplicationRuntimeException;

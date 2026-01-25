@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.domain.device.Device;
 import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
 import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;

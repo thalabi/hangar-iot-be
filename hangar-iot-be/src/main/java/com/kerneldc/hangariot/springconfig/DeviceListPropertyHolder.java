@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.domain.device.Device;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.domain.device.Device;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 
 import lombok.RequiredArgsConstructor;
