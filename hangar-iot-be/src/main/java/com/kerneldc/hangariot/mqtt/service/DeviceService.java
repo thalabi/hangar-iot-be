@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.kerneldc.hangariot.controller.Device;
+import com.kerneldc.hangariot.repository.DeviceRepository;
 import com.kerneldc.hangariot.springconfig.DeviceListPropertyHolder;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DeviceService {
 
 	private final DeviceListPropertyHolder deviceListPropertyHolder;
+	private final DeviceRepository deviceRepository;
 
 	@Value("${client-exposed.mqtt.commands}")
 	private String[] commands;
@@ -26,6 +28,8 @@ public class DeviceService {
 	private String websocketTopicsPrefix;
 
 	public List<Device> getDeviceList() {
+		var devices = deviceRepository.findAll();
+		devices.forEach(device -> System.out.println("====================================================="+device));
 		return deviceListPropertyHolder.getDeviceList();
 	}
 	

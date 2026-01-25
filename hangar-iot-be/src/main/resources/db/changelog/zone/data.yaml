@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: data
+      author: thalabi
+      changes:
+        - insert:
+            tableName: zone
+            columns:
+              - column: {name: name, value: "Home"}
+              - column: {name: lk, value: "Home"}
+              - column: {name: version, value: 0}
+        - insert:
+            tableName: zone
+            columns:
+              - column: {name: name, value: "Hangar"}
+              - column: {name: lk, value: "Hangar"}
+              - column: {name: version, value: 0}
+              

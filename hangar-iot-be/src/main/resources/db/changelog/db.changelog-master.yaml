@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - include: {file: zone/create-table.yaml, relativeToChangelogFile: true}
+  - include: {file: zone/data.yaml, relativeToChangelogFile: true}
+
+  - include: {file: area/create-table.yaml, relativeToChangelogFile: true}
+  - include: {file: area/data.yaml, relativeToChangelogFile: true}
+
+  - include: {file: device/create-table.yaml, relativeToChangelogFile: true}
+  - include: {file: device/data.yaml, relativeToChangelogFile: true}
+  

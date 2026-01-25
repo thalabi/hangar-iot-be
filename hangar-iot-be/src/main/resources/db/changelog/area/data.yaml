@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: data
+      author: thalabi
+      changes:
+        - insert:
+            tableName: area
+            columns:
+              - column: {name: name, value: "Master Bedroom"}
+              - column: {name: lk, value: "Master Bedroom"}
+              - column: {name: zone_id, value: 1}
+              - column: {name: version, value: 0}
+        - insert:
+            tableName: area
+            columns:
+              - column: {name: name, value: "Office"}
+              - column: {name: lk, value: "Office"}
+              - column: {name: zone_id, value: 1}
+              - column: {name: version, value: 0}
+        - insert:
+            tableName: area
+            columns:
+              - column: {name: name, value: "Basement"}
+              - column: {name: lk, value: "Basement"}
+              - column: {name: zone_id, value: 1}
+              - column: {name: version, value: 0}
+        - insert:
+            tableName: area
+            columns:
+              - column: {name: name, value: "Family Room"}
+              - column: {name: lk, value: "Family Room"}
+              - column: {name: zone_id, value: 1}
+              - column: {name: version, value: 0}
+        - insert:
+            tableName: area
+            columns:
+              - column: {name: name, value: "Living Room"}
+              - column: {name: lk, value: "Living Room"}
+              - column: {name: zone_id, value: 1}
+              - column: {name: version, value: 0}
+              

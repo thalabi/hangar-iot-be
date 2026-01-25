@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table
+      author: thalabi
+      changes:
+        - createTable:
+            tableName: area
+            columns:
+              - column: {name: id, type: bigint, autoIncrement: true, constraints: {primaryKey: true}}
+              - column: {name: lk, type: VARCHAR(4000), constraints: {nullable: false}}
+              - column: {name: version, type: bigint, constraints: {nullable: false}}
+
+              - column: {name: name, type: varchar(255)}
+              - column: {name: zone_id, type: bigint, constraints: {nullable: false, references: zone(id), foreignKeyName: fk_area_1}}
+              

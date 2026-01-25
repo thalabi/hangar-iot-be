@@ -1,6 +1,6 @@
 package com.kerneldc.hangariot.mqtt.command;
 
-import com.kerneldc.hangariot.controller.Device.BridgeEnum;
+import com.kerneldc.hangariot.domain.enums.BridgeEnum;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.LatitudeResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.LongitudeResult;

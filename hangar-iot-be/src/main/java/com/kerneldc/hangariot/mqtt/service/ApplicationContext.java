@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.hangariot.controller.Device;
-import com.kerneldc.hangariot.controller.Device.BridgeEnum;
+import com.kerneldc.hangariot.domain.enums.BridgeEnum;
 import com.kerneldc.hangariot.mqtt.command.ICommandEnum;
 import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
 import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;

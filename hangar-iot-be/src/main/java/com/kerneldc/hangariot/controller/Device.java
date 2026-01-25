@@ -2,24 +2,21 @@ package com.kerneldc.hangariot.controller;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.kerneldc.hangariot.domain.device.DeviceConfigData;
+import com.kerneldc.hangariot.domain.enums.BridgeEnum;
+import com.kerneldc.hangariot.domain.enums.DeviceTypeEnum;
+
 import lombok.Data;
 
 @Data
 public class Device {
-
-	public enum BridgeEnum {
-		TASMOTA,
-		ZIGBEE2MQTT
-	};
-	
-	private enum DeviceTypeEnum {PLUG, MOTION_SENSOR}
 	
 	private String name;
 	private String description;
 	private String location;
 	private DeviceTypeEnum deviceType;
 	private Boolean telemetry;
-	private String iotDeviceMake;
+	private String make;
 	private String iotDeviceModel;
 	private Boolean enableDataSaver;
 	private DeviceConfigData config;
