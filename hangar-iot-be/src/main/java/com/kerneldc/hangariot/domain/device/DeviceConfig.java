@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Embeddable
-public class DeviceConfigData implements Serializable {
+public class DeviceConfig implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	

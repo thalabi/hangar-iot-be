@@ -81,14 +81,10 @@ public class TopicHelper {
 				}
 			}
 			case ZIGBEE2MQTT -> {
-				// TODO
-				LOGGER.info("Device [{}] bridge is [{}]", device.getName(), device.getBridge());
 				topicList.add(MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-				
 			}
 			}
 		}
-		LOGGER.info("Subscribing to following MQTT topics [{}]", String.join(", ", topicList));
 		return topicList;
 	}
 

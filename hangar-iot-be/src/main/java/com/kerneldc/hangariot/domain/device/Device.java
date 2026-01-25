@@ -36,7 +36,7 @@ public class Device extends AbstractPersistableEntity {
     private String model;
     private Boolean enableDataSaver;
     @Embedded
-    private DeviceConfigData deviceConfigData;
+    private DeviceConfig deviceConfig;
     private String location;
 	@Enumerated(EnumType.STRING)
     private BridgeEnum bridge;

@@ -1,5 +1,6 @@
 package com.kerneldc.hangariot.mqtt.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.kerneldc.hangariot.domain.device.Device;
 import com.kerneldc.hangariot.repository.DeviceRepository;
-import com.kerneldc.hangariot.springconfig.DeviceListPropertyHolder;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,28 +20,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DeviceService {
 
-//	private final DeviceListPropertyHolder deviceListPropertyHolder;
 	private final DeviceRepository deviceRepository;
+	private List<Device> deviceList = new ArrayList<>();
 
 	@Value("${client-exposed.mqtt.commands}")
 	private String[] commands;
-	@Value("${websocket.topics.prefix:/topic}")
-	private String websocketTopicsPrefix;
+
+	@PostConstruct
+	public void loadDevices() {
+		LOGGER.info("Loading devices from database.");
+		deviceList = deviceRepository.findAll();
+		var i = 0;
+		for (var device: deviceList) {
+			LOGGER.info("{} - [{}] ({})", String.format("%2d", ++i), device.getName(), device.getBridge());
+		}
+	}
 
 	public List<Device> getDeviceList() {
-		var devices = deviceRepository.findAll();
-		devices.forEach(device -> System.out.println("====================================================="+device));
-//		return deviceListPropertyHolder.getDeviceList();
-		return deviceRepository.findAll();
+		return deviceList;
 	}
 	
 	public Device getDevice(String name) {
-		return getDeviceList().stream().filter(device -> StringUtils.equals(device.getName(), name)).findAny().orElse(null);
+		return deviceList.stream().filter(device -> StringUtils.equals(device.getName(), name)).findAny().orElse(null);
 	}
 	
 	public List<String> getDeviceNameList() {
-//		return deviceListPropertyHolder.getDeviceList().stream().map(Device::getName).toList();
-		return getDeviceList().stream().map(Device::getName).toList();
+		return deviceList.stream().map(Device::getName).toList();
 	}
 
 	public List<String> getCommandList() {

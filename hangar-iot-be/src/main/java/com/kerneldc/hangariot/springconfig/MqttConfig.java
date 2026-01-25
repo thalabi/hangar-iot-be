@@ -64,14 +64,13 @@ public class MqttConfig {
     }
 
 	@Bean
-    public MessageProducer inbound(TopicHelper topicHelper) {
-		var topicList = topicHelper.getTopicsToSubscribeTo();
-        var adapter =
-                new MqttPahoMessageDrivenChannelAdapter(listenerClientId, mqttClientFactory(), topicList.toArray(new String[0]));
+    public MqttPahoMessageDrivenChannelAdapter inbound(TopicHelper topicHelper) {
+        var adapter = new MqttPahoMessageDrivenChannelAdapter(listenerClientId, mqttClientFactory());
         adapter.setCompletionTimeout(10000); // in milliseconds
         adapter.setConverter(new DefaultPahoMessageConverter());
         //adapter.setQos(1);
         adapter.setOutputChannel(mqttInboundChannel());
+        adapter.setAutoStartup(false);
         return adapter;
     }
 	

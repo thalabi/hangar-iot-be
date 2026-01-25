@@ -1,7 +1,5 @@
 package com.kerneldc.hangariot.mqtt.service.handler.tasmota;
 
-import java.util.Date;
-
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,15 +1,16 @@
 package com.kerneldc.hangariot;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.stereotype.Component;
 
 import com.kerneldc.hangariot.domain.enums.BridgeEnum;
 import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.DeviceService;
 import com.kerneldc.hangariot.mqtt.service.MqttSenderService;
+import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
 import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
 
@@ -19,28 +20,31 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile("!test")
-public class InitializeApplication implements ApplicationRunner {
+public class InitializeApplication {
 
-	private final MqttSenderService mqttSenderService;
+	private final MqttPahoMessageDrivenChannelAdapter mqtt;
 	private final DeviceService deviceService;
 	private final ApplicationContext applicationContext;
+	private final TopicHelper topicHelper;
+	private final MqttSenderService mqttSenderService;
 	
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
+	@EventListener(ApplicationReadyEvent.class)
+    public void init() {
 		
-		var deviceList = deviceService.getDeviceNameList();
-		
-		LOGGER.info("Managing devices: {}", String.join(", ", deviceList));
-		var i = 0;
-		for (var device: deviceService.getDeviceList()) {
-			LOGGER.info("{} - device [{}] ({})", String.format("%2d", ++i), device.getName(), device.getBridge());
-		}
-		
+		startMqtt();
 		connectionStateOfZ2mDevices();
 	}
-
+	
+	private void startMqtt() {
+		var topicList = topicHelper.getTopicsToSubscribeTo();
+		LOGGER.info("Subscribing to following MQTT topics [{}]", String.join(", ", topicList));
+		mqtt.addTopic(topicList.toArray(new String[0]));
+		LOGGER.info("Starting MQTT.");
+		mqtt.start();
+	}
+	
 	private void connectionStateOfZ2mDevices() {
+		
 		LOGGER.info("Finding out the connection state of Zigbee2Mqtt devices:");
 		var i = 0;
 		for (var device: deviceService.getDeviceList()) {
@@ -52,6 +56,9 @@ public class InitializeApplication implements ApplicationRunner {
 					mqttSenderService.triggerPublishConnectionState(device);
 				}
 			}
+		}
+		if (i == 0) {
+			LOGGER.warn("  No Zigbee2Mqtt devices found.");
 		}
 	}
 

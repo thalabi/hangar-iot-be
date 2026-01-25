@@ -1,12 +1,11 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-device-s31-sandbox
+      id: insert
       author: thalabi
       changes:
         - insert:
             tableName: device
             columns:
-              - column: {name: version, value: 0}
               - column: {name: name, value: "s-31-sandbox"}
               - column: {name: lk, value: "s-31-sandbox"}
               - column: {name: description, value: "Basement lampshade"}
@@ -25,3 +24,27 @@ databaseChangeLog:
               - column: {name: passive, value: false}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 3}
+              - column: {name: version, value: 0}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "Master Bedroom-Lampshade"}
+              - column: {name: lk, value: "Master Bedroom-Lampshade"}
+              - column: {name: description, value: "Master Bedroom Lampshade"}
+              - column: {name: device_type, value: "PLUG"}
+              - column: {name: telemetry, value: false}
+              - column: {name: make, value: "Ikea"}
+              - column: {name: model, value: "Tretakt"}
+              - column: {name: enable_data_saver, value: false}
+              - column: {name: latitude_degrees, value: 43.651070}
+              - column: {name: longitude_degrees, value: -79.347015}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
+              - column: {name: location, value: "Lampshade on the center table"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: false}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 3}
+              - column: {name: version, value: 0}
+              

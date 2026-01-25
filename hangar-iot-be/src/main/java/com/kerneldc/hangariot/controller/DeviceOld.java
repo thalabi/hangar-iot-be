@@ -2,7 +2,7 @@ package com.kerneldc.hangariot.controller;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.kerneldc.hangariot.domain.device.DeviceConfigData;
+import com.kerneldc.hangariot.domain.device.DeviceConfig;
 import com.kerneldc.hangariot.domain.enums.BridgeEnum;
 import com.kerneldc.hangariot.domain.enums.DeviceTypeEnum;
 
@@ -19,7 +19,7 @@ public class DeviceOld {
 	private String make;
 	private String iotDeviceModel;
 	private Boolean enableDataSaver;
-	private DeviceConfigData config;
+	private DeviceConfig config;
 	private DeviceGroupEnum group;
 	private BridgeEnum bridge;
 	private Boolean passive; // or non-reporting of their 'state'
