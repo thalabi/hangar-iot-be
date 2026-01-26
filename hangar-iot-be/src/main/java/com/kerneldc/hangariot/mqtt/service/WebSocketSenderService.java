@@ -22,7 +22,6 @@ public class WebSocketSenderService {
 	private final SimpMessagingTemplate webSocket;
 	private final ApplicationContext applicationContext;
 	private final TopicHelper topicHelper;
-	private final DeviceService deviceService;
 
 	private final ObjectMapper objectMapper;
 	

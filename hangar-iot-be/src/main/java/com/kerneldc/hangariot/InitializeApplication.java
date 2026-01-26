@@ -45,7 +45,7 @@ public class InitializeApplication {
 	
 	private void connectionStateOfZ2mDevices() {
 		
-		LOGGER.info("Finding out the connection state of Zigbee2Mqtt devices:");
+		LOGGER.info("Setting the connection state of Zigbee2Mqtt devices:");
 		var i = 0;
 		for (var device: deviceService.getDeviceList()) {
 			if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {

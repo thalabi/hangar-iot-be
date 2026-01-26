@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert
+      id: data
       author: thalabi
       changes:
         - insert:
@@ -41,10 +41,32 @@ databaseChangeLog:
               - column: {name: timezone_offset, value: 99}
               - column: {name: time_dst, value: "0,2,3,1,2,-240"}
               - column: {name: time_std, value: "0,1,11,1,2,-300"}
-              - column: {name: location, value: "Lampshade on the center table"}
+              - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
               - column: {name: zone_id, value: 1}
-              - column: {name: area_id, value: 3}
+              - column: {name: area_id, value: 1}
+              - column: {name: version, value: 0}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "Office-Sensor by the window ledge"}
+              - column: {name: lk, value: "Office-Sensor by the window ledge"}
+              - column: {name: description, value: "Office-Sensor by the window ledge"}
+              - column: {name: device_type, value: "MOTION_SENSOR"}
+              - column: {name: telemetry, value: false}
+              - column: {name: make, value: "ThirdReality"}
+              - column: {name: model, value: "P1WMSA1"}
+              - column: {name: enable_data_saver, value: false}
+              - column: {name: latitude_degrees, value: 43.651070}
+              - column: {name: longitude_degrees, value: -79.347015}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
+              - column: {name: location, value: "On the window ledge"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 2}
               - column: {name: version, value: 0}
               

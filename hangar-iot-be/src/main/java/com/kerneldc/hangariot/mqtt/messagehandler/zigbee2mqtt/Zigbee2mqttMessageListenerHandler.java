@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.service.handler.zigbee2mqtt;
+package com.kerneldc.hangariot.mqtt.messagehandler.zigbee2mqtt;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.messaging.MessagingException;
@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;
+import com.kerneldc.hangariot.mqtt.messagehandler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
-import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
 import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;

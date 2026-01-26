@@ -1,4 +1,4 @@
-package com.kerneldc.hangariot.mqtt.service.handler.tasmota;
+package com.kerneldc.hangariot.mqtt.messagehandler.tasmota;
 
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.messaging.MessagingException;
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kerneldc.hangariot.mqtt.messagehandler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
-import com.kerneldc.hangariot.mqtt.service.handler.AbstractMessageListenerHandler;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
 
