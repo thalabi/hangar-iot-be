@@ -37,10 +37,17 @@ public class InitializeApplication {
 	
 	private void startMqtt() {
 		var topicList = topicHelper.getTopicsToSubscribeTo();
-		LOGGER.info("Subscribing to following MQTT topics [{}]", String.join(", ", topicList));
+		var i = 0;
+		LOGGER.info("Subscribing to following MQTT topics of managed devices:");
+		for (var topic: topicList) {
+			LOGGER.info("{} - topic [{}]", String.format("%2d", ++i), topic);
+		}
+		
 		mqtt.addTopic(topicList.toArray(new String[0]));
+		
 		LOGGER.info("Starting MQTT.");
 		mqtt.start();
+		
 	}
 	
 	private void connectionStateOfZ2mDevices() {

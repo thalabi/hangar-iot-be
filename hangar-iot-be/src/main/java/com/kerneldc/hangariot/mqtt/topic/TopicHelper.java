@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -70,21 +71,38 @@ public class TopicHelper {
 	public List<String> getTopicsToSubscribeTo() {
 		var topicList = new ArrayList<String>();
 		
-		for (var device : deviceService.getDeviceList()) {
-			switch (device.getBridge()) {
-			case TASMOTA -> {
-				topicList.add(RESULT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-				topicList.add(POWER_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-				topicList.add(LAST_WILL_AND_TESTAMENT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-				if (Boolean.TRUE.equals(device.getTelemetry())) {
-					topicList.add(SENSOR_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+		// Only return topic for devices that are managed ie isManaged is true
+		deviceService.getDeviceList().stream().filter(device -> BooleanUtils.isTrue(device.getIsManaged())).forEach(device -> {
+				switch (device.getBridge()) {
+				case TASMOTA -> {
+					topicList.add(RESULT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+					topicList.add(POWER_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+					topicList.add(LAST_WILL_AND_TESTAMENT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+					if (Boolean.TRUE.equals(device.getTelemetry())) {
+						topicList.add(SENSOR_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+					}
 				}
-			}
-			case ZIGBEE2MQTT -> {
-				topicList.add(MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-			}
-			}
-		}
+				case ZIGBEE2MQTT -> {
+					topicList.add(MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+				}
+				}
+				}
+				);
+//		for (var device : deviceService.getDeviceList()) {
+//			switch (device.getBridge()) {
+//			case TASMOTA -> {
+//				topicList.add(RESULT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+//				topicList.add(POWER_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+//				topicList.add(LAST_WILL_AND_TESTAMENT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+//				if (Boolean.TRUE.equals(device.getTelemetry())) {
+//					topicList.add(SENSOR_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+//				}
+//			}
+//			case ZIGBEE2MQTT -> {
+//				topicList.add(MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
+//			}
+//			}
+//		}
 		return topicList;
 	}
 

@@ -41,6 +41,7 @@ public class Device extends AbstractPersistableEntity {
 	@Enumerated(EnumType.STRING)
     private BridgeEnum bridge;
     private Boolean passive; // or non-reporting of their 'state'
+    private Boolean isManaged;
 	
     @Transient
     private ReentrantLock lock = new ReentrantLock();

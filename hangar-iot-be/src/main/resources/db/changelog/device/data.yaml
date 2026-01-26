@@ -3,11 +3,107 @@ databaseChangeLog:
       id: data
       author: thalabi
       changes:
+#   Hangar
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "cabin-heater"}
+              - column: {name: lk, value: "cabin-heater"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Cabin heater"}
+              - column: {name: device_type, value: "PLUG"}
+              - column: {name: telemetry, value: true}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "S-31"}
+              - column: {name: enable_data_saver, value: true}
+              - column: {name: latitude_degrees, value: 43.897095}
+              - column: {name: longitude_degrees, value: -78.865791}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
+              - column: {name: location, value: "South east outlet"}
+              - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 2}
+              - column: {name: area_id, value: null}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "tanis-heater"}
+              - column: {name: lk, value: "tanis-heater"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Tanis heater"}
+              - column: {name: device_type, value: "PLUG"}
+              - column: {name: telemetry, value: true}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "S-31"}
+              - column: {name: enable_data_saver, value: true}
+              - column: {name: latitude_degrees, value: 43.897095}
+              - column: {name: longitude_degrees, value: -78.865791}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
+              - column: {name: location, value: "North outlet"}
+              - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 2}
+              - column: {name: area_id, value: null}
+
+#   Home
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "family-room-light"}
+              - column: {name: lk, value: "family-room-light"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Family room lampshade"}
+              - column: {name: device_type, value: "PLUG"}
+              - column: {name: telemetry, value: false}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "BasicR2"}
+              - column: {name: enable_data_saver, value: false}
+              - column: {name: latitude_degrees, value: 43.651070}
+              - column: {name: longitude_degrees, value: -79.347015}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
+              - column: {name: location, value: "South east corner"}
+              - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 4}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "living-room-light"}
+              - column: {name: lk, value: "living-room-light"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Living room lampshade"}
+              - column: {name: device_type, value: "PLUG"}
+              - column: {name: telemetry, value: false}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "BasicR2"}
+              - column: {name: enable_data_saver, value: false}
+              - column: {name: latitude_degrees, value: 43.651070}
+              - column: {name: longitude_degrees, value: -79.347015}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
+              - column: {name: location, value: "South east corner"}
+              - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 5}
         - insert:
             tableName: device
             columns:
               - column: {name: name, value: "s-31-sandbox"}
               - column: {name: lk, value: "s-31-sandbox"}
+              - column: {name: version, value: 0}
               - column: {name: description, value: "Basement lampshade"}
               - column: {name: device_type, value: "PLUG"}
               - column: {name: telemetry, value: true}
@@ -22,15 +118,16 @@ databaseChangeLog:
               - column: {name: location, value: "North east corner"}
               - column: {name: bridge, value: "TASMOTA"}
               - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 3}
-              - column: {name: version, value: 0}
         - insert:
             tableName: device
             columns:
               - column: {name: name, value: "Master Bedroom-Lampshade"}
               - column: {name: lk, value: "Master Bedroom-Lampshade"}
-              - column: {name: description, value: "Master Bedroom Lampshade"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Master bedroom lampshade"}
               - column: {name: device_type, value: "PLUG"}
               - column: {name: telemetry, value: false}
               - column: {name: make, value: "Ikea"}
@@ -44,15 +141,16 @@ databaseChangeLog:
               - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 1}
-              - column: {name: version, value: 0}
         - insert:
             tableName: device
             columns:
               - column: {name: name, value: "Office-Sensor by the window ledge"}
               - column: {name: lk, value: "Office-Sensor by the window ledge"}
-              - column: {name: description, value: "Office-Sensor by the window ledge"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Office sensor by the window ledge"}
               - column: {name: device_type, value: "MOTION_SENSOR"}
               - column: {name: telemetry, value: false}
               - column: {name: make, value: "ThirdReality"}
@@ -66,7 +164,7 @@ databaseChangeLog:
               - column: {name: location, value: "On the window ledge"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: true}
+              - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 2}
-              - column: {name: version, value: 0}
               

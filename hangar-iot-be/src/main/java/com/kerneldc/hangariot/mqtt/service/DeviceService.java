@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,8 @@ public class DeviceService {
 		deviceList = deviceRepository.findAll();
 		var i = 0;
 		for (var device: deviceList) {
-			LOGGER.info("{} - [{}] ({})", String.format("%2d", ++i), device.getName(), device.getBridge());
+			var managedLabel = (BooleanUtils.isTrue(device.getIsManaged()) ? "Managed" : "Not managed");
+			LOGGER.info("{} - [{}] ({}) ({})", String.format("%2d", ++i), device.getName(), device.getBridge(), managedLabel);
 		}
 	}
 
