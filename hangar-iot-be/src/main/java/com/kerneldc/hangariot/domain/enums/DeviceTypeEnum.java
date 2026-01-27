@@ -2,5 +2,7 @@ package com.kerneldc.hangariot.domain.enums;
 
 public enum DeviceTypeEnum {
 	PLUG,
-	MOTION_SENSOR
+	WALL_SWITCH,
+	MOTION_SENSOR,
+	BODY_SENSOR
 }
