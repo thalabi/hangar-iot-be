@@ -5,12 +5,14 @@ import java.util.Arrays;
 import com.kerneldc.hangariot.domain.AbstractEntity;
 import com.kerneldc.hangariot.domain.area.Area;
 import com.kerneldc.hangariot.domain.device.Device;
+import com.kerneldc.hangariot.domain.devicesinfo.DevicesInfo;
 import com.kerneldc.hangariot.domain.zone.Zone;
 
 public enum EntityEnum implements IEntityEnum {
 	ZONE(Zone.class, false, new String[] {}),
 	AREA(Area.class, false, new String[] {}),
 	DEVICE(Device.class, false, new String[] {}),
+	DEVICES_INFO(DevicesInfo.class, false, new String[] {}),
 //	LOG_SHEET(LogSheet.class, false, new String[] {}),
 //	JOURNEY_LOG(JourneyLog.class, false, new String[] {}),
 //	ENGINE_LOG(EngineLog.class, false, new String[] {}),

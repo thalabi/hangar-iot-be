@@ -29,7 +29,7 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 
 	@Override
 	public boolean canHandleMessage(String fullTopic) {
-		return topicHelper.isZigbee2mqttTopic(fullTopic);
+		return topicHelper.isZigbee2mqttDeviceTopic(fullTopic);
 	}
 
 	@Override

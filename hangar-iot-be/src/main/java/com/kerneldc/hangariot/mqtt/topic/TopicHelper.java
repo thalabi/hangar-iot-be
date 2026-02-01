@@ -46,6 +46,7 @@ public class TopicHelper {
 	private static final String RESULT_TOPIC_TEMPLATE = "stat/<device>/" + MqttTopicSuffixEnum.RESULT;
 	
 	// ZIGBEE2MQTT
+	private static final String MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC = "zigbee2mqtt/bridge/devices";
 	private static final String MQTT_ZIGBEE2MQTT_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
 	private static final String MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
 	
@@ -71,6 +72,8 @@ public class TopicHelper {
 	public List<String> getTopicsToSubscribeTo() {
 		var topicList = new ArrayList<String>();
 		
+		topicList.add(MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
+		
 		// Only return topic for devices that are managed ie isManaged is true
 		deviceService.getDeviceList().stream().filter(device -> BooleanUtils.isTrue(device.getIsManaged())).forEach(device -> {
 				switch (device.getBridge()) {
@@ -88,21 +91,6 @@ public class TopicHelper {
 				}
 				}
 				);
-//		for (var device : deviceService.getDeviceList()) {
-//			switch (device.getBridge()) {
-//			case TASMOTA -> {
-//				topicList.add(RESULT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-//				topicList.add(POWER_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-//				topicList.add(LAST_WILL_AND_TESTAMENT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-//				if (Boolean.TRUE.equals(device.getTelemetry())) {
-//					topicList.add(SENSOR_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-//				}
-//			}
-//			case ZIGBEE2MQTT -> {
-//				topicList.add(MQTT_ZIGBEE2MQTT_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
-//			}
-//			}
-//		}
 		return topicList;
 	}
 
@@ -132,8 +120,11 @@ public class TopicHelper {
 	public boolean isTasmotaTopic(String topic) {
 		return topic.startsWith("stat/") || topic.startsWith("tele/");
 	}
-	public boolean isZigbee2mqttTopic(String topic) {
-		return topic.startsWith("zigbee2mqtt/");
+	public boolean isZigbee2mqttDeviceTopic(String topic) {
+		return topic.startsWith("zigbee2mqtt/") && ! /* not */ topic.equals(MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
+	}
+	public boolean isZigbee2mqttDevicesInfoTopic(String topic) {
+		return topic.equals(MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
 	}
 	
 	public MqttTopicSuffixEnum getTopicSuffix(String topic) {

@@ -10,7 +10,7 @@ public interface DeviceRepository extends BaseTableRepository<Device, Long>{
 	
 	@Override
 	default IEntityEnum canHandle() {
-		return EntityEnum.AREA;
+		return EntityEnum.DEVICE;
 	}
 
 }

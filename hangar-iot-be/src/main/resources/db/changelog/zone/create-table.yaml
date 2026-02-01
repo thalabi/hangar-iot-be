@@ -10,4 +10,4 @@ databaseChangeLog:
               - column: {name: lk, type: VARCHAR(4000), constraints: {nullable: false}}
               - column: {name: version, type: bigint, constraints: {nullable: false}}
               
-              - column: {name: name, type: varchar(255)}
+              - column: {name: name, type: varchar(255), constraints: {nullable: false}}

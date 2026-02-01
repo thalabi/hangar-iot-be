@@ -36,7 +36,6 @@ public class ResultMessageListenerHandler extends AbstractMessageListenerHandler
 		try {
 			message = addTimeStampToMessage(timestamp, message);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
 			throw new MessagingException("Error adding timestamp field to json string", NestedExceptionUtils.getMostSpecificCause(e));
 		}		
 

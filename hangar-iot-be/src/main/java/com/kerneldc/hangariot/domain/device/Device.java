@@ -27,6 +27,7 @@ public class Device extends AbstractPersistableEntity {
 	private static final long serialVersionUID = 1L;
 	
 	@Setter(AccessLevel.NONE)
+	private String ieeeAddress;
 	private String name;
     private String description;
 	@Enumerated(EnumType.STRING)
@@ -53,14 +54,14 @@ public class Device extends AbstractPersistableEntity {
     @JoinColumn(name = "area_id")
 	private Area area;
 
-	public void setName(String name) {
-		this.name = name;
+	public void setIeeeAddress(String ieeeAddress) {
+		this.ieeeAddress = ieeeAddress;
 		setLogicalKeyHolder();
 	}
 	
 	@Override
 	protected void setLogicalKeyHolder() {
-		var logicalKeyHolder = LogicalKeyHolder.build(name);
+		var logicalKeyHolder = LogicalKeyHolder.build(ieeeAddress);
 		super.setLogicalKeyHolder(logicalKeyHolder);
 	}
 
