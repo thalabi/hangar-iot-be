@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table
+      author: thalabi
+      changes:
+        - createTable:
+            tableName: mqtt_message_log
+            columns:
+              - column: {name: id, type: bigint, autoIncrement: true, constraints: {primaryKey: true}}
+              - column: {name: lk, type: varchar(4000), constraints: {nullable: false}}
+              - column: {name: version, type: bigint, constraints: {nullable: false}}
+
+              - column: {name: timestamp, type: timestamp with time zone, constraints: {nullable: false}}
+              - column: {name: topic, type: varchar(255), constraints: {nullable: false}}
+              - column: {name: message, type: varchar(255), constraints: {nullable: false}}
+              - column: {name: completion_time_seconds, type: bigint, constraints: {nullable: false}}
+              - column: {name: success, type: boolean, constraints: {nullable: false}}

@@ -1,5 +1,8 @@
 package com.kerneldc.hangariot.mqtt.service;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +16,7 @@ import com.kerneldc.hangariot.controller.TimeStdRequest;
 import com.kerneldc.hangariot.controller.TimersRequest;
 import com.kerneldc.hangariot.domain.device.Device;
 import com.kerneldc.hangariot.domain.enums.BridgeEnum;
+import com.kerneldc.hangariot.domain.mqttmessagelog.MqttMessageLog;
 import com.kerneldc.hangariot.exception.ApplicationException;
 import com.kerneldc.hangariot.exception.ApplicationRuntimeException;
 import com.kerneldc.hangariot.exception.DeviceOfflineException;
@@ -28,6 +32,7 @@ import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimerResult;
 import com.kerneldc.hangariot.mqtt.result.tasmota.timer.TimersResult;
 import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
+import com.kerneldc.hangariot.repository.MqttMessageLogRepository;
 import com.kerneldc.hangariot.springconfig.MqttConfig.MqqtGateway;
 import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
 import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
@@ -49,6 +54,7 @@ public class MqttSenderService {
 	private final ObjectMapper objectMapper;
 	private final DeviceService deviceService;
 	private final WebSocketSenderService webSocketSenderService;
+	private final MqttMessageLogRepository mqttMessageLogRepository;
 	
 	@Value("${command.execution.timeout:5}")
 	private Integer commandExecutionTimeout;
@@ -217,9 +223,10 @@ public class MqttSenderService {
 		try {
 			var commandTimestamp = System.currentTimeMillis();
 	        mqqtGateway.sendMessage(topic, message);
+	        var mqttMessageLog = MqttMessageLog.buildMqttMessageLog(commandTimestamp, topic, message);
 	        
 			if (wait) {
-				return waitForMessageSendToComplete(device, commandEnum, commandTimestamp); 
+				return waitForMessageSendToComplete(device, commandEnum, commandTimestamp, mqttMessageLog); 
 			} else {
 				return null;
 			}
@@ -234,7 +241,7 @@ public class MqttSenderService {
 	public void init () {
 		maxNumberOfTries = commandExecutionTimeout * 1000 / SLEEP_MILLISECONDS;
 	}
-	private AbstractBaseResult waitForMessageSendToComplete(Device device, ICommandEnum iCommandEnum, long commandIssuedTimestamp) throws DeviceOfflineException {
+	private AbstractBaseResult waitForMessageSendToComplete(Device device, ICommandEnum iCommandEnum, long commandIssuedTimestamp, MqttMessageLog mqttMessageLog) throws DeviceOfflineException {
     	AbstractBaseResult result;
     	int count = 0;
     	LOGGER.info("Waiting for message send to complete ...");
@@ -243,6 +250,7 @@ public class MqttSenderService {
 				TimeUnit.MILLISECONDS.sleep(SLEEP_MILLISECONDS);
 			} catch (InterruptedException _) {
 				markDeviceUnreachable(device);
+				mqttMessageLogRepository.persistMqttMessageLogFailure(mqttMessageLog, count*SLEEP_MILLISECONDS);
 				Thread.currentThread().interrupt();
 				throw new DeviceOfflineException();
 			}
@@ -255,15 +263,30 @@ public class MqttSenderService {
 		if (count == maxNumberOfTries) {
 			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", iCommandEnum, device.getName());
 			markDeviceUnreachable(device);
+			mqttMessageLogRepository.persistMqttMessageLogFailure(mqttMessageLog, count*SLEEP_MILLISECONDS);
 			throw new DeviceOfflineException();
 		}
+		mqttMessageLogRepository.persistMqttMessageLogSuccess(mqttMessageLog, count*SLEEP_MILLISECONDS);
 		return result;
     }
+	
 	private void markDeviceUnreachable(Device device) {
 		LOGGER.warn("Marking device [{}] as UNREACHABLE", device.getName());
 		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.UNREACHABLE, System.currentTimeMillis());
 		applicationContext.setConnectionState(device, stateMessage);
 		webSocketSenderService.publishConnectionState(device);
+	}
+
+	private MqttMessageLog buildMqttMessageLog(long timestamp, String topic, String message) {
+		var mqttMessageLog = new MqttMessageLog();
+		mqttMessageLog.setTimestamp(fromEpoch(timestamp));
+		mqttMessageLog.setTopic(topic);
+		mqttMessageLog.setMessage(message);
+		return mqttMessageLog;
+	}
+	private OffsetDateTime fromEpoch(long epochMilli) {
+		Instant instant = Instant.ofEpochMilli(epochMilli);
+		return OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
 	}
 
 }

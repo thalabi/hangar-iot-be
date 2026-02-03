@@ -45,7 +45,7 @@ public class Zigbee2mqttDevicesInfoMessageListenerHandler extends AbstractMessag
 
 		LOGGER.info("Begin Zigbee2mqttDevicesInfoMessageListenerHandler ...");
 		
-//		LOGGER.info("Updating MqttDeviceInfo database entity");
+//		LOGGER.info("Updating MqttMessageLog database entity");
 //		var devicesInfo = devicesInfoRepository.findByKey(DevicesInfo.KEY);
 //		devicesInfo.setDevicesInfo(message);
 //		devicesInfoRepository.save(devicesInfo);
@@ -70,9 +70,8 @@ public class Zigbee2mqttDevicesInfoMessageListenerHandler extends AbstractMessag
 		LOGGER.info("End Zigbee2mqttDevicesInfoMessageListenerHandler ...");
 	}
 	
-	private OffsetDateTime fromEpoch(long epochSeconds) {
-		Instant instant = Instant.ofEpochMilli(epochSeconds);
+	private OffsetDateTime fromEpoch(long epochMilli) {
+		Instant instant = Instant.ofEpochMilli(epochMilli);
 		return OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
-
 	}
 }

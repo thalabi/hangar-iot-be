@@ -6,6 +6,7 @@ import com.kerneldc.hangariot.domain.AbstractEntity;
 import com.kerneldc.hangariot.domain.area.Area;
 import com.kerneldc.hangariot.domain.device.Device;
 import com.kerneldc.hangariot.domain.mqttdeviceinfo.MqttDeviceInfo;
+import com.kerneldc.hangariot.domain.mqttmessagelog.MqttMessageLog;
 import com.kerneldc.hangariot.domain.zone.Zone;
 
 public enum EntityEnum implements IEntityEnum {
@@ -13,6 +14,7 @@ public enum EntityEnum implements IEntityEnum {
 	AREA(Area.class, false, new String[] {}),
 	DEVICE(Device.class, false, new String[] {}),
 	MQTT_DEVICE_INFO(MqttDeviceInfo.class, false, new String[] {}),
+	MQTT_MESSAGE_LOG(MqttMessageLog.class, false, new String[] {}),
 //	LOG_SHEET(LogSheet.class, false, new String[] {}),
 //	JOURNEY_LOG(JourneyLog.class, false, new String[] {}),
 //	ENGINE_LOG(EngineLog.class, false, new String[] {}),

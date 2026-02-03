@@ -19,7 +19,6 @@ import lombok.Setter;
 public class MqttDeviceInfo extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;
-	public static final String KEY = "DEVICES_INFO";
 	
 	@Setter(AccessLevel.NONE)
 	private String ieeeAddress;
