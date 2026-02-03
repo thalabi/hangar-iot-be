@@ -57,12 +57,6 @@ public class MqttSenderService {
 	private String websocketTopicsPrefix;
 
 	private static final String UNEXPECTED_RESULT_MESSAGE_FORMAT = "Executing [%s] command with argument [%s] failed. Result came back as [%s], expected [%s]";
-	private static final String STATE_PAYLOAD = """
-			{"state": ""}
-			""";
-	private static final String STATE_TOGGLE_PAYLOAD = """
-			{"state": "toggle"}
-			""";
 
 	public void togglePower(Device device, String powerStateExpected) throws ApplicationException, DeviceOfflineException {
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
@@ -97,7 +91,7 @@ public class MqttSenderService {
 	public void triggerPublishPowerState(Device device) throws DeviceOfflineException {
 		LOGGER.info("triggerPublishPowerState(\"{}\") begin", device.getName());
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
-			sendMessage(device, Zigbee2MqttCommandEnum.GET_STATE, STATE_PAYLOAD);
+			sendMessage(device, Zigbee2MqttCommandEnum.GET_STATE, Zigbee2MqttCommandEnum.GET_STATE.getPayload());
 		} else {
 			sendMessage(device, TasmotaCommandEnum.POWER);
 		}
