@@ -35,7 +35,7 @@ public class ScheduledTasks {
 	
 	@Scheduled(cron = "${telemetry.scheduler.increase-task.cron-expression}")
 	public void increaseTelemetryPeriod() throws ApplicationException, JsonProcessingException {
-		var deviceList = deviceService.getDeviceList();
+		var deviceList = deviceService.getManagedDeviceList();
 		for (Device device: deviceList) {
 			if (Boolean.TRUE.equals(device.getEnableDataSaver())) {
 				LOGGER.info("Increasing telePeriod for device [{}] to [{}]", device.getName(), increaseTelemetryPeriod);
@@ -50,7 +50,7 @@ public class ScheduledTasks {
 	
 	@Scheduled(cron = "${telemetry.scheduler.restore-task.cron-expression}")
 	public void restoreTelemetryPeriod() throws InterruptedException, ApplicationException, JsonProcessingException {
-		var deviceList = deviceService.getDeviceList();
+		var deviceList = deviceService.getManagedDeviceList();
 		for (Device device: deviceList) {
 			if (Boolean.TRUE.equals(device.getEnableDataSaver())) {
 				LOGGER.info("Decreasing telePeriod for device [{}] to [{}]", device.getName(), decreaseTelemetryPeriod);

@@ -193,7 +193,7 @@ public class HangarIotController {
     	LOGGER.info("Begin ...");
     	var authorizedDeviceNames = getAuthorizedDeviceNames();
     	LOGGER.info("authorizedDeviceNames: [{}]", authorizedDeviceNames);
-    	var deviceResponseList = deviceService.getDeviceList().stream().filter(device -> authorizedDeviceNames.contains(device.getName())).map(device -> {
+    	var deviceResponseList = deviceService.getManagedDeviceList().stream().filter(device -> authorizedDeviceNames.contains(device.getName())).map(device -> {
     		var deviceResponse = new DeviceResponse();
     		deviceResponse.setDevice(device);
     		return deviceResponse;
@@ -224,7 +224,7 @@ public class HangarIotController {
     }
 
     private void validateDeviceName(String deviceName) throws InvalidDeviceException {
-    	if (! /* not */ deviceService.getDeviceNameList().contains(deviceName)) {
+    	if (! /* not */ deviceService.getManagedDeviceNameList().contains(deviceName)) {
     		throw new InvalidDeviceException(String.format("Device [%s] is invalid", deviceName));
     	}
     }

@@ -75,7 +75,7 @@ public class TopicHelper {
 		topicList.add(MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
 		
 		// Only return topic for devices that are managed ie isManaged is true
-		deviceService.getDeviceList().stream().filter(device -> BooleanUtils.isTrue(device.getIsManaged())).forEach(device -> {
+		deviceService.getManagedDeviceList().forEach(device -> {
 				switch (device.getBridge()) {
 				case TASMOTA -> {
 					topicList.add(RESULT_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
@@ -134,7 +134,10 @@ public class TopicHelper {
 			throw new IllegalArgumentException(String.format("Could not get suffix from %s", topic));
 		}
 		return MqttTopicSuffixEnum.valueOf(matcher.group(3));
-		
+	}
+	
+	public boolean isDevicesInfoTopic(String topic) {
+		return StringUtils.equals(topic, MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
 	}
 
 }

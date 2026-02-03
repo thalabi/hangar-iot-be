@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table
+      author: thalabi
+      changes:
+        - createTable:
+            tableName: mqtt_device_info
+            columns:
+              - column: {name: id, type: bigint, autoIncrement: true, constraints: {primaryKey: true}}
+              - column: {name: lk, type: varchar(4000), constraints: {nullable: false}}
+              - column: {name: version, type: bigint, constraints: {nullable: false}}
+
+              - column: {name: ieee_address, type: varchar(255), constraints: {nullable: false}}
+              - column: {name: device_details, type: jsonb, constraints: {nullable: false}}
+              - column: {name: timestamp, type: timestamp with time zone, constraints: {nullable: false}}

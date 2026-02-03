@@ -3,6 +3,7 @@ package com.kerneldc.hangariot.mqtt.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 public class DeviceService {
 
 	private final DeviceRepository deviceRepository;
-	private List<Device> deviceList = new ArrayList<>();
+//	private List<Device> allDeviceList = new ArrayList<>();
+	private List<Device> managedDeviceList = new ArrayList<>();
 
 	@Value("${client-exposed.mqtt.commands}")
 	private String[] commands;
@@ -30,26 +32,35 @@ public class DeviceService {
 	@PostConstruct
 	public void loadDevices() {
 		LOGGER.info("Loading devices from database.");
-		deviceList = deviceRepository.findAll();
+		var allDeviceList = deviceRepository.findAll();
+//		allDeviceList = deviceRepository.findByIsManaged(true);
 		var i = 0;
-		for (var device: deviceList) {
+		for (var device: allDeviceList) {
 			var managedLabel = (BooleanUtils.isTrue(device.getIsManaged()) ? "Managed" : "Not managed");
 			LOGGER.info("{} - [{}] ({}) ({})", String.format("%2d", ++i), device.getName(), device.getBridge(), managedLabel);
+//			LOGGER.info("{} - [{}] ({})", String.format("%2d", ++i), device.getName(), device.getBridge());
 		}
+		
+		managedDeviceList = allDeviceList.stream().filter(device -> BooleanUtils.isTrue(device.getIsManaged()))
+				.collect(Collectors.toList());
+
 	}
 
-	public List<Device> getDeviceList() {
-		return deviceList;
+//	public List<Device> getAllDeviceList() {
+//		return allDeviceList;
+//	}
+	public List<Device> getManagedDeviceList() {
+		return managedDeviceList;
+	}
+	
+	public List<String> getManagedDeviceNameList() {
+		return managedDeviceList.stream().map(Device::getName).toList();
 	}
 	
 	public Device getDevice(String name) {
-		return deviceList.stream().filter(device -> StringUtils.equals(device.getName(), name)).findAny().orElse(null);
+		return managedDeviceList.stream().filter(device -> StringUtils.equals(device.getName(), name)).findAny().orElse(null);
 	}
 	
-	public List<String> getDeviceNameList() {
-		return deviceList.stream().map(Device::getName).toList();
-	}
-
 	public List<String> getCommandList() {
 		return Arrays.asList(commands);
 	}

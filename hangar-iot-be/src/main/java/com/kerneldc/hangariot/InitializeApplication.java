@@ -38,7 +38,7 @@ public class InitializeApplication {
 	private void startMqtt() {
 		var topicList = topicHelper.getTopicsToSubscribeTo();
 		var i = 0;
-		LOGGER.info("Subscribing to following MQTT topics of managed devices:");
+		LOGGER.info("Subscribing to following MQTT topics:");
 		for (var topic: topicList) {
 			LOGGER.info("{} - topic [{}]", String.format("%2d", ++i), topic);
 		}
@@ -52,9 +52,9 @@ public class InitializeApplication {
 	
 	private void connectionStateOfZ2mDevices() {
 		
-		LOGGER.info("Setting the connection state of Zigbee2Mqtt devices:");
+		LOGGER.info("Determinng the connection state of Zigbee2Mqtt devices:");
 		var i = 0;
-		for (var device: deviceService.getDeviceList()) {
+		for (var device: deviceService.getManagedDeviceList()) {
 			if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
 				LOGGER.info("{} - device [{}]", String.format("%2d", ++i), device.getName());
 				if (BooleanUtils.isTrue(device.getPassive())) {

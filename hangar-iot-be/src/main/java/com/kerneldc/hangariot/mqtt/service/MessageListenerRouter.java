@@ -2,6 +2,7 @@ package com.kerneldc.hangariot.mqtt.service;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
@@ -10,6 +11,7 @@ import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 
 import com.kerneldc.hangariot.mqtt.messagehandler.IMessageListenerHandler;
+import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MessageListenerRouter implements MessageHandler {
 
 	private final Collection<IMessageListenerHandler> messageListenerHandlerCollection;
+	private final TopicHelper topicHelper;
 	
 	@Override
 	public void handleMessage(Message<?> messageObject) throws MessagingException {
@@ -31,7 +34,11 @@ public class MessageListenerRouter implements MessageHandler {
 		var timestamp = (long)messageObject.getHeaders().get(MessageHeaders.TIMESTAMP); 
 		var message = (String)messageObject.getPayload();
 		
-		LOGGER.info("Message [{}] arrived in topic [{}] at [{}]", message, fullTopic, timestamp);
+		if (topicHelper.isDevicesInfoTopic(fullTopic)) {
+			LOGGER.info("Message ([{}] characters) arived in topic [{}] at [{}]", StringUtils.length(message), fullTopic, timestamp);
+		} else {
+			LOGGER.info("Message [{}] arrived in topic [{}] at [{}]", message, fullTopic, timestamp);
+		}
 			
 		for (IMessageListenerHandler handler: messageListenerHandlerCollection) {
 			if (handler.canHandleMessage(fullTopic)) {

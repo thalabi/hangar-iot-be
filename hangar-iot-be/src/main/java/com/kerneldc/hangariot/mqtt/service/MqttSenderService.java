@@ -200,13 +200,14 @@ public class MqttSenderService {
 		return null;
 		
 	}
-	public AbstractBaseResult sendMessage(Device device, ICommandEnum commandEnum, String stringArgument) throws DeviceOfflineException {
-		return sendMessage(device, commandEnum, stringArgument, true);
+	public AbstractBaseResult sendMessage(Device device, ICommandEnum commandEnum, String message) throws DeviceOfflineException {
+		return sendMessage(device, commandEnum, message, true);
 	}
 	
-	private AbstractBaseResult sendMessage(Device device, ICommandEnum commandEnum, String stringArgument, boolean wait) throws DeviceOfflineException {
+	private AbstractBaseResult sendMessage(Device device, ICommandEnum commandEnum, String message, boolean wait) throws DeviceOfflineException {
+		LOGGER.info("device name [{}], commandEnum [{}], message [{}], wait [{}]", device.getName(), commandEnum, message, wait);
 		var topic = topicHelper.getCommandTopic(commandEnum, device);
-		LOGGER.info("Sending mqtt message [{}] to topic [{}]", stringArgument, topic);
+		LOGGER.info("Sending mqtt message [{}] to topic [{}]", message, topic);
 		var lock = device.getLock();
 		
 		try {
@@ -221,7 +222,7 @@ public class MqttSenderService {
 		
 		try {
 			var commandTimestamp = System.currentTimeMillis();
-	        mqqtGateway.sendMessage(topic, stringArgument);
+	        mqqtGateway.sendMessage(topic, message);
 	        
 			if (wait) {
 				return waitForMessageSendToComplete(device, commandEnum, commandTimestamp); 
@@ -239,7 +240,7 @@ public class MqttSenderService {
 	public void init () {
 		maxNumberOfTries = commandExecutionTimeout * 1000 / SLEEP_MILLISECONDS;
 	}
-	private AbstractBaseResult waitForMessageSendToComplete(Device device, ICommandEnum tasmotaCommandEnum, long commandIssuedTimestamp) throws DeviceOfflineException {
+	private AbstractBaseResult waitForMessageSendToComplete(Device device, ICommandEnum iCommandEnum, long commandIssuedTimestamp) throws DeviceOfflineException {
     	AbstractBaseResult result;
     	int count = 0;
     	LOGGER.info("Waiting for message send to complete ...");
@@ -252,13 +253,13 @@ public class MqttSenderService {
 				throw new DeviceOfflineException();
 			}
 			count++;
-			result = applicationContext.getCommandResult(device, tasmotaCommandEnum);
+			result = applicationContext.getCommandResult(device, iCommandEnum);
 			LOGGER.info("result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]", result, count, maxNumberOfTries, (result != null ? result.getTimestamp() : ""), commandIssuedTimestamp);
 		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandIssuedTimestamp && count < maxNumberOfTries));
 		LOGGER.info("Waited [{}] seconds", count * SLEEP_MILLISECONDS / 1000f);
 		
 		if (count == maxNumberOfTries) {
-			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", tasmotaCommandEnum, device.getName());
+			LOGGER.warn("Timed out waiting for command [{}] to execute on device [{}]", iCommandEnum, device.getName());
 			markDeviceUnreachable(device);
 			throw new DeviceOfflineException();
 		}
