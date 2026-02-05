@@ -76,6 +76,10 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 				var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
 				webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 			}
+			
+			// state message
+			LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, fullTopic);
+			webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
 		}
 		
 		LOGGER.info("End Zigbee2mqttMessageListenerHandler ...");

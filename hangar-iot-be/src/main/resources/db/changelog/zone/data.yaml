@@ -9,10 +9,20 @@ databaseChangeLog:
               - column: {name: name, value: "Home"}
               - column: {name: lk, value: "Home"}
               - column: {name: version, value: 0}
+              - column: {name: latitude_degrees, value: 43.651070}
+              - column: {name: longitude_degrees, value: -79.347015}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
         - insert:
             tableName: zone
             columns:
               - column: {name: name, value: "Hangar"}
               - column: {name: lk, value: "Hangar"}
               - column: {name: version, value: 0}
+              - column: {name: latitude_degrees, value: 43.897095}
+              - column: {name: longitude_degrees, value: -78.865791}
+              - column: {name: timezone_offset, value: 99}
+              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
+              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               

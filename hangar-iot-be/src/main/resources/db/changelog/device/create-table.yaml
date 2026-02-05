@@ -18,11 +18,11 @@ databaseChangeLog:
               - column: {name: make, type: varchar(255), constraints: {nullable: false}}
               - column: {name: model, type: varchar(255), constraints: {nullable: false}}
               - column: {name: enable_data_saver, type: boolean, constraints: {nullable: false}}
-              - column: {name: latitude_degrees, type: "decimal(10,7)"}
-              - column: {name: longitude_degrees, type: "decimal(10,7)"}
-              - column: {name: timezone_offset, type: integer}
-              - column: {name: time_dst, type: varchar(255)}
-              - column: {name: time_std, type: varchar(255)}
+#              - column: {name: latitude_degrees, type: "decimal(10,7)"}
+#              - column: {name: longitude_degrees, type: "decimal(10,7)"}
+#              - column: {name: timezone_offset, type: integer}
+#              - column: {name: time_dst, type: varchar(255)}
+#              - column: {name: time_std, type: varchar(255)}
               - column: {name: location, type: varchar(255)}
               - column: {name: bridge, type: varchar(255), constraints: {nullable: false}}
               - column: {name: passive, type: boolean, constraints: {nullable: false}}

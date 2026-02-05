@@ -36,8 +36,8 @@ public class Device extends AbstractPersistableEntity {
     private String make;
     private String model;
     private Boolean enableDataSaver;
-    @Embedded
-    private DeviceConfig deviceConfig;
+//    @Embedded
+//    private DeviceConfig deviceConfig;
     private String location;
 	@Enumerated(EnumType.STRING)
     private BridgeEnum bridge;

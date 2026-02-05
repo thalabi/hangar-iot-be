@@ -35,7 +35,7 @@ public class MessageListenerRouter implements MessageHandler {
 		var message = (String)messageObject.getPayload();
 		
 		if (topicHelper.isDevicesInfoTopic(fullTopic)) {
-			LOGGER.info("Message ([{}] characters) arived in topic [{}] at [{}]", StringUtils.length(message), fullTopic, timestamp);
+			LOGGER.info("Message ([{}] characters) arrived in topic [{}] at [{}]", StringUtils.length(message), fullTopic, timestamp);
 		} else {
 			LOGGER.info("Message [{}] arrived in topic [{}] at [{}]", message, fullTopic, timestamp);
 		}

@@ -1,7 +1,7 @@
 package com.kerneldc.hangariot.mqtt.service;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
@@ -246,6 +246,7 @@ public class MqttSenderService {
     	int count = 0;
     	LOGGER.info("Waiting for message send to complete ...");
 		do {
+
 			try {
 				TimeUnit.MILLISECONDS.sleep(SLEEP_MILLISECONDS);
 			} catch (InterruptedException _) {
@@ -256,8 +257,13 @@ public class MqttSenderService {
 			}
 			count++;
 			result = applicationContext.getCommandResult(device, iCommandEnum);
-			LOGGER.info("result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]", result, count, maxNumberOfTries, (result != null ? result.getTimestamp() : ""), commandIssuedTimestamp);
+			LOGGER.info(
+					"result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]",
+					result, count, maxNumberOfTries, (result != null ? fromEpochMilli(result.getTimestamp()) : ""),
+					fromEpochMilli(commandIssuedTimestamp));
+
 		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandIssuedTimestamp && count < maxNumberOfTries));
+		
 		LOGGER.info("Waited [{}] seconds", count * SLEEP_MILLISECONDS / 1000f);
 		
 		if (count == maxNumberOfTries) {
@@ -277,16 +283,9 @@ public class MqttSenderService {
 		webSocketSenderService.publishConnectionState(device);
 	}
 
-	private MqttMessageLog buildMqttMessageLog(long timestamp, String topic, String message) {
-		var mqttMessageLog = new MqttMessageLog();
-		mqttMessageLog.setTimestamp(fromEpoch(timestamp));
-		mqttMessageLog.setTopic(topic);
-		mqttMessageLog.setMessage(message);
-		return mqttMessageLog;
+	private static LocalTime fromEpochMilli(long epochMilli) {
+		return Instant.ofEpochMilli(epochMilli)
+                .atZone(ZoneId.systemDefault())
+                .toLocalTime();
 	}
-	private OffsetDateTime fromEpoch(long epochMilli) {
-		Instant instant = Instant.ofEpochMilli(epochMilli);
-		return OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
-	}
-
 }

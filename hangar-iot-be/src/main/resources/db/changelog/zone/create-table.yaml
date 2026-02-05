@@ -11,3 +11,9 @@ databaseChangeLog:
               - column: {name: version, type: bigint, constraints: {nullable: false}}
               
               - column: {name: name, type: varchar(255), constraints: {nullable: false}}
+              - column: {name: latitude_degrees, type: "decimal(10,7)", constraints: {nullable: false}}
+              - column: {name: longitude_degrees, type: "decimal(10,7)", constraints: {nullable: false}}
+              - column: {name: timezone_offset, type: integer, constraints: {nullable: false}}
+              - column: {name: time_dst, type: varchar(255), constraints: {nullable: false}}
+              - column: {name: time_std, type: varchar(255), constraints: {nullable: false}}
+              

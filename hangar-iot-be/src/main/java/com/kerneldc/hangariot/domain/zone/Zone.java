@@ -17,6 +17,12 @@ public class Zone extends AbstractPersistableEntity {
 	@Setter(AccessLevel.NONE)
 	private String name;
 
+	private Float latitudeDegrees;
+	private Float longitudeDegrees;
+	private String timezoneOffset;
+	private String timeDst;
+	private String timeStd;
+
 	public void setName(String name) {
 		this.name = name;
 		setLogicalKeyHolder();

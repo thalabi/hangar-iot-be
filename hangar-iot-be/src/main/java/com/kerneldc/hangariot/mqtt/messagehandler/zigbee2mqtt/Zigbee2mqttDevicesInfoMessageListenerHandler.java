@@ -45,10 +45,6 @@ public class Zigbee2mqttDevicesInfoMessageListenerHandler extends AbstractMessag
 
 		LOGGER.info("Begin Zigbee2mqttDevicesInfoMessageListenerHandler ...");
 		
-//		LOGGER.info("Updating MqttMessageLog database entity");
-//		var devicesInfo = devicesInfoRepository.findByKey(DevicesInfo.KEY);
-//		devicesInfo.setDevicesInfo(message);
-//		devicesInfoRepository.save(devicesInfo);
 		List<MqttDeviceDetails> deviceDetailsList;
 		try {
 			deviceDetailsList = objectMapper.readValue(message, new TypeReference<List<MqttDeviceDetails>>() {});
@@ -56,10 +52,10 @@ public class Zigbee2mqttDevicesInfoMessageListenerHandler extends AbstractMessag
 			throw new MessagingException(String.format("Error serializing devices info message:\n%s", message), NestedExceptionUtils.getMostSpecificCause(e));
 		}
 		
-		LOGGER.info("device info read: [{}]", deviceDetailsList.size());
+		LOGGER.info("[{}] device info read from ZIGBEE2MQTT_DEVICES_INFO_TOPIC.", deviceDetailsList.size());
 		var i = 0;
 		for (var deviceDetails: deviceDetailsList) {
-			LOGGER.info("device [{}], friendlyName [{}] ieeeAddress [{}]", ++i, deviceDetails.getFriendlyName(), deviceDetails.getIeeeAddress());
+			LOGGER.info("device info [{}], friendlyName [{}] ieeeAddress [{}]", ++i, deviceDetails.getFriendlyName(), deviceDetails.getIeeeAddress());
 			var mqttDeviceInfo = new MqttDeviceInfo();
 			mqttDeviceInfo.setIeeeAddress(deviceDetails.getIeeeAddress());
 			mqttDeviceInfo.setDeviceDetails(deviceDetails);

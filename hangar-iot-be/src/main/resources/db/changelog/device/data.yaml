@@ -18,11 +18,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "S-31"}
               - column: {name: enable_data_saver, value: true}
-              - column: {name: latitude_degrees, value: 43.897095}
-              - column: {name: longitude_degrees, value: -78.865791}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "South east outlet"}
               - column: {name: bridge, value: "TASMOTA"}
               - column: {name: passive, value: false}
@@ -42,11 +37,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "S-31"}
               - column: {name: enable_data_saver, value: true}
-              - column: {name: latitude_degrees, value: 43.897095}
-              - column: {name: longitude_degrees, value: -78.865791}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "North outlet"}
               - column: {name: bridge, value: "TASMOTA"}
               - column: {name: passive, value: false}
@@ -69,11 +59,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "BasicR2"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "South east corner"}
               - column: {name: bridge, value: "TASMOTA"}
               - column: {name: passive, value: false}
@@ -93,11 +78,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "BasicR2"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "South east corner"}
               - column: {name: bridge, value: "TASMOTA"}
               - column: {name: passive, value: false}
@@ -117,11 +97,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "S-31"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "North east corner"}
               - column: {name: bridge, value: "TASMOTA"}
               - column: {name: passive, value: false}
@@ -142,11 +117,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "S40ZBTPB Lite"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
@@ -166,11 +136,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "S40ZBTPB Lite"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "On the north east coffee table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
@@ -190,11 +155,6 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "S40ZBTPB Lite"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "On Tarif's bedside table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
@@ -214,12 +174,7 @@ databaseChangeLog:
               - column: {name: make, value: "Ikea"}
               - column: {name: model, value: "Tretakt"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
-              - column: {name: location, value: "Lampshade on the center table"}
+              - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
@@ -238,12 +193,7 @@ databaseChangeLog:
               - column: {name: make, value: "ThirdReality"}
               - column: {name: model, value: "P1WMSA1"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
-              - column: {name: location, value: "Sensor on the window ledge"}
+              - column: {name: location, value: "By the door"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: true}
               - column: {name: is_managed, value: true}
@@ -262,12 +212,7 @@ databaseChangeLog:
               - column: {name: make, value: "ThirdReality"}
               - column: {name: model, value: "P1WMSA1"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
-              - column: {name: location, value: "Sensor on the window ledge"}
+              - column: {name: location, value: "By the TV"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: true}
               - column: {name: is_managed, value: true}
@@ -286,11 +231,6 @@ databaseChangeLog:
               - column: {name: make, value: "Ikea"}
               - column: {name: model, value: "Tretakt"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
               - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
@@ -310,12 +250,7 @@ databaseChangeLog:
               - column: {name: make, value: "ThirdReality"}
               - column: {name: model, value: "P1WMSA1"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
-              - column: {name: location, value: "Sensor on the window ledge"}
+              - column: {name: location, value: "On the window ledge"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: true}
               - column: {name: is_managed, value: true}
@@ -334,12 +269,7 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "ZBMINIL2"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
-              - column: {name: location, value: "On the window ledge"}
+              - column: {name: location, value: ""}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
@@ -358,12 +288,7 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "SNZB-06P"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: latitude_degrees, value: 43.651070}
-              - column: {name: longitude_degrees, value: -79.347015}
-              - column: {name: timezone_offset, value: 99}
-              - column: {name: time_dst, value: "0,2,3,1,2,-240"}
-              - column: {name: time_std, value: "0,1,11,1,2,-300"}
-              - column: {name: location, value: "On the window ledge"}
+              - column: {name: location, value: "On the left window"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: true}
               - column: {name: is_managed, value: true}

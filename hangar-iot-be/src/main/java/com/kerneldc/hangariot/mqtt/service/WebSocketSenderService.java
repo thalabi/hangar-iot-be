@@ -64,4 +64,10 @@ public class WebSocketSenderService {
 		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", messageString, fullTopic, webSocketTopic);
 	}
 
+	public void publishZigbee2MqttState(String fullTopic, String message) {
+		var webSocketTopic = websocketTopicsPrefix + "/" + fullTopic;
+		webSocket.convertAndSend(webSocketTopic, message);
+		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", message, fullTopic, webSocketTopic);
+	}
+
 }
