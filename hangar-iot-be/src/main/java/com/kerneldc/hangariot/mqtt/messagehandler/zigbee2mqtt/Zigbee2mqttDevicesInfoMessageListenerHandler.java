@@ -1,8 +1,5 @@
 package com.kerneldc.hangariot.mqtt.messagehandler.zigbee2mqtt;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.springframework.core.NestedExceptionUtils;
@@ -19,6 +16,7 @@ import com.kerneldc.hangariot.mqtt.service.ApplicationContext;
 import com.kerneldc.hangariot.mqtt.service.MqttDeviceInfoService;
 import com.kerneldc.hangariot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
+import com.kerneldc.hangariot.util.TimeUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,15 +57,10 @@ public class Zigbee2mqttDevicesInfoMessageListenerHandler extends AbstractMessag
 			var mqttDeviceInfo = new MqttDeviceInfo();
 			mqttDeviceInfo.setIeeeAddress(deviceDetails.getIeeeAddress());
 			mqttDeviceInfo.setDeviceDetails(deviceDetails);
-			mqttDeviceInfo.setTimestamp(fromEpoch(timestamp));
+			mqttDeviceInfo.setTimestamp(TimeUtils.epochMilliToOffsetDateTime(timestamp));
 			mqttDeviceInfoService.saveOrUpdate(mqttDeviceInfo);
 		}
 		
 		LOGGER.info("End Zigbee2mqttDevicesInfoMessageListenerHandler ...");
-	}
-	
-	private OffsetDateTime fromEpoch(long epochMilli) {
-		Instant instant = Instant.ofEpochMilli(epochMilli);
-		return OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
 	}
 }

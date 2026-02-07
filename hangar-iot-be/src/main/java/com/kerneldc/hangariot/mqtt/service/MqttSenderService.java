@@ -1,10 +1,8 @@
 package com.kerneldc.hangariot.mqtt.service;
 
-import java.time.Instant;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +32,7 @@ import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.repository.MqttMessageLogRepository;
 import com.kerneldc.hangariot.springconfig.MqttConfig.MqqtGateway;
+import com.kerneldc.hangariot.util.TimeUtils;
 import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
 import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
 
@@ -94,14 +93,29 @@ public class MqttSenderService {
 		LOGGER.info("triggerPublishConnectionState(\"{}\") end", device.getName());
 	}
 
-	public void triggerPublishPowerState(Device device) throws DeviceOfflineException {
-		LOGGER.info("triggerPublishPowerState(\"{}\") begin", device.getName());
+	public void triggerPublishState(Device device) throws DeviceOfflineException, JsonProcessingException {
+		LOGGER.info("triggerPublishState(\"{}\") begin", device.getName());
+		
+		if (applicationContext.isDeviceOffLine(device)) {
+			return;
+		}
+
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
-			sendMessage(device, Zigbee2MqttCommandEnum.GET_STATE, Zigbee2MqttCommandEnum.GET_STATE.getPayload());
-		} else {
+			if (BooleanUtils.isTrue(device.getPassive())) {
+				var stateResult = (StateResult)applicationContext.getZigbee2MqttStateResult(device);
+				var message = objectMapper.writeValueAsString(stateResult);
+				webSocketSenderService.publishZigbee2MqttState(topicHelper.getWsStateTopic(device), message);
+			} else {
+				sendMessage(device, Zigbee2MqttCommandEnum.GET_STATE, Zigbee2MqttCommandEnum.GET_STATE.getPayload());
+			}
+			return;
+		} 
+		
+		if (device.getBridge() == BridgeEnum.TASMOTA) {
 			sendMessage(device, TasmotaCommandEnum.POWER);
 		}
-		LOGGER.info("triggerPublishPowerState(\"{}\") end", device.getName());
+		
+		LOGGER.info("triggerPublishState(\"{}\") end", device.getName());
 	}
 
 	public void triggerPublishSensorData(Device device) throws ApplicationException {
@@ -259,8 +273,8 @@ public class MqttSenderService {
 			result = applicationContext.getCommandResult(device, iCommandEnum);
 			LOGGER.info(
 					"result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]",
-					result, count, maxNumberOfTries, (result != null ? fromEpochMilli(result.getTimestamp()) : ""),
-					fromEpochMilli(commandIssuedTimestamp));
+					result, count, maxNumberOfTries, (result != null ? TimeUtils.epochMilliToLocalTime(result.getTimestamp()) : ""),
+					TimeUtils.epochMilliToLocalTime(commandIssuedTimestamp));
 
 		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandIssuedTimestamp && count < maxNumberOfTries));
 		
@@ -283,9 +297,4 @@ public class MqttSenderService {
 		webSocketSenderService.publishConnectionState(device);
 	}
 
-	private static LocalTime fromEpochMilli(long epochMilli) {
-		return Instant.ofEpochMilli(epochMilli)
-                .atZone(ZoneId.systemDefault())
-                .toLocalTime();
-	}
 }

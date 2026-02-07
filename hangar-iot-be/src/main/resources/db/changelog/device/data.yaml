@@ -282,7 +282,7 @@ databaseChangeLog:
               - column: {name: name, value: "Basement-Body sensor"}
               - column: {name: lk, value: "0x8c73dafffeb2a95c"}
               - column: {name: version, value: 0}
-              - column: {name: description, value: "Body sensor on the left window"}
+              - column: {name: description, value: "Body sensor by the left window"}
               - column: {name: device_type, value: "BODY_SENSOR"}
               - column: {name: telemetry, value: false}
               - column: {name: make, value: "Sonoff"}

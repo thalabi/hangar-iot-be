@@ -62,13 +62,13 @@ public class HangarIotController {
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
 
-    @PostMapping("/triggerPublishPowerState")
-	public ResponseEntity<String> triggerPublishPowerState(@Valid @RequestBody DeviceRequest deviceRequest) throws JsonProcessingException, ApplicationException {
+    @PostMapping("/triggerPublishState")
+	public ResponseEntity<String> triggerPublishState(@Valid @RequestBody DeviceRequest deviceRequest) throws JsonProcessingException, ApplicationException {
     	LOGGER.info("Begin ...");
     	var deviceName = deviceRequest.getDeviceName();
     	validateDeviceName(deviceName);
     	
-		mqttSenderService.triggerPublishPowerState(deviceService.getDevice(deviceName));
+		mqttSenderService.triggerPublishState(deviceService.getDevice(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }

@@ -15,6 +15,8 @@ public class StateResult extends AbstractBaseResult {
 	private String state;
 	private Integer linkquality;
 	private Boolean occupancy;
+	private Integer battery;
+	private Boolean batteryLow;
 	
 //	@JsonCreator // Need @JsonCreator because '@JsonProperty(required = true)' is only enforced during deserialization  
 //    public StateResult(@JsonProperty(required = true) String state, Integer linkquality, Boolean occupancy) {

@@ -63,7 +63,7 @@ public class ApplicationContext {
 	public AbstractBaseResult getCommandResult(Device device, ICommandEnum commandEnum) {
 		switch (commandEnum.handlesBridge()) {
 		case ZIGBEE2MQTT: {
-			return resultTopicCache.get(new DeviceAndCommandEnum(device, Zigbee2MqttCommandEnum.STATE));
+			return getZigbee2MqttStateResult(device);
 		}
 		case TASMOTA: {
 			return resultTopicCache.get(new DeviceAndCommandEnum(device, commandEnum));
@@ -72,6 +72,10 @@ public class ApplicationContext {
 		return null;
 	}
 
+	public AbstractBaseResult getZigbee2MqttStateResult(Device device) {
+		return resultTopicCache.get(new DeviceAndCommandEnum(device, Zigbee2MqttCommandEnum.STATE));
+	}
+	
 	// Tasmota message
 	private TasmotaCommandEnum getTasmotaCommandEnum(String message) throws JsonProcessingException {
 		
@@ -92,6 +96,10 @@ public class ApplicationContext {
 		deviceConnectionStateCache.put(device, connectionStateMessage);
 	}
 
+	public boolean isDeviceOffLine(Device device) {
+		return ! /* not */ isDeviceOnLine(device);
+	}
+	
 	public boolean isDeviceOnLine(Device device) {
 		var stateMessage = getConnectionState(device);
 		return stateMessage != null && stateMessage.getState() == ConnectionStateEnum.ONLINE;

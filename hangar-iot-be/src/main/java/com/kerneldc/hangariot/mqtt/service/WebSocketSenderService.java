@@ -48,7 +48,7 @@ public class WebSocketSenderService {
 
 	public void publishConnectionState(Device device) {
 		LOGGER.info("Publishing ConnectionStateMessage message [{}] of device [{}]", applicationContext.getConnectionState(device), device.getName());
-		var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getWsStateTopic(device);
+		var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getWsConnectionStateTopic(device);
 		webSocket.convertAndSend(webSocketTopic, applicationContext.getConnectionState(device));
 	}
 

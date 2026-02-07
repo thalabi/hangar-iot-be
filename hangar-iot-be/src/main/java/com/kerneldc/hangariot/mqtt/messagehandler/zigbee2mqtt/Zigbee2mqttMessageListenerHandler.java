@@ -58,6 +58,11 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 		} else {
 		
 			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
+
+			// state message
+			LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, fullTopic);
+			webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
+			
 			StateResult stateResult;
 			try {
 				message = addTimeStampToMessage(timestamp, message);
@@ -77,9 +82,6 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 				webSocketSenderService.publishPowerState(fullTopic, powerMessage);
 			}
 			
-			// state message
-			LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, fullTopic);
-			webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
 		}
 		
 		LOGGER.info("End Zigbee2mqttMessageListenerHandler ...");

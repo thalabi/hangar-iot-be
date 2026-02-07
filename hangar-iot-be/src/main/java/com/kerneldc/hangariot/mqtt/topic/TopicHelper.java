@@ -38,6 +38,7 @@ public class TopicHelper {
 	private static final String LAST_WILL_AND_TESTAMENT_TOPIC_TEMPLATE = "tele/<device>/" + MqttTopicSuffixEnum.LWT;
 	
 	private static final String WS_CONNECTION_STATE_TOPIC_TEMPLATE = "<device>/state";
+	private static final String WS_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
 	// received from MQTT and published on WebSocket
 	private static final String POWER_TOPIC_TEMPLATE = "stat/<device>/" + MqttTopicSuffixEnum.POWER;
 	// received from MQTT and published on WebSocket
@@ -64,8 +65,11 @@ public class TopicHelper {
 		throw new IllegalStateException();
 	}
 
-	public String getWsStateTopic(Device device) {
+	public String getWsConnectionStateTopic(Device device) {
 		return WS_CONNECTION_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
+	}
+	public String getWsStateTopic(Device device) {
+		return WS_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName());
 	}
 
 
@@ -123,8 +127,13 @@ public class TopicHelper {
 	public boolean isZigbee2mqttDeviceTopic(String topic) {
 		return topic.startsWith("zigbee2mqtt/") && ! /* not */ topic.equals(MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
 	}
+
+	// TODO refcator following two methods into one
 	public boolean isZigbee2mqttDevicesInfoTopic(String topic) {
 		return topic.equals(MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
+	}
+	public boolean isDevicesInfoTopic(String topic) {
+		return StringUtils.equals(topic, MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
 	}
 	
 	public MqttTopicSuffixEnum getTopicSuffix(String topic) {
@@ -136,8 +145,5 @@ public class TopicHelper {
 		return MqttTopicSuffixEnum.valueOf(matcher.group(3));
 	}
 	
-	public boolean isDevicesInfoTopic(String topic) {
-		return StringUtils.equals(topic, MQTT_ZIGBEE2MQTT_DEVICES_INFO_TOPIC);
-	}
 
 }
