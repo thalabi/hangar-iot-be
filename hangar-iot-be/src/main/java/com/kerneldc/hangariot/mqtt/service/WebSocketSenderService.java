@@ -49,6 +49,10 @@ public class WebSocketSenderService {
 	public void publishConnectionState(Device device) {
 		LOGGER.info("Publishing ConnectionStateMessage message [{}] of device [{}]", applicationContext.getConnectionState(device), device.getName());
 		var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getWsConnectionStateTopic(device);
+		if (applicationContext.getConnectionState(device) == null) {
+			LOGGER.error("No connection state found in cache for device [{}]", device.getName());
+			return;
+		}
 		webSocket.convertAndSend(webSocketTopic, applicationContext.getConnectionState(device));
 	}
 

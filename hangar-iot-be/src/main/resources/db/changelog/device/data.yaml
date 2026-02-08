@@ -97,7 +97,7 @@ databaseChangeLog:
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "S-31"}
               - column: {name: enable_data_saver, value: false}
-              - column: {name: location, value: "North east corner"}
+              - column: {name: location, value: "By the long coffee table"}
               - column: {name: bridge, value: "TASMOTA"}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
@@ -289,6 +289,25 @@ databaseChangeLog:
               - column: {name: model, value: "SNZB-06P"}
               - column: {name: enable_data_saver, value: false}
               - column: {name: location, value: "On the left window"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: true}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 3}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: ieee_address, value: "0xb40e060fffe2600d"}
+              - column: {name: name, value: "Basement-Motion sensor on the side of the stairs"}
+              - column: {name: lk, value: "0xb40e060fffe2600d"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Sensor on the side of the stairs"}
+              - column: {name: device_type, value: "MOTION_SENSOR"}
+              - column: {name: telemetry, value: false}
+              - column: {name: make, value: "ThirdReality"}
+              - column: {name: model, value: "P1WMSA1"}
+              - column: {name: enable_data_saver, value: false}
+              - column: {name: location, value: "On the side of the stairs"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
               - column: {name: passive, value: true}
               - column: {name: is_managed, value: true}
