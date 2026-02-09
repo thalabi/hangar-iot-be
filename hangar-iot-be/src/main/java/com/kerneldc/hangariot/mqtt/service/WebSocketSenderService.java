@@ -70,6 +70,7 @@ public class WebSocketSenderService {
 
 	public void publishZigbee2MqttState(String fullTopic, String message) {
 		var webSocketTopic = websocketTopicsPrefix + "/" + fullTopic;
+		LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, fullTopic);
 		webSocket.convertAndSend(webSocketTopic, message);
 		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", message, fullTopic, webSocketTopic);
 	}

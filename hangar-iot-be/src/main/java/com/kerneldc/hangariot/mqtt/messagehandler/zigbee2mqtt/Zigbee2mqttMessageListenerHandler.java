@@ -39,29 +39,22 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 		
 		var device = topicHelper.getDevice(fullTopic);
 
-		var isDuplicate = applicationContext.setTopicMessage(fullTopic, message);
-		if (isDuplicate) {
-
-			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
-			var stateResult = (StateResult)applicationContext.getCommandResult(device, Zigbee2MqttCommandEnum.STATE);
-			stateResult.setTimestamp(System.currentTimeMillis());
-
-			// publish connection state
-			webSocketSenderService.publishConnectionState(device);
-			
-			// TODO remove after client uses state message for power
-			// publish power state
-			if (BooleanUtils.isFalse(device.getPassive())) {
-				var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
-				webSocketSenderService.publishPowerState(fullTopic, powerMessage);
-			}
-
-		} else {
+//		var isDuplicate = applicationContext.setTopicMessage(fullTopic, message);
+//		if (isDuplicate) {
+//
+//			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
+//			var stateResult = (StateResult)applicationContext.getCommandResult(device, Zigbee2MqttCommandEnum.STATE);
+//			stateResult.setTimestamp(System.currentTimeMillis());
+//
+//			// publish connection state
+//			webSocketSenderService.publishConnectionState(device);
+//			
+//
+//		} else {
 		
 			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
 
 			// state message
-			LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, fullTopic);
 			webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
 			
 			StateResult stateResult;
@@ -77,14 +70,7 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 			applicationContext.setConnectionState(device, stateMessage);
 			webSocketSenderService.publishConnectionState(device);
 	
-			// TODO remove after client uses state message for power
-			// power state
-			if (BooleanUtils.isFalse(device.getPassive())) {
-				var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
-				webSocketSenderService.publishPowerState(fullTopic, powerMessage);
-			}
-			
-		}
+//		}
 		
 		LOGGER.info("End Zigbee2mqttMessageListenerHandler ...");
 	}

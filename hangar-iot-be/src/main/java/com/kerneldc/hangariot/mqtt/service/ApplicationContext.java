@@ -36,7 +36,7 @@ public class ApplicationContext {
 	private record DeviceAndCommandEnum(Device device, ICommandEnum commandEnum) {}
 	
 	// Used to detect duplicates
-	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
+//	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
 
 	/**
 	 * @param topic
@@ -105,9 +105,9 @@ public class ApplicationContext {
 		return stateMessage != null && stateMessage.getState() == ConnectionStateEnum.ONLINE;
 	}
 	
-	public String getTopicMessage(String topic) {
-		return topicMessageCache.get(topic);
-	}
+//	public String getTopicMessage(String topic) {
+//		return topicMessageCache.get(topic);
+//	}
 	
 	/**
 	 * Puts an entry only if topic is not in the map or if the message is not the same
@@ -115,21 +115,21 @@ public class ApplicationContext {
 	 * @param message
 	 * @return true if duplicate entry
 	 */
-	public boolean setTopicMessage(String topic, String message) {
-		var value = topicMessageCache.get(topic);
-		if (value != null && value.equals(message)) {
-			return true;
-		} else {
-			topicMessageCache.put(topic, message);
-			return false;
-		}
-	}
+//	public boolean setTopicMessage(String topic, String message) {
+//		var value = topicMessageCache.get(topic);
+//		if (value != null && value.equals(message)) {
+//			return true;
+//		} else {
+//			topicMessageCache.put(topic, message);
+//			return false;
+//		}
+//	}
 
 	@PreDestroy
 	public void terminate() {
 		resultTopicCache.clear();
 		deviceConnectionStateCache.clear();
-		topicMessageCache.clear();
+//		topicMessageCache.clear();
 	}
 
 	public void dumpCache() {
@@ -143,10 +143,10 @@ public class ApplicationContext {
 	        LOGGER.info("key: [{}], value: [{}]", key, value)
 	    );
 
-	    LOGGER.info("Dump of topicMessageCache:");
-	    topicMessageCache.forEach((key, value) ->
-	        LOGGER.info("key: [{}], value: [{}]", key, value)
-	    );
+//	    LOGGER.info("Dump of topicMessageCache:");
+//	    topicMessageCache.forEach((key, value) ->
+//	        LOGGER.info("key: [{}], value: [{}]", key, value)
+//	    );
 	}
 	public ObjectNode dumpCacheToJson() {
 		var applicationContextCache = objectMapper.createObjectNode();
@@ -174,15 +174,15 @@ public class ApplicationContext {
 	    applicationContextCache.set("deviceConnectionStateCache", deviceConnectionStateCacheEntries);
 	    
 	    
-	    var topicMessageCacheEntries = objectMapper.createArrayNode();
-	    topicMessageCache.forEach((key, value) -> {
-	    	var topicMessageCacheEntry = objectMapper.createObjectNode();
-	    	topicMessageCacheEntry.put("topic", key);
-	    	topicMessageCacheEntry.put("message", value);
-	    	topicMessageCacheEntries.add(topicMessageCacheEntry);
-	    }
-	    );
-	    applicationContextCache.set("topicMessageCache", topicMessageCacheEntries);
+//	    var topicMessageCacheEntries = objectMapper.createArrayNode();
+//	    topicMessageCache.forEach((key, value) -> {
+//	    	var topicMessageCacheEntry = objectMapper.createObjectNode();
+//	    	topicMessageCacheEntry.put("topic", key);
+//	    	topicMessageCacheEntry.put("message", value);
+//	    	topicMessageCacheEntries.add(topicMessageCacheEntry);
+//	    }
+//	    );
+//	    applicationContextCache.set("topicMessageCache", topicMessageCacheEntries);
 	    
 	    return applicationContextCache;
 	}
