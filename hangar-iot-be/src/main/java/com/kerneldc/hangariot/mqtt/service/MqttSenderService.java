@@ -97,6 +97,8 @@ public class MqttSenderService {
 		LOGGER.info("triggerPublishState(\"{}\") begin", device.getName());
 		
 		if (applicationContext.isDeviceOffLine(device)) {
+			LOGGER.info("device is offline");
+			LOGGER.info("triggerPublishState(\"{}\") end", device.getName());
 			return;
 		}
 
@@ -108,6 +110,7 @@ public class MqttSenderService {
 			} else {
 				sendMessage(device, Zigbee2MqttCommandEnum.GET_STATE, Zigbee2MqttCommandEnum.GET_STATE.getPayload());
 			}
+			LOGGER.info("triggerPublishState(\"{}\") end", device.getName());
 			return;
 		} 
 		
@@ -272,8 +275,8 @@ public class MqttSenderService {
 			count++;
 			result = applicationContext.getCommandResult(device, iCommandEnum);
 			LOGGER.info(
-					"result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]",
-					result, count, maxNumberOfTries, (result != null ? TimeUtils.epochMilliToLocalTime(result.getTimestamp()) : ""),
+					"device [{}] result [{}] count [{}] maxNumberOfTries [{}] result.getTimestamp() [{}] commandIssuedTimestamp [{}]",
+					device.getName(), result, count, maxNumberOfTries, (result != null ? TimeUtils.epochMilliToLocalTime(result.getTimestamp()) : ""),
 					TimeUtils.epochMilliToLocalTime(commandIssuedTimestamp));
 
 		} while ((result == null && count < maxNumberOfTries) || (result != null && result.getTimestamp() <= commandIssuedTimestamp && count < maxNumberOfTries));

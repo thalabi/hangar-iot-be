@@ -49,6 +49,7 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 			// publish connection state
 			webSocketSenderService.publishConnectionState(device);
 			
+			// TODO remove after client uses state message for power
 			// publish power state
 			if (BooleanUtils.isFalse(device.getPassive())) {
 				var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
@@ -76,6 +77,7 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 			applicationContext.setConnectionState(device, stateMessage);
 			webSocketSenderService.publishConnectionState(device);
 	
+			// TODO remove after client uses state message for power
 			// power state
 			if (BooleanUtils.isFalse(device.getPassive())) {
 				var powerMessage = new PowerMessage(stateResult.getState().toLowerCase(), System.currentTimeMillis());
