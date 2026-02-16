@@ -14,18 +14,13 @@ databaseChangeLog:
               - column: {name: name, type: varchar(255), constraints: {nullable: false}}
               - column: {name: description, type: varchar(255)}
               - column: {name: device_type, type: varchar(255), constraints: {nullable: false}}
-              - column: {name: telemetry, type: boolean, constraints: {nullable: false}}
+              - column: {name: telemetry, type: boolean} # tasmota only
               - column: {name: make, type: varchar(255), constraints: {nullable: false}}
               - column: {name: model, type: varchar(255), constraints: {nullable: false}}
-              - column: {name: enable_data_saver, type: boolean, constraints: {nullable: false}}
-#              - column: {name: latitude_degrees, type: "decimal(10,7)"}
-#              - column: {name: longitude_degrees, type: "decimal(10,7)"}
-#              - column: {name: timezone_offset, type: integer}
-#              - column: {name: time_dst, type: varchar(255)}
-#              - column: {name: time_std, type: varchar(255)}
+              - column: {name: enable_data_saver, type: boolean} # tasmota only
               - column: {name: location, type: varchar(255)}
               - column: {name: bridge, type: varchar(255), constraints: {nullable: false}}
-              - column: {name: passive, type: boolean, constraints: {nullable: false}}
+              - column: {name: passive, type: boolean} # zigbee2mqtt only
               - column: {name: is_managed, type: boolean, constraints: {nullable: false}}
               - column: {name: zone_id, type: bigint, constraints: {nullable: false, references: zone(id), foreignKeyName: fk_device_1}}
               - column: {name: area_id, type: bigint, constraints: {nullable: true, references: area(id), foreignKeyName: fk_device_2}}
