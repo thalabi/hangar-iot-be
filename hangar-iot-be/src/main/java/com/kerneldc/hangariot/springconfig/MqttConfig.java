@@ -37,8 +37,8 @@ public class MqttConfig {
 	@Value("${mqtt.password}")
 	protected String PASSWORD;
 
-	private static final String LISTENER_CLIENT_NAME = "Hangar-IOT-Controller:" + "listener" + "-";
-	private static final String RECEIVER_CLIENT_NAME = "Hangar-IOT-Controller:" + "receiver" + "-";
+	private static final String LISTENER_CLIENT_NAME = "Hangar-IOT-Controller2:" + "listener" + "-";
+	private static final String RECEIVER_CLIENT_NAME = "Hangar-IOT-Controller2:" + "receiver" + "-";
 	private final String listenerClientId = LISTENER_CLIENT_NAME + UUID.randomUUID();
 	private final String receiverClientId = RECEIVER_CLIENT_NAME + UUID.randomUUID();
 
