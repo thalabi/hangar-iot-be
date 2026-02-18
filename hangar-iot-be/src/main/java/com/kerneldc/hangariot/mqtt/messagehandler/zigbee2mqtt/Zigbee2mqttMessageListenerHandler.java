@@ -39,38 +39,24 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 		
 		var device = topicHelper.getDevice(fullTopic);
 
-//		var isDuplicate = applicationContext.setTopicMessage(fullTopic, message);
-//		if (isDuplicate) {
-//
-//			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}] *** duplicate. only setting new timestamp in cache ***", fullTopic, timestamp, message);
-//			var stateResult = (StateResult)applicationContext.getCommandResult(device, Zigbee2MqttCommandEnum.STATE);
-//			stateResult.setTimestamp(System.currentTimeMillis());
-//
-//			// publish connection state
-//			webSocketSenderService.publishConnectionState(device);
-//			
-//
-//		} else {
 		
-			LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
+		LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
 
-			// state message
-			webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
-			
-			StateResult stateResult;
-			try {
-				message = addTimeStampToMessage(timestamp, message);
-				stateResult = (StateResult)applicationContext.setCommandResult(fullTopic, message);
-			} catch (JsonProcessingException e) {
-				throw new MessagingException("Failed to add message to cache.", e);
-			}
+		// state message
+		webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
+		
+		try {
+			message = addTimeStampToMessage(timestamp, message);
+			applicationContext.setCommandResult(fullTopic, message);
+		} catch (JsonProcessingException e) {
+			throw new MessagingException("Failed to add message to cache.", e);
+		}
+
+		// set and publish connection state
+		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
+		applicationContext.setConnectionState(device, stateMessage);
+		webSocketSenderService.publishConnectionState(device);
 	
-			// set and publish connection state
-			var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.ONLINE, System.currentTimeMillis());
-			applicationContext.setConnectionState(device, stateMessage);
-			webSocketSenderService.publishConnectionState(device);
-	
-//		}
 		
 		LOGGER.info("End Zigbee2mqttMessageListenerHandler ...");
 	}
