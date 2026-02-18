@@ -41,12 +41,12 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 
 		
 		LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);
-
-		// state message
-		webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
-		
 		try {
 			message = addTimeStampToMessage(timestamp, message);
+
+			// state message
+			webSocketSenderService.publishZigbee2MqttState(fullTopic, message);
+			
 			applicationContext.setCommandResult(fullTopic, message);
 		} catch (JsonProcessingException e) {
 			throw new MessagingException("Failed to add message to cache.", e);
