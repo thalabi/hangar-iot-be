@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kerneldc.hangariot.domain.AbstractPersistableEntity;
 import com.kerneldc.hangariot.domain.LogicalKeyHolder;
 
@@ -23,10 +25,17 @@ public class MqttMessageLog extends AbstractPersistableEntity {
 	@Setter(AccessLevel.NONE)
 	private String topic;
 
+	@Setter(AccessLevel.NONE)
 	private String message;
+
 	private Long completionTimeSeconds;
 	private Boolean success;
 	
+	public void setMessage(String message) {
+		// Replaces \r and \n with nothing; null-safe by default
+	    this.message = StringUtils.replaceChars(message, "\r\n", null);
+	}
+
 	public void setTimestamp(OffsetDateTime timestamp) {
 		this.timestamp = timestamp;
 		setLogicalKeyHolder();
