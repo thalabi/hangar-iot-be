@@ -13,3 +13,12 @@ databaseChangeLog:
               - column: {name: name, type: varchar(255), constraints: {nullable: false}}
               - column: {name: zone_id, type: bigint, constraints: {nullable: false, references: zone(id), foreignKeyName: fk_area_1}}
               
+              
+  - changeSet:
+      id: add-unique-constraint-lk
+      author: thalabi
+      changes:
+        - addUniqueConstraint:
+            tableName: area
+            columnNames: lk
+            constraintName: area_lk_unique                            

@@ -15,3 +15,13 @@ databaseChangeLog:
               - column: {name: message, type: varchar(255), constraints: {nullable: false}}
               - column: {name: completion_time_seconds, type: bigint, constraints: {nullable: false}}
               - column: {name: success, type: boolean, constraints: {nullable: false}}
+              
+              
+  - changeSet:
+      id: add-unique-constraint-lk
+      author: thalabi
+      changes:
+        - addUniqueConstraint:
+            tableName: mqtt_message_log
+            columnNames: lk
+            constraintName: mqtt_message_log_lk_unique                            

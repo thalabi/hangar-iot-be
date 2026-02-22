@@ -25,3 +25,12 @@ databaseChangeLog:
               - column: {name: zone_id, type: bigint, constraints: {nullable: false, references: zone(id), foreignKeyName: fk_device_1}}
               - column: {name: area_id, type: bigint, constraints: {nullable: true, references: area(id), foreignKeyName: fk_device_2}}
               
+              
+  - changeSet:
+      id: add-unique-constraint-lk
+      author: thalabi
+      changes:
+        - addUniqueConstraint:
+            tableName: device
+            columnNames: lk
+            constraintName: device_lk_unique                            

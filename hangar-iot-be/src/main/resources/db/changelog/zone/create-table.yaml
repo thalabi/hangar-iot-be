@@ -17,3 +17,12 @@ databaseChangeLog:
               - column: {name: time_dst, type: varchar(255), constraints: {nullable: false}}
               - column: {name: time_std, type: varchar(255), constraints: {nullable: false}}
               
+              
+  - changeSet:
+      id: add-unique-constraint-lk
+      author: thalabi
+      changes:
+        - addUniqueConstraint:
+            tableName: zone
+            columnNames: lk
+            constraintName: zone_lk_unique                            

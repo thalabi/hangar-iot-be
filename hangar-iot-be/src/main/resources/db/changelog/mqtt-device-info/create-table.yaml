@@ -13,3 +13,13 @@ databaseChangeLog:
               - column: {name: ieee_address, type: varchar(255), constraints: {nullable: false}}
               - column: {name: device_details, type: jsonb, constraints: {nullable: false}}
               - column: {name: timestamp, type: timestamp with time zone, constraints: {nullable: false}}
+              
+              
+  - changeSet:
+      id: add-unique-constraint-lk
+      author: thalabi
+      changes:
+        - addUniqueConstraint:
+            tableName: mqtt_device_info
+            columnNames: lk
+            constraintName: mqtt_device_info_lk_unique              
