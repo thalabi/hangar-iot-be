@@ -104,7 +104,7 @@ public class MqttSenderService {
 
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
 			if (BooleanUtils.isTrue(device.getPassive())) {
-				var stateResult = (StateResult)applicationContext.getZigbee2MqttStateResult(device);
+				var stateResult = applicationContext.getZigbee2MqttStateResult(device);
 				var message = objectMapper.writeValueAsString(stateResult);
 				webSocketSenderService.publishZigbee2MqttState(topicHelper.getWsStateTopic(device), message);
 			} else {

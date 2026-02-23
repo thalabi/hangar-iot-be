@@ -15,6 +15,8 @@ import com.kerneldc.hangariot.mqtt.command.ICommandEnum;
 import com.kerneldc.hangariot.mqtt.command.TasmotaCommandEnum;
 import com.kerneldc.hangariot.mqtt.command.Zigbee2MqttCommandEnum;
 import com.kerneldc.hangariot.mqtt.result.AbstractBaseResult;
+import com.kerneldc.hangariot.mqtt.result.tasmota.PowerResult;
+import com.kerneldc.hangariot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.hangariot.mqtt.topic.TopicHelper;
 import com.kerneldc.hangariot.websocket.ConnectionStateEnum;
 import com.kerneldc.hangariot.websocket.message.ConnectionStateMessage;
@@ -72,8 +74,23 @@ public class ApplicationContext {
 		return null;
 	}
 
-	public AbstractBaseResult getZigbee2MqttStateResult(Device device) {
-		return resultTopicCache.get(new DeviceAndCommandEnum(device, Zigbee2MqttCommandEnum.STATE));
+	public StateResult getZigbee2MqttStateResult(Device device) {
+		return (StateResult)resultTopicCache.get(new DeviceAndCommandEnum(device, Zigbee2MqttCommandEnum.STATE));
+	}
+	private PowerResult getTasmotaPowerResult(Device device) {
+		return (PowerResult)resultTopicCache.get(new DeviceAndCommandEnum(device, TasmotaCommandEnum.POWER));
+	}
+
+	public boolean getPower(Device device) {
+		switch (device.getBridge()) {
+		case ZIGBEE2MQTT: {
+			return StringUtils.equalsIgnoreCase(getZigbee2MqttStateResult(device).getState(), "on");
+		}
+		case TASMOTA: {
+			return StringUtils.equalsIgnoreCase(getTasmotaPowerResult(device).getPower(), "on");
+		}
+		}
+		throw new IllegalArgumentException();
 	}
 	
 	// Tasmota message

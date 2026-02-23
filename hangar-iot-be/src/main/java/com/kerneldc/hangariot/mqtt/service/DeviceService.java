@@ -10,8 +10,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.kerneldc.hangariot.domain.area.Area;
 import com.kerneldc.hangariot.domain.device.Device;
+import com.kerneldc.hangariot.domain.zone.Zone;
+import com.kerneldc.hangariot.exception.InvalidAreaException;
+import com.kerneldc.hangariot.exception.InvalidDeviceException;
+import com.kerneldc.hangariot.exception.InvalidZoneException;
+import com.kerneldc.hangariot.repository.AreaRepository;
 import com.kerneldc.hangariot.repository.DeviceRepository;
+import com.kerneldc.hangariot.repository.ZoneRepository;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -23,27 +30,38 @@ import lombok.extern.slf4j.Slf4j;
 public class DeviceService {
 
 	private final DeviceRepository deviceRepository;
-//	private List<Device> allDeviceList = new ArrayList<>();
+	private final ZoneRepository zoneRepository;
+	private final AreaRepository areaRepository;
 	private List<Device> managedDeviceList = new ArrayList<>();
+	private List<Zone> zoneList = new ArrayList<>();
+	private List<Area> areaList = new ArrayList<>();
 
 	@Value("${client-exposed.mqtt.commands}")
 	private String[] commands;
 
 	@PostConstruct
-	public void loadDevices() {
+	public void init() {
+		loadDevices();
+		loadZonesAndAreas();
+	}
+	
+	private void loadDevices() {
 		LOGGER.info("Loading devices from database.");
 		var allDeviceList = deviceRepository.findAll();
-//		allDeviceList = deviceRepository.findByIsManaged(true);
 		var i = 0;
 		for (var device: allDeviceList) {
 			var managedLabel = (BooleanUtils.isTrue(device.getIsManaged()) ? "Managed" : "Not managed");
 			LOGGER.info("{} - [{}] ({}) ({})", String.format("%2d", ++i), device.getName(), device.getBridge(), managedLabel);
-//			LOGGER.info("{} - [{}] ({})", String.format("%2d", ++i), device.getName(), device.getBridge());
 		}
 		
 		managedDeviceList = allDeviceList.stream().filter(device -> BooleanUtils.isTrue(device.getIsManaged()))
 				.collect(Collectors.toList());
+	}
 
+	private void loadZonesAndAreas() {
+		LOGGER.info("Loading zones and areas from database.");
+		zoneList = zoneRepository.findAll();
+		areaList = areaRepository.findAll();
 	}
 
 //	public List<Device> getAllDeviceList() {
@@ -64,5 +82,46 @@ public class DeviceService {
 	public List<String> getCommandList() {
 		return Arrays.asList(commands);
 	}
+	
+	public List<Device> findByZoneAndArea(String zoneName, String areaName, Boolean powerStateRequested) {
+		return managedDeviceList.stream()
+				.filter(device -> StringUtils.equals(device.getZone().getName(), zoneName)
+						&& StringUtils.equals(device.getArea().getName(), areaName)
+						)
+				.toList();
+	}
+	
+//	public List<Zone> getZoneList() {
+//		return zoneList;
+//	}
+//	public List<Area> getAreaList() {
+//		return areaList;
+//	}
+	
+	private List<String> getZoneNameList() {
+		return zoneList.stream().map(Zone::getName).toList();
+	}
+	private List<String> getAreaNameList() {
+		return areaList.stream().map(Area::getName).toList();
+	}
+
+	
+    public void validateDeviceName(String deviceName) throws InvalidDeviceException {
+    	if (! /* not */ getManagedDeviceNameList().contains(deviceName)) {
+    		throw new InvalidDeviceException(String.format("Device [%s] is invalid", deviceName));
+    	}
+    }
+
+    public void validateZoneName(String zoneName) throws InvalidZoneException {
+    	if (! /* not */ getZoneNameList().contains(zoneName)) {
+    		throw new InvalidZoneException(String.format("Zone [%s] is invalid", zoneName));
+    	}
+    }
+    public void validateAreaName(String areaName) throws InvalidAreaException {
+    	if (! /* not */ getAreaNameList().contains(areaName)) {
+    		throw new InvalidAreaException(String.format("Area [%s] is invalid", areaName));
+    	}
+    }
+    
 	
 }
