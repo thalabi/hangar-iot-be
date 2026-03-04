@@ -140,8 +140,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!-- Make this jar fully executable -->
-					<executable>true</executable>
 					<!-- needed for LOADER_PATH env variable to work -->
 					<layout>ZIP</layout>
 					<excludes>
