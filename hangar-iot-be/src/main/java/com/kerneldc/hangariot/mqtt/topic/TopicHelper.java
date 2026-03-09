@@ -127,10 +127,6 @@ public class TopicHelper {
 		return topic.startsWith("zigbee2mqtt/") && ! /* not */ topic.equals(MQTT_ZIGBEE_DEVICES_INFO_TOPIC);
 	}
 
-	// TODO refcator following two methods into one
-//	public boolean isZigbee2mqttDevicesInfoTopic(String topic) {
-//		return topic.equals(MQTT_ZIGBEE_DEVICES_INFO_TOPIC);
-//	}
 	public boolean isDevicesInfoTopic(String topic) {
 		return StringUtils.equals(topic, MQTT_ZIGBEE_DEVICES_INFO_TOPIC);
 	}
