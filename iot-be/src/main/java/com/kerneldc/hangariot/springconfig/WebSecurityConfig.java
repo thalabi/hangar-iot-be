@@ -33,6 +33,8 @@ public class WebSecurityConfig {
 	private String actuatorUsername;
 	@Value("${application.security.actuator.password}")
 	private String actuatorPassword;
+	@Value("${websocket.endpoint}")
+	private String websocketEndpoint;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, KeycloakJwtRolesConverter keycloakJwtRolesConverter)
@@ -61,7 +63,7 @@ public class WebSecurityConfig {
 					//
 					// TODO secure websocket requests
 					//
-					"/protected/hangar-iot-websocket*").permitAll());
+					websocketEndpoint+"*").permitAll());
 			httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
 			.requestMatchers("/actuator/*").hasRole("ACTUATOR")).httpBasic(Customizer.withDefaults());
 			httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.anyRequest().authenticated());
