@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.kerneldc</groupId>
-	<artifactId>hangar-iot-be</artifactId>
+	<artifactId>iot-be</artifactId>
 	<version>3.0.0-SNAPSHOT</version>
-	<name>hangar-iot-be</name>
-	<description>Hangar IOT Managmenet</description>
+	<name>iot-be</name>
+	<description>IOT Managmenet</description>
 
 	<properties>
 		<java.version>25</java.version>
@@ -212,9 +212,9 @@
 	</distributionManagement>
 
 	<scm>
-		<url>scm:git:https://github.com/thalabi/hangar-iot-be</url>
-		<connection>scm:git:https://github.com/thalabi/hangar-iot-be</connection>
-		<developerConnection>scm:git:https://github.com/thalabi/hangar-iot-be</developerConnection>
+		<url>scm:git:https://github.com/thalabi/iot-be</url>
+		<connection>scm:git:https://github.com/thalabi/iot-be</connection>
+		<developerConnection>scm:git:https://github.com/thalabi/iot-be</developerConnection>
 	  	<tag>HEAD</tag>
 	</scm>
 	
