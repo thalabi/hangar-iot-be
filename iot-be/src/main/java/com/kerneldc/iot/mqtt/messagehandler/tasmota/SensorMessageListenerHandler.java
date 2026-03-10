@@ -1,0 +1,43 @@
+package com.kerneldc.iot.mqtt.messagehandler.tasmota;
+
+import org.springframework.core.NestedExceptionUtils;
+import org.springframework.messaging.MessagingException;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kerneldc.iot.mqtt.messagehandler.AbstractMessageListenerHandler;
+import com.kerneldc.iot.mqtt.service.ApplicationContext;
+import com.kerneldc.iot.mqtt.service.WebSocketSenderService;
+import com.kerneldc.iot.mqtt.topic.TopicHelper;
+import com.kerneldc.iot.mqtt.topic.TopicHelper.MqttTopicSuffixEnum;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j
+public class SensorMessageListenerHandler extends AbstractMessageListenerHandler {
+
+	public SensorMessageListenerHandler(ApplicationContext applicationContext, ObjectMapper objectMapper,
+			WebSocketSenderService webSocketSenderService, TopicHelper topicHelper) {
+		super(applicationContext, objectMapper, webSocketSenderService, topicHelper);
+	}
+
+	@Override
+	public boolean canHandleMessage(String fullTopic) {
+		return topicHelper.isTasmotaTopic(fullTopic) && topicHelper.getTopicSuffix(fullTopic).equals(MqttTopicSuffixEnum.SENSOR);
+	}
+
+	@Override
+	public void handleMessage(String fullTopic, long timestamp, String message) {
+		try {
+			message = addTimeStampToMessage(timestamp, message);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new MessagingException("Error adding timestamp field to json string", NestedExceptionUtils.getMostSpecificCause(e));
+		}		
+
+		webSocketSenderService.publishMessageToWebSocket(fullTopic, message);
+	}
+
+}
