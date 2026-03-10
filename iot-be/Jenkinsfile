@@ -19,7 +19,7 @@ pipeline {
         stage ('Build') {
             steps {
                 sh '''
-                cd hangar-iot-be
+                cd iot-be
                 mvn clean package
                 '''
             }
@@ -38,7 +38,7 @@ pipeline {
 			}
 			steps {
                 sh '''
-                cd hangar-iot-be
+                cd iot-be
                 mvn deploy -Dmaven.test.skip=true
                 '''
             }
