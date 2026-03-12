@@ -34,10 +34,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/protected/hangarIotController")
+@RequestMapping("/protected/IotController")
 @RequiredArgsConstructor
 @Slf4j
-public class HangarIotController {
+public class IotController {
 
 	private final MqttSenderService mqttSenderService;
 	private final WebSocketSenderService webSocketSenderService;

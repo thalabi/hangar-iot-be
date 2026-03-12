@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.kerneldc.iot.controller.HangarIotController;
+import com.kerneldc.iot.controller.IotController;
 
-@ControllerAdvice(basePackageClasses = HangarIotController.class)
-public class HangarIotControllerExceptionHandler extends ResponseEntityExceptionHandler {
+@ControllerAdvice(basePackageClasses = IotController.class)
+public class IotControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
 
 	@ExceptionHandler(InvalidDeviceException.class)
