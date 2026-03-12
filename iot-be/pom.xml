@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.kerneldc</groupId>
 	<artifactId>iot-be</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0-RELEASE</version>
 	<name>iot-be</name>
 	<description>IOT Managmenet</description>
 
