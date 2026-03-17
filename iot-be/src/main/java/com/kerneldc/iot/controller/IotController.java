@@ -26,8 +26,8 @@ import com.kerneldc.iot.mqtt.result.tasmota.timer.TimersResult;
 import com.kerneldc.iot.mqtt.service.ApplicationContext;
 import com.kerneldc.iot.mqtt.service.DeviceService;
 import com.kerneldc.iot.mqtt.service.MqttSenderService;
-import com.kerneldc.iot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.iot.task.ScheduledTasks;
+import com.kerneldc.iot.websocket.service.WebSocketSenderService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -12,3 +12,5 @@ databaseChangeLog:
   
   - include: {file: mqtt-message-log/create-table.yaml, relativeToChangelogFile: true}
   
+  - include: {file: device-attribute-log/create-table.yaml, relativeToChangelogFile: true}
+  

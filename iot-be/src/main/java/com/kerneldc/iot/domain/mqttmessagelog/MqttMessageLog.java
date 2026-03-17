@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.kerneldc.iot.domain.AbstractPersistableEntity;
 import com.kerneldc.iot.domain.LogicalKeyHolder;
+import com.kerneldc.iot.util.TimeUtils;
 
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -54,14 +55,14 @@ public class MqttMessageLog extends AbstractPersistableEntity {
 
 	public static MqttMessageLog buildMqttMessageLog(long timestamp, String topic, String message) {
 		var mqttMessageLog = new MqttMessageLog();
-		mqttMessageLog.setTimestamp(fromEpoch(timestamp));
+		mqttMessageLog.setTimestamp(TimeUtils.epochMilliToOffsetDateTime(timestamp));
 		mqttMessageLog.setTopic(topic);
 		mqttMessageLog.setMessage(message);
 		return mqttMessageLog;
 	}
-	private static OffsetDateTime fromEpoch(long epochMilli) {
-		Instant instant = Instant.ofEpochMilli(epochMilli);
-		return OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
-	}
+//	private static OffsetDateTime fromEpoch(long epochMilli) {
+//		Instant instant = Instant.ofEpochMilli(epochMilli);
+//		return OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
+//	}
 
 }

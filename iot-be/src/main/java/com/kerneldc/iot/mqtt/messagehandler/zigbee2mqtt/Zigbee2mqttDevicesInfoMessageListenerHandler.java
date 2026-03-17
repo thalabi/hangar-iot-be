@@ -14,9 +14,9 @@ import com.kerneldc.iot.mqtt.messagehandler.AbstractMessageListenerHandler;
 import com.kerneldc.iot.mqtt.result.zigbee2mqtt.MqttDeviceDetails;
 import com.kerneldc.iot.mqtt.service.ApplicationContext;
 import com.kerneldc.iot.mqtt.service.MqttDeviceInfoService;
-import com.kerneldc.iot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.iot.mqtt.topic.TopicHelper;
 import com.kerneldc.iot.util.TimeUtils;
+import com.kerneldc.iot.websocket.service.WebSocketSenderService;
 
 import lombok.extern.slf4j.Slf4j;
 

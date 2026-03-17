@@ -1,5 +1,6 @@
 package com.kerneldc.iot.mqtt.service;
 
+import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.iot.domain.device.Device;
+import com.kerneldc.iot.domain.deviceattributelog.DeviceAttributeLog.Change;
 import com.kerneldc.iot.domain.enums.BridgeEnum;
 import com.kerneldc.iot.mqtt.command.ICommandEnum;
 import com.kerneldc.iot.mqtt.command.TasmotaCommandEnum;
@@ -34,6 +36,7 @@ public class ApplicationContext {
 	private final TopicHelper topicHelper;
 	private Map<DeviceAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
 	private Map<Device, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
+	private Map<Device, ArrayDeque<Change>> deviceActivity = new ConcurrentHashMap<>();
 	
 	private record DeviceAndCommandEnum(Device device, ICommandEnum commandEnum) {}
 	

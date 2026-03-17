@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.iot.mqtt.service.ApplicationContext;
-import com.kerneldc.iot.mqtt.service.WebSocketSenderService;
 import com.kerneldc.iot.mqtt.topic.TopicHelper;
+import com.kerneldc.iot.websocket.service.WebSocketSenderService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

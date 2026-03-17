@@ -1,4 +1,4 @@
-package com.kerneldc.iot.mqtt.service;
+package com.kerneldc.iot.websocket.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NestedExceptionUtils;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.iot.domain.device.Device;
+import com.kerneldc.iot.mqtt.service.ApplicationContext;
 import com.kerneldc.iot.mqtt.topic.TopicHelper;
 
 import lombok.RequiredArgsConstructor;

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import com.kerneldc.iot.domain.AbstractEntity;
 import com.kerneldc.iot.domain.area.Area;
 import com.kerneldc.iot.domain.device.Device;
+import com.kerneldc.iot.domain.deviceattributelog.DeviceAttributeLog;
 import com.kerneldc.iot.domain.mqttdeviceinfo.MqttDeviceInfo;
 import com.kerneldc.iot.domain.mqttmessagelog.MqttMessageLog;
 import com.kerneldc.iot.domain.zone.Zone;
@@ -15,6 +16,7 @@ public enum EntityEnum implements IEntityEnum {
 	DEVICE(Device.class, false, new String[] {}),
 	MQTT_DEVICE_INFO(MqttDeviceInfo.class, false, new String[] {}),
 	MQTT_MESSAGE_LOG(MqttMessageLog.class, false, new String[] {}),
+	DEVICE_ATTRIBUTE_LOG(DeviceAttributeLog.class, false, new String[] {}),
 //	LOG_SHEET(LogSheet.class, false, new String[] {}),
 //	JOURNEY_LOG(JourneyLog.class, false, new String[] {}),
 //	ENGINE_LOG(EngineLog.class, false, new String[] {}),

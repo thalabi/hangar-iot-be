@@ -35,6 +35,7 @@ import com.kerneldc.iot.springconfig.MqttConfig.MqqtGateway;
 import com.kerneldc.iot.util.TimeUtils;
 import com.kerneldc.iot.websocket.ConnectionStateEnum;
 import com.kerneldc.iot.websocket.message.ConnectionStateMessage;
+import com.kerneldc.iot.websocket.service.WebSocketSenderService;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

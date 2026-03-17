@@ -7,6 +7,10 @@ import java.time.ZoneId;
 
 public class TimeUtils {
 	
+	 private TimeUtils() {
+	  /* This utility class should not be instantiated */
+	 }
+
 	public static LocalTime epochMilliToLocalTime(long epochMilli) {
 		return Instant.ofEpochMilli(epochMilli)
                 .atZone(ZoneId.systemDefault())
