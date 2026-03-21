@@ -1,8 +1,10 @@
 package com.kerneldc.iot.mqtt.service;
 
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import com.kerneldc.iot.mqtt.result.AbstractBaseResult;
 import com.kerneldc.iot.mqtt.result.tasmota.PowerResult;
 import com.kerneldc.iot.mqtt.result.zigbee2mqtt.StateResult;
 import com.kerneldc.iot.mqtt.topic.TopicHelper;
+import com.kerneldc.iot.util.TimeUtils;
 import com.kerneldc.iot.websocket.ConnectionStateEnum;
 import com.kerneldc.iot.websocket.message.ConnectionStateMessage;
 
@@ -36,9 +39,11 @@ public class ApplicationContext {
 	private final TopicHelper topicHelper;
 	private Map<DeviceAndCommandEnum, AbstractBaseResult> resultTopicCache = new ConcurrentHashMap<>();
 	private Map<Device, ConnectionStateMessage> deviceConnectionStateCache = new ConcurrentHashMap<>();
-	private Map<Device, ArrayDeque<Change>> deviceActivity = new ConcurrentHashMap<>();
+	private Map<Device, ArrayDeque<TimestampAndChanges>> deviceAttributeChanges = new ConcurrentHashMap<>();
 	
 	private record DeviceAndCommandEnum(Device device, ICommandEnum commandEnum) {}
+	protected record TimestampAndChanges(long timestamp, List<Change> changes) {}
+	private static final int ATTRIBUTE_CHANGES_SIZE = 3;
 	
 	// Used to detect duplicates
 //	private Map<String, String> topicMessageCache = new ConcurrentHashMap<>();
@@ -163,11 +168,50 @@ public class ApplicationContext {
 	        LOGGER.info("key: [{}], value: [{}]", key, value)
 	    );
 
-//	    LOGGER.info("Dump of topicMessageCache:");
-//	    topicMessageCache.forEach((key, value) ->
-//	        LOGGER.info("key: [{}], value: [{}]", key, value)
-//	    );
 	}
+	
+	public void pushChanges(Device device, long timestamp, List<Change> changes) {
+		
+		var changesDeque = deviceAttributeChanges.computeIfAbsent(device,
+				_ -> new ArrayDeque<>(ATTRIBUTE_CHANGES_SIZE)); // Initialize
+		
+		// if timestamp is the same minute as last entry then merge the changes
+		var lastEntry = changesDeque.peekLast();
+		if (lastEntry != null && TimeUtils.isSameMinute(lastEntry.timestamp, timestamp)) {
+			// Merge with existing minute
+			changesDeque.pollLast(); // efficient way to remove last
+			changesDeque.addLast(mergeEntries(lastEntry, changes));	
+			return;
+		}
+		
+		// Add as new entry, maintaining size limit
+		if (changesDeque.size() == ATTRIBUTE_CHANGES_SIZE) {
+			changesDeque.removeFirst();
+		}
+		
+		changesDeque.addLast(new TimestampAndChanges(timestamp, changes));
+	}
+	private TimestampAndChanges mergeEntries(TimestampAndChanges existing, List<Change> newChanges) {
+	    var combined = Stream.concat(existing.changes().stream(), newChanges.stream()).toList();
+	    return new TimestampAndChanges(existing.timestamp(), combined);
+	}
+	
+	public String getAttributeChanges(Device device) throws JsonProcessingException {
+		var changesDeque = deviceAttributeChanges.get(device);
+		if (changesDeque == null) {
+			return StringUtils.EMPTY;
+		}
+		
+		
+		var changesJsonAll = objectMapper.writeValueAsString(changesDeque.reversed()); // In reverse order, ie latest first
+		LOGGER.info("changesJsonAll [{}]", changesJsonAll);
+		return changesJsonAll;		
+	}
+
+	protected Map<Device, ArrayDeque<TimestampAndChanges>> getDeviceAttributeChanges() {
+		return deviceAttributeChanges;
+	}
+	
 	public ObjectNode dumpCacheToJson() {
 		var applicationContextCache = objectMapper.createObjectNode();
 
@@ -194,15 +238,16 @@ public class ApplicationContext {
 	    applicationContextCache.set("deviceConnectionStateCache", deviceConnectionStateCacheEntries);
 	    
 	    
-//	    var topicMessageCacheEntries = objectMapper.createArrayNode();
-//	    topicMessageCache.forEach((key, value) -> {
-//	    	var topicMessageCacheEntry = objectMapper.createObjectNode();
-//	    	topicMessageCacheEntry.put("topic", key);
-//	    	topicMessageCacheEntry.put("message", value);
-//	    	topicMessageCacheEntries.add(topicMessageCacheEntry);
-//	    }
-//	    );
-//	    applicationContextCache.set("topicMessageCache", topicMessageCacheEntries);
+	    var deviceAttributeChangesEntries = objectMapper.createArrayNode();
+	    deviceAttributeChanges.forEach((key, value) -> {
+	    	var deviceAttributeChangesEntry = objectMapper.createObjectNode();
+	    	deviceAttributeChangesEntry.put("device", key.toString());
+	    	deviceAttributeChangesEntry.put("attributeChanges", value.toString());
+	    	deviceAttributeChangesEntries.add(deviceAttributeChangesEntry);
+	    }
+	    );
+	    applicationContextCache.set("deviceAttributeChangesEntries", deviceAttributeChangesEntries);
+	    
 	    
 	    return applicationContextCache;
 	}

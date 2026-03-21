@@ -5,14 +5,12 @@ import org.javers.core.JaversBuilder;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.iot.domain.area.Area;
 import com.kerneldc.iot.domain.device.Device;
 import com.kerneldc.iot.domain.enums.BridgeEnum;
 import com.kerneldc.iot.domain.enums.DeviceTypeEnum;
 import com.kerneldc.iot.domain.zone.Zone;
 import com.kerneldc.iot.mqtt.result.zigbee2mqtt.StateResult;
-import com.kerneldc.iot.util.MessageUtils;
 import com.kerneldc.iot.util.StateResultComparator;
 
 class StateResultComparatorTest {

@@ -21,5 +21,9 @@ public class TimeUtils {
 		Instant instant = Instant.ofEpochMilli(epochMilli);
 		return OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
 	}
+	
+	public static boolean isSameMinute(long epochMilli1, long epochMilli2) {
+		 return epochMilli1 / 60000L == epochMilli2 / 60000L;
+	}
 
 }

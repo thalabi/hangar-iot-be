@@ -71,9 +71,17 @@ public class WebSocketSenderService {
 
 	public void publishZigbee2MqttState(String fullTopic, String message) {
 		var webSocketTopic = websocketTopicsPrefix + "/" + fullTopic;
-		LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, fullTopic);
+//		LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, webSocketTopic);
 		webSocket.convertAndSend(webSocketTopic, message);
 		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", message, fullTopic, webSocketTopic);
+	}
+
+	public void publishZigbee2MqttAttributeChanges(Device device) throws JsonProcessingException {
+		var webSocketTopic = websocketTopicsPrefix + "/" + device.getName() + "/attributeChanges";
+		var attributeChanges = applicationContext.getAttributeChanges(device);
+//		LOGGER.info("Publishing web socket, message [{}], topic [{}]", attributeChanges, webSocketTopic);
+		webSocket.convertAndSend(webSocketTopic, attributeChanges);
+		LOGGER.info("Message [{}] added to WebSocket topic [{}]", attributeChanges, webSocketTopic);
 	}
 
 }

@@ -27,6 +27,7 @@ public class DeviceAttributeLogService {
 
 	private final DeviceAttributeLogRepository deviceAttributeLogRepository;
 	private final StateResultComparator stateResultComparator;
+	private final ApplicationContext applicationContext;
 
 
 	public void logDiff(Device device, long timestamp, AbstractBaseResult oldState, AbstractBaseResult newState) {
@@ -40,6 +41,8 @@ public class DeviceAttributeLogService {
 		if (changes.isEmpty()) {
 			return;
 		}
+		
+		applicationContext.pushChanges(device, timestamp, changes);
 		
 		save(device, timestamp, changes);
 	}

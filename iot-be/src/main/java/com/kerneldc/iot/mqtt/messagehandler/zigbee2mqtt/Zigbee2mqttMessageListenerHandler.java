@@ -52,6 +52,9 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 			var newState = applicationContext.setCommandResult(fullTopic, message);
 			deviceAttributeLogService.logDiff(device, timestamp, oldState, newState);
 			
+			// publish attribute changes
+			webSocketSenderService.publishZigbee2MqttAttributeChanges(device);
+			
 		} catch (JsonProcessingException e) {
 			throw new MessagingException("Failed to add message to cache.", e);
 		}
