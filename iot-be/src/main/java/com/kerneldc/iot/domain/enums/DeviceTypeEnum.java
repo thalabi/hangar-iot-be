@@ -1,10 +1,10 @@
 package com.kerneldc.iot.domain.enums;
 
 public enum DeviceTypeEnum {
-	PLUG(new String[] { "linkquality", "state" }),
-	WALL_SWITCH(new String[] { "linkquality", "state" }),
-	MOTION_SENSOR(new String[] { "linkquality", "occupancy" }),
-	BODY_SENSOR(new String[] { "linkquality", "occupancy", "illumination" }),
+	PLUG(new String[] { "state" }),
+	WALL_SWITCH(new String[] { "state" }),
+	MOTION_SENSOR(new String[] { "occupancy" }),
+	BODY_SENSOR(new String[] { "occupancy", "illumination" }),
 	;
 	
 	String[] monitoredAttributes;
