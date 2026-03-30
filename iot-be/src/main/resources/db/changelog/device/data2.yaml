@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: data
+      author: thalabi
+      changes:
+#     Zigbee
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: ieee_address, value: "0x8c73dafffe85871d"}
+              - column: {name: name, value: "Family Room-Body sensor"}
+              - column: {name: lk, value: "0x8c73dafffe85871d"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Body sensor by the chimney"}
+              - column: {name: device_type, value: "BODY_SENSOR"}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "SNZB-06P"}
+              - column: {name: location, value: "By the chimney"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: true}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 4}
