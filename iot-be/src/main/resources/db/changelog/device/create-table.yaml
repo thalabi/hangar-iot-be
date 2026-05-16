@@ -13,6 +13,7 @@ databaseChangeLog:
               - column: {name: ieee_address, type: varchar(255), constraints: {nullable: false}}
               - column: {name: name, type: varchar(255), constraints: {nullable: false}}
               - column: {name: description, type: varchar(255)}
+              - column: {name: label, type: varchar(255)}
               - column: {name: device_type, type: varchar(255), constraints: {nullable: false}}
               - column: {name: telemetry, type: boolean} # tasmota only
               - column: {name: make, type: varchar(255), constraints: {nullable: false}}
@@ -33,4 +34,13 @@ databaseChangeLog:
         - addUniqueConstraint:
             tableName: device
             columnNames: lk
-            constraintName: device_lk_unique                            
+            constraintName: device_lk_unique
+
+  - changeSet:
+      id: add-unique-constraint-label
+      author: thalabi
+      changes:
+        - addUniqueConstraint:
+            tableName: device
+            columnNames: label
+            constraintName: device_label_unique                                        

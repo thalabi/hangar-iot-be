@@ -175,6 +175,7 @@ databaseChangeLog:
               - column: {name: lk, value: "0xb40e060fffe24200"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor by the door"}
+              - column: {name: label, value: "Motion Sensor 3"}
               - column: {name: device_type, value: "MOTION_SENSOR"}
               - column: {name: make, value: "ThirdReality"}
               - column: {name: model, value: "P1WMSA1"}
@@ -192,6 +193,7 @@ databaseChangeLog:
               - column: {name: lk, value: "0xb40e060fffe24209"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor by the TV"}
+              - column: {name: label, value: "Motion Sensor 4"}
               - column: {name: device_type, value: "MOTION_SENSOR"}
               - column: {name: make, value: "ThirdReality"}
               - column: {name: model, value: "P1WMSA1"}
@@ -221,11 +223,47 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
+              - column: {name: ieee_address, value: "0x00124b002f8d8494"}
+              - column: {name: name, value: "Office-Desk lamp"}
+              - column: {name: lk, value: "0x00124b002f8d8494"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Desk lamp"}
+              - column: {name: device_type, value: "PLUG"}
+              - column: {name: make, value: "Ikea"}
+              - column: {name: model, value: "Tretakt"}
+              - column: {name: location, value: "Under desk"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 2}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: ieee_address, value: "0xb40e060fffe25596"}
+              - column: {name: name, value: "Office-Sensor on desk"}
+              - column: {name: lk, value: "0xb40e060fffe25596"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Sensor on desk"}
+              - column: {name: label, value: "Motion Sensor 2"}
+              - column: {name: device_type, value: "MOTION_SENSOR"}
+              - column: {name: make, value: "ThirdReality"}
+              - column: {name: model, value: "P1WMSA1"}
+              - column: {name: location, value: "On the window ledge"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: true}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 2}
+        - insert:
+            tableName: device
+            columns:
               - column: {name: ieee_address, value: "0xb40e060fffe270ca"}
               - column: {name: name, value: "Office-Sensor by the window ledge"}
               - column: {name: lk, value: "0xb40e060fffe270ca"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor by the window ledge"}
+              - column: {name: label, value: "Motion Sensor 1"}
               - column: {name: device_type, value: "MOTION_SENSOR"}
               - column: {name: make, value: "ThirdReality"}
               - column: {name: model, value: "P1WMSA1"}
@@ -260,6 +298,7 @@ databaseChangeLog:
               - column: {name: lk, value: "0x8c73dafffeb2a95c"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Body sensor by the left window"}
+              - column: {name: label, value: "Motion Sensor 5"}
               - column: {name: device_type, value: "BODY_SENSOR"}
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "SNZB-06P"}
@@ -286,4 +325,21 @@ databaseChangeLog:
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 3}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: ieee_address, value: "0x8c73dafffe85871d"}
+              - column: {name: name, value: "Family Room-Body sensor"}
+              - column: {name: lk, value: "0x8c73dafffe85871d"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Body sensor by the chimney"}
+              - column: {name: device_type, value: "BODY_SENSOR"}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "SNZB-06P"}
+              - column: {name: location, value: "By the chimney"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: true}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 4}
               
