@@ -342,4 +342,20 @@ databaseChangeLog:
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 4}
-              
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: ieee_address, value: "0x7c31fafffef267e3"}
+              - column: {name: name, value: "Garage-Ceiling light switch"}
+              - column: {name: lk, value: "0x7c31fafffef267e3"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Ceiling light switch"}
+              - column: {name: device_type, value: "WALL_SWITCH"}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "ZBMINIL2"}
+              - column: {name: location, value: ""}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 6}

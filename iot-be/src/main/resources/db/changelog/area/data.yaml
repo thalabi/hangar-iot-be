@@ -38,4 +38,10 @@ databaseChangeLog:
               - column: {name: lk, value: "Living Room"}
               - column: {name: zone_id, value: 1}
               - column: {name: version, value: 0}
-              
+        - insert:
+            tableName: area
+            columns:
+              - column: {name: name, value: "Garage"}
+              - column: {name: lk, value: "Garage"}
+              - column: {name: zone_id, value: 1}
+              - column: {name: version, value: 0}
