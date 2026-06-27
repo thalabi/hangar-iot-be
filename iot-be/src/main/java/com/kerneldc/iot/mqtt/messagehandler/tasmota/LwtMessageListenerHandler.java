@@ -33,7 +33,7 @@ public class LwtMessageListenerHandler extends AbstractMessageListenerHandler {
 		
 		var stateMessage = new ConnectionStateMessage(ConnectionStateEnum.valueOf(message.toUpperCase()), System.currentTimeMillis());
 
-		applicationContext.setConnectionState(topicHelper.getDevice(fullTopic), stateMessage);
+		applicationContext.setConnectionState(topicHelper.getDeviceFromTopic(fullTopic), stateMessage);
 
 		webSocketSenderService.publishMessageToWebSocket(topicHelper.transformLwtToState(fullTopic), stateMessage);
 	}

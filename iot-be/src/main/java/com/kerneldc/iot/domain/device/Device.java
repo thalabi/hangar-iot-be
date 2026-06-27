@@ -27,8 +27,9 @@ public class Device extends AbstractPersistableEntity {
 	private static final long serialVersionUID = 1L;
 	
 	@Setter(AccessLevel.NONE)
-	private String ieeeAddress;
 	private String name;
+	// Ieee Address for Zigbee2mqtt devices and Id for ESPresense devices
+	private String address;
     private String description;
 	@Enumerated(EnumType.STRING)
     private DeviceTypeEnum deviceType;
@@ -54,14 +55,14 @@ public class Device extends AbstractPersistableEntity {
     @JoinColumn(name = "area_id")
 	private Area area;
 
-	public void setIeeeAddress(String ieeeAddress) {
-		this.ieeeAddress = ieeeAddress;
+	public void setName(String name) {
+		this.name = name;
 		setLogicalKeyHolder();
 	}
 	
 	@Override
 	protected void setLogicalKeyHolder() {
-		var logicalKeyHolder = LogicalKeyHolder.build(ieeeAddress);
+		var logicalKeyHolder = LogicalKeyHolder.build(name);
 		super.setLogicalKeyHolder(logicalKeyHolder);
 	}
 

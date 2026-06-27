@@ -64,7 +64,7 @@ public class WebSocketSenderService {
 		} catch (JsonProcessingException e) {
 			throw new MessagingException("Error serializing LWT object to string", NestedExceptionUtils.getMostSpecificCause(e));
 		}
-		var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getDevice(fullTopic).getName() + "/power"; 
+		var webSocketTopic = websocketTopicsPrefix + "/" + topicHelper.getDeviceFromTopic(fullTopic).getName() + "/power"; 
 		webSocket.convertAndSend(webSocketTopic, messageString);
 		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", messageString, fullTopic, webSocketTopic);
 	}
@@ -82,6 +82,21 @@ public class WebSocketSenderService {
 //		LOGGER.info("Publishing web socket, message [{}], topic [{}]", attributeChanges, webSocketTopic);
 		webSocket.convertAndSend(webSocketTopic, attributeChanges);
 		LOGGER.info("Message [{}] added to WebSocket topic [{}]", attributeChanges, webSocketTopic);
+	}
+
+	public void publishEspresenseState(String fullTopic, String message) {
+		var webSocketTopic = websocketTopicsPrefix + "/" + fullTopic;
+//		LOGGER.info("Publishing web socket, message [{}], topic [{}]", message, webSocketTopic);
+		webSocket.convertAndSend(webSocketTopic, message);
+		LOGGER.info("Message [{}] in topic [{}] added to WebSocket topic [{}]", message, fullTopic, webSocketTopic);
+	}
+
+	public void publishEspresenseAttributeChanges(Device device) throws JsonProcessingException {
+//		var webSocketTopic = websocketTopicsPrefix + "/" + device.getName() + "/attributeChanges";
+//		var attributeChanges = applicationContext.getAttributeChanges(device);
+////		LOGGER.info("Publishing web socket, message [{}], topic [{}]", attributeChanges, webSocketTopic);
+//		webSocket.convertAndSend(webSocketTopic, attributeChanges);
+//		LOGGER.info("Message [{}] added to WebSocket topic [{}]", attributeChanges, webSocketTopic);
 	}
 
 }

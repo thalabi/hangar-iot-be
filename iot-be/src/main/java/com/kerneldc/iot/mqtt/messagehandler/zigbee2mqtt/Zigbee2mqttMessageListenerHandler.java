@@ -37,7 +37,7 @@ public class Zigbee2mqttMessageListenerHandler extends AbstractMessageListenerHa
 
 		LOGGER.info("Begin Zigbee2mqttMessageListenerHandler ...");
 		
-		var device = topicHelper.getDevice(fullTopic);
+		var device = topicHelper.getDeviceFromTopic(fullTopic);
 
 		
 		LOGGER.info("fullTopic [{}], timestamp [{}], message [{}]", fullTopic, timestamp, message);

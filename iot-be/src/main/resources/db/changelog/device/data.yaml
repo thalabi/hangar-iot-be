@@ -8,7 +8,6 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "cabin-heater"}
               - column: {name: name, value: "cabin-heater"}
               - column: {name: lk, value: "cabin-heater"}
               - column: {name: version, value: 0}
@@ -26,7 +25,6 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "tanis-heater"}
               - column: {name: name, value: "tanis-heater"}
               - column: {name: lk, value: "tanis-heater"}
               - column: {name: version, value: 0}
@@ -47,7 +45,6 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "family-room-light"}
               - column: {name: name, value: "family-room-light"}
               - column: {name: lk, value: "family-room-light"}
               - column: {name: version, value: 0}
@@ -65,7 +62,6 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "living-room-light"}
               - column: {name: name, value: "living-room-light"}
               - column: {name: lk, value: "living-room-light"}
               - column: {name: version, value: 0}
@@ -83,7 +79,6 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "s-31-sandbox"}
               - column: {name: name, value: "s-31-sandbox"}
               - column: {name: lk, value: "s-31-sandbox"}
               - column: {name: version, value: 0}
@@ -102,8 +97,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x00124b002f8acdb3"}
               - column: {name: name, value: "Family Room-Lampshade"}
+              - column: {name: address, value: "0x00124b002f8acdb3"}
               - column: {name: lk, value: "0x00124b002f8acdb3"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Short lampshade"}
@@ -119,8 +114,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x00124b002f8d8491"}
               - column: {name: name, value: "Living Room-Lampshade"}
+              - column: {name: address, value: "0x00124b002f8d8491"}
               - column: {name: lk, value: "0x00124b002f8d8491"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Short lampshade"}
@@ -136,8 +131,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x00124b002f8d1f07"}
               - column: {name: name, value: "Master Bedroom-Bedside lamp"}
+              - column: {name: address, value: "0x00124b002f8d1f07"}
               - column: {name: lk, value: "0x00124b002f8d1f07"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Bedside lampshade"}
@@ -153,8 +148,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x348d13fffec67189"}
               - column: {name: name, value: "Master Bedroom-Lampshade"}
+              - column: {name: address, value: "0x348d13fffec67189"}
               - column: {name: lk, value: "0x348d13fffec67189"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Lampshade"}
@@ -170,8 +165,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0xb40e060fffe24200"}
               - column: {name: name, value: "Master Bedroom-Sensor by the door"}
+              - column: {name: address, value: "0xb40e060fffe24200"}
               - column: {name: lk, value: "0xb40e060fffe24200"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor by the door"}
@@ -188,8 +183,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0xb40e060fffe24209"}
               - column: {name: name, value: "Master Bedroom-Sensor by the TV"}
+              - column: {name: address, value: "0xb40e060fffe24209"}
               - column: {name: lk, value: "0xb40e060fffe24209"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor by the TV"}
@@ -206,8 +201,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x348d13fffec65f9f"}
               - column: {name: name, value: "Basement-Desk lamp"}
+              - column: {name: address, value: "0x348d13fffec65f9f"}
               - column: {name: lk, value: "0x348d13fffec65f9f"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Desk lamp"}
@@ -223,8 +218,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x00124b002f8d8494"}
               - column: {name: name, value: "Office-Desk lamp"}
+              - column: {name: address, value: "0x00124b002f8d8494"}
               - column: {name: lk, value: "0x00124b002f8d8494"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Desk lamp"}
@@ -240,8 +235,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0xb40e060fffe25596"}
               - column: {name: name, value: "Office-Sensor on desk"}
+              - column: {name: address, value: "0xb40e060fffe25596"}
               - column: {name: lk, value: "0xb40e060fffe25596"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor on desk"}
@@ -258,8 +253,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0xb40e060fffe270ca"}
               - column: {name: name, value: "Office-Sensor by the window ledge"}
+              - column: {name: address, value: "0xb40e060fffe270ca"}
               - column: {name: lk, value: "0xb40e060fffe270ca"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor by the window ledge"}
@@ -276,8 +271,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x983268fffe972b25"}
               - column: {name: name, value: "Office-Ceiling light switch"}
+              - column: {name: address, value: "0x983268fffe972b25"}
               - column: {name: lk, value: "0x983268fffe972b25"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Ceiling light switch"}
@@ -293,12 +288,11 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x8c73dafffeb2a95c"}
               - column: {name: name, value: "Basement-Body sensor"}
+              - column: {name: address, value: "0x8c73dafffeb2a95c"}
               - column: {name: lk, value: "0x8c73dafffeb2a95c"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Body sensor by the left window"}
-              - column: {name: label, value: "Motion Sensor 5"}
               - column: {name: device_type, value: "BODY_SENSOR"}
               - column: {name: make, value: "Sonoff"}
               - column: {name: model, value: "SNZB-06P"}
@@ -311,11 +305,12 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0xb40e060fffe2600d"}
               - column: {name: name, value: "Basement-Motion sensor on the side of the stairs"}
+              - column: {name: address, value: "0xb40e060fffe2600d"}
               - column: {name: lk, value: "0xb40e060fffe2600d"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Sensor on the side of the stairs"}
+              - column: {name: label, value: "Motion Sensor 5"}
               - column: {name: device_type, value: "MOTION_SENSOR"}
               - column: {name: make, value: "ThirdReality"}
               - column: {name: model, value: "P1WMSA1"}
@@ -328,8 +323,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x8c73dafffe85871d"}
               - column: {name: name, value: "Family Room-Body sensor"}
+              - column: {name: address, value: "0x8c73dafffe85871d"}
               - column: {name: lk, value: "0x8c73dafffe85871d"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Body sensor by the chimney"}
@@ -345,8 +340,8 @@ databaseChangeLog:
         - insert:
             tableName: device
             columns:
-              - column: {name: ieee_address, value: "0x7c31fafffef267e3"}
               - column: {name: name, value: "Garage-Ceiling light switch"}
+              - column: {name: address, value: "0x7c31fafffef267e3"}
               - column: {name: lk, value: "0x7c31fafffef267e3"}
               - column: {name: version, value: 0}
               - column: {name: description, value: "Ceiling light switch"}
@@ -359,3 +354,39 @@ databaseChangeLog:
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 6}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "Garage-Motion sensor"}
+              - column: {name: address, value: "0xb40e060fffe26803"}
+              - column: {name: lk, value: "0xb40e060fffe26803"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Sensor low to the floor"}
+              - column: {name: label, value: "Motion Sensor 6"}
+              - column: {name: device_type, value: "MOTION_SENSOR"}
+              - column: {name: make, value: "ThirdReality"}
+              - column: {name: model, value: "P1WMSA1"}
+              - column: {name: location, value: "Low to the floor"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: true}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 6}
+#      ESPresense
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "Tarif's Phone"}
+              - column: {name: address, value: "iBeacon:66378194-59f0-497b-8e0c-0e7472e6caf9-100-40004"}
+              - column: {name: lk, value: "Tarif's Phone"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Tarif's S25 Ultra Phone"}
+              - column: {name: device_type, value: "ESPRESENSE_SENSOR"}
+              - column: {name: make, value: "Samsung"}
+              - column: {name: model, value: "S25 Ultra"}
+              - column: {name: location, value: "Mobile"}
+              - column: {name: bridge, value: "ESPRESENSE"}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 6}
+              

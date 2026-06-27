@@ -172,7 +172,7 @@ public class MqttSenderService {
 	
 	public void setTimers(TimersRequest timersRequest) throws JsonProcessingException, ApplicationException, DeviceOfflineException {
 		var applicationException = new ApplicationException();
-		var device = deviceService.getDevice(timersRequest.getDeviceName());
+		var device = deviceService.getDeviceByName(timersRequest.getDeviceName());
 
 		for (int i=0; i<16; i++) {
 			if (Boolean.TRUE.equals(timersRequest.getTimerModifiedArray()[i])) {

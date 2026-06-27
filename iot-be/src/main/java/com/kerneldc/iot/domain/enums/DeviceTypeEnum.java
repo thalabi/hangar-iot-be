@@ -5,6 +5,7 @@ public enum DeviceTypeEnum {
 	WALL_SWITCH(new String[] { "state" }),
 	MOTION_SENSOR(new String[] { "occupancy" }),
 	BODY_SENSOR(new String[] { "occupancy", "illumination" }),
+	ESPRESENSE_SENSOR(new String[] { "rssi", "distance" }),
 	;
 	
 	String[] monitoredAttributes;

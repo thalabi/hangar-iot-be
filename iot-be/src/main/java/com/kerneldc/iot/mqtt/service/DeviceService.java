@@ -55,7 +55,7 @@ public class DeviceService {
 		}
 		
 		managedDeviceList = allDeviceList.stream().filter(device -> BooleanUtils.isTrue(device.getIsManaged()))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void loadZonesAndAreas() {
@@ -75,8 +75,11 @@ public class DeviceService {
 		return managedDeviceList.stream().map(Device::getName).toList();
 	}
 	
-	public Device getDevice(String name) {
+	public Device getDeviceByName(String name) {
 		return managedDeviceList.stream().filter(device -> StringUtils.equals(device.getName(), name)).findAny().orElse(null);
+	}
+	public Device getDeviceByAddress(String address) {
+		return managedDeviceList.stream().filter(device -> StringUtils.equals(device.getAddress(), address)).findAny().orElse(null);
 	}
 	
 	public List<String> getCommandList() {

@@ -61,7 +61,7 @@ public class IotController {
     	var deviceName = deviceRequest.getDeviceName();
     	deviceService.validateDeviceName(deviceName);
     	
-    	webSocketSenderService.publishConnectionState(deviceService.getDevice(deviceName));
+    	webSocketSenderService.publishConnectionState(deviceService.getDeviceByName(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -72,7 +72,7 @@ public class IotController {
     	var deviceName = deviceRequest.getDeviceName();
     	deviceService.validateDeviceName(deviceName);
     	
-		mqttSenderService.triggerPublishState(deviceService.getDevice(deviceName));
+		mqttSenderService.triggerPublishState(deviceService.getDeviceByName(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -83,7 +83,7 @@ public class IotController {
     	var deviceName = togglePowerRequest.getDeviceName();
     	deviceService.validateDeviceName(deviceName);
     	
-   		mqttSenderService.togglePower(deviceService.getDevice(deviceName), togglePowerRequest.getPowerStateRequested());
+   		mqttSenderService.togglePower(deviceService.getDeviceByName(deviceName), togglePowerRequest.getPowerStateRequested());
    		LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -117,7 +117,7 @@ public class IotController {
     	LOGGER.info("Begin ...");
     	var deviceName = deviceRequest.getDeviceName();
     	deviceService.validateDeviceName(deviceName);
-   		mqttSenderService.triggerPublishSensorData(deviceService.getDevice(deviceName));
+   		mqttSenderService.triggerPublishSensorData(deviceService.getDeviceByName(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -128,7 +128,7 @@ public class IotController {
     	var deviceName = deviceRequest.getDeviceName();
     	deviceService.validateDeviceName(deviceName);
     	
-		mqttSenderService.triggerTimezoneValue(deviceService.getDevice(deviceName));
+		mqttSenderService.triggerTimezoneValue(deviceService.getDeviceByName(deviceName));
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
     }
@@ -139,7 +139,7 @@ public class IotController {
     	var deviceName = timezoneRequest.getDeviceName();
     	deviceService.validateDeviceName(deviceName);
     	
-		mqttSenderService.setTelePeriod(deviceService.getDevice(deviceName), timezoneRequest.getTelePeriod());
+		mqttSenderService.setTelePeriod(deviceService.getDeviceByName(deviceName), timezoneRequest.getTelePeriod());
     	
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
@@ -150,7 +150,7 @@ public class IotController {
     	LOGGER.info("Begin ...");
     	var deviceName = timezoneRequest.getDeviceName();
     	deviceService.validateDeviceName(deviceName);
-		mqttSenderService.setTimezoneOffset(deviceService.getDevice(deviceName), timezoneRequest.getTimezoneOffset());
+		mqttSenderService.setTimezoneOffset(deviceService.getDeviceByName(deviceName), timezoneRequest.getTimezoneOffset());
     	
     	LOGGER.info("End ...");
     	return ResponseEntity.ok(StringUtils.EMPTY);
@@ -179,7 +179,7 @@ public class IotController {
     	LOGGER.info("Begin ...");
     	deviceService.validateDeviceName(deviceName);
     	
-		var	result = mqttSenderService.getTimers(deviceService.getDevice(deviceName));
+		var	result = mqttSenderService.getTimers(deviceService.getDeviceByName(deviceName));
 
 		LOGGER.info("End ...");
     	return ResponseEntity.ok(result);
@@ -204,7 +204,7 @@ public class IotController {
     	deviceService.validateDeviceName(deviceName);
 
     	var commandEnum = TasmotaCommandEnum.valueOf(freeFormatCommandRequest.getCommand().toUpperCase());
-    	var abstractBaseResult = mqttSenderService.sendMessage(deviceService.getDevice(deviceName), commandEnum,
+    	var abstractBaseResult = mqttSenderService.sendMessage(deviceService.getDeviceByName(deviceName), commandEnum,
 					freeFormatCommandRequest.getArguments());
 		LOGGER.info("abstractBaseResult: [{}]", abstractBaseResult);
 		var result = commandEnum.getResultType().cast(abstractBaseResult);

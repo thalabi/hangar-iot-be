@@ -28,7 +28,7 @@ class StateResultComparatorTest {
 		// 2. Instantiate and populate the device1 object
 		device1 = new Device();
 
-		device1.setIeeeAddress("0x348d13fffec67189"); // This also sets the LogicalKeyHolder
+		device1.setAddress("0x348d13fffec67189"); // This also sets the LogicalKeyHolder
 		device1.setName("Master Bedroom-Lampshade");
 		device1.setDescription("Lampshade");
 		device1.setDeviceType(DeviceTypeEnum.PLUG);    // Mapping "PLUG" to Enum

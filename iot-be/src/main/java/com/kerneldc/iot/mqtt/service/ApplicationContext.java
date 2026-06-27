@@ -55,7 +55,7 @@ public class ApplicationContext {
 	 * @throws JsonProcessingException
 	 */
 	public AbstractBaseResult setCommandResult(String topic, String message) throws JsonProcessingException {
-		var device = topicHelper.getDevice(topic);
+		var device = topicHelper.getDeviceFromTopic(topic);
 		ICommandEnum commandEnum; 
 		if (device.getBridge() == BridgeEnum.ZIGBEE2MQTT) {
 			commandEnum = Zigbee2MqttCommandEnum.STATE;

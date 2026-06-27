@@ -2,13 +2,14 @@ package com.kerneldc.iot.mqtt.topic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.kerneldc.iot.domain.device.Device;
+import com.kerneldc.iot.domain.enums.BridgeEnum;
 import com.kerneldc.iot.mqtt.command.ICommandEnum;
 import com.kerneldc.iot.mqtt.command.TasmotaCommandEnum;
 import com.kerneldc.iot.mqtt.command.Zigbee2MqttCommandEnum;
@@ -31,6 +32,8 @@ public class TopicHelper {
 
 	private static final String DEVICE_ARG = "<device>";
 	private static final String COMMAND_ARG = "<command>";
+	private static final String ADDRESS_ARG = "<address>";
+	private static final String AREA_ARG = "<area>";
 	
 	private static final String COMMAND_TOPIC_TEMPLATE = "cmnd/<device>/<command>";
 	
@@ -49,6 +52,7 @@ public class TopicHelper {
 	private static final String MQTT_ZIGBEE_DEVICES_INFO_TOPIC = "zigbee2mqtt/bridge/devices";
 	private static final String MQTT_ZIGBEE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
 	private static final String MQTT_ZIGBEE_STATE_TOPIC_TEMPLATE = "zigbee2mqtt/<device>";
+	private static final String ESPRESENSE_STATE_TOPIC_TEMPLATE = "espresense/devices/<address>/<area>";
 	
 	private final DeviceService deviceService;
 	
@@ -91,29 +95,47 @@ public class TopicHelper {
 				case ZIGBEE2MQTT -> {
 					topicList.add(MQTT_ZIGBEE_STATE_TOPIC_TEMPLATE.replace(DEVICE_ARG, device.getName()));
 				}
+				case ESPRESENSE -> {
+					Objects.requireNonNull(device.getArea(), "Device [" + device.getName() + "] area cannot be null");
+					topicList.add(ESPRESENSE_STATE_TOPIC_TEMPLATE.replace(ADDRESS_ARG, device.getAddress())
+																	.replace(AREA_ARG, device.getArea().getName().toLowerCase()));
+				}
+				default -> throw new IllegalArgumentException("Unexpected value: " + device.getBridge());
 				}
 				}
 				);
 		return topicList;
 	}
 
-	// The first pattern is for TASMOTA topics and the second is for ZIGBEE2MQTT topics
-	private static final Pattern TOPIC_PATTERN = Pattern.compile("(.+/(.+)/.+)|(zigbee2mqtt/(.+))");
+	// The first pattern is for TASMOTA topics, the second is for ZIGBEE2MQTT topics and the third is for ESPresense topics
+	private static final Pattern TOPIC_PATTERN = Pattern.compile("^(?:[^/]*/([^/]+)/[^/]*|zigbee2mqtt/([^/]+)|espresense/[^/]*/([^/]+)/[^/]*)$");
 
-	public Device getDevice(String topic) {
+
+	public Device getDeviceFromTopic(String topic) {
 		var matcher = TOPIC_PATTERN.matcher(topic);
 
 		if (! /* not */ matcher.matches()) {
 			throw new IllegalArgumentException(String.format("Topic [%s] does not match any known patterns", topic));
 		}
 
-		// If the first (TASMOTA) pattern matched, group(2) will have the value
-		// If the second (ZIGBEE2MQTT) pattern matched, group(4) will have the value
-		var deviceName = (matcher.group(2) != null) ? matcher.group(2) : matcher.group(4);
-		if (StringUtils.isEmpty(deviceName)) {
-			throw new IllegalStateException(String.format("Could not extract device name from topic [%s]", topic));
+		// If the first (TASMOTA) pattern matched, group(1) will have the value
+		// If the second (ZIGBEE2MQTT) pattern matched, group(2) will have the value
+		// If the second (ESPresense) pattern matched, group(3) will have the value
+		String token;
+		if (matcher.group(1) != null) {
+			token = matcher.group(1);
+			return deviceService.getDeviceByName(token);
 		}
-		return deviceService.getDevice(deviceName);
+		if (matcher.group(2) != null) {
+			token = matcher.group(2);
+			return deviceService.getDeviceByName(token);
+		}
+		if (matcher.group(3) != null) {
+			token = matcher.group(3);
+			return deviceService.getDeviceByAddress(token);
+		}
+
+		throw new IllegalStateException(String.format("Could not extract device from topic [%s]", topic));
 	}
 	
 	public String transformLwtToState(String lwtTopic) {
@@ -125,6 +147,9 @@ public class TopicHelper {
 	}
 	public boolean isZigbee2mqttDeviceTopic(String topic) {
 		return topic.startsWith("zigbee2mqtt/") && ! /* not */ topic.equals(MQTT_ZIGBEE_DEVICES_INFO_TOPIC);
+	}
+	public boolean isEspresenseDeviceTopic(String topic) {
+		return topic.startsWith("espresense/");
 	}
 
 	public boolean isDevicesInfoTopic(String topic) {

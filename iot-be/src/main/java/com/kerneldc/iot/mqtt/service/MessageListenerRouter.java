@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.kerneldc.iot.mqtt.messagehandler.IMessageListenerHandler;
 import com.kerneldc.iot.mqtt.topic.TopicHelper;
+import com.kerneldc.iot.util.TimeUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +36,9 @@ public class MessageListenerRouter implements MessageHandler {
 		var message = (String)messageObject.getPayload();
 		
 		if (topicHelper.isDevicesInfoTopic(fullTopic)) {
-			LOGGER.info("Message ([{}] characters) arrived in topic [{}] at [{}]", StringUtils.length(message), fullTopic, timestamp);
+			LOGGER.info("Message ([{}] characters) arrived in topic [{}] at [{}]", StringUtils.length(message), fullTopic, TimeUtils.epochMilliToLocalTime(timestamp));
 		} else {
-			LOGGER.info("Message [{}] arrived in topic [{}] at [{}]", message, fullTopic, timestamp);
+			LOGGER.info("Message [{}] arrived in topic [{}] at [{}]", message, fullTopic, TimeUtils.epochMilliToLocalTime(timestamp));
 		}
 			
 		for (IMessageListenerHandler handler: messageListenerHandlerCollection) {
