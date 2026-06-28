@@ -37,13 +37,12 @@ public class Device extends AbstractPersistableEntity {
     private String make;
     private String model;
     private Boolean enableDataSaver;
-//    @Embedded
-//    private DeviceConfig deviceConfig;
     private String location;
 	@Enumerated(EnumType.STRING)
     private BridgeEnum bridge;
-    private Boolean passive; // or non-reporting of their 'state'
-    private Boolean isManaged;
+	private Boolean powerControllable; // can be turned on or off
+    private Boolean passive; // responds to /get command with payload {"state": ""}
+    private Boolean isManaged; // is managed by this app
 	
     @Transient
     private ReentrantLock lock = new ReentrantLock();

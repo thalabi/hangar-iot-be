@@ -100,7 +100,7 @@ public class IotController {
     	var deviceList = deviceService.findByZoneAndArea(zoneName, areaName, powerStateRequested);
     	LOGGER.info("deviceList.size() [{}]", deviceList.size());
     	for (var device: deviceList) {
-    		if ((device.getBridge() == BridgeEnum.ZIGBEE2MQTT && BooleanUtils.isFalse(device.getPassive()) || device.getBridge() == BridgeEnum.TASMOTA)
+    		if ((device.getBridge() == BridgeEnum.ZIGBEE2MQTT && BooleanUtils.isTrue(device.getPowerControllable()) || device.getBridge() == BridgeEnum.TASMOTA)
 						&& applicationContext.getPower(device) != powerStateRequested) {
     			mqttSenderService.togglePower(device, powerStateRequested ? "ON" : "OFF");
     		}

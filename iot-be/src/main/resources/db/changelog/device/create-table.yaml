@@ -21,6 +21,7 @@ databaseChangeLog:
               - column: {name: enable_data_saver, type: boolean} # tasmota only
               - column: {name: location, type: varchar(255)}
               - column: {name: bridge, type: varchar(255), constraints: {nullable: false}}
+              - column: {name: power_controllable, type: boolean}
               - column: {name: passive, type: boolean} # zigbee2mqtt only
               - column: {name: is_managed, type: boolean, constraints: {nullable: false}}
               - column: {name: zone_id, type: bigint, constraints: {nullable: false, references: zone(id), foreignKeyName: fk_device_1}}

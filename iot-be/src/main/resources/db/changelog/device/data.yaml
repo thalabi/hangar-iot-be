@@ -19,6 +19,7 @@ databaseChangeLog:
               - column: {name: enable_data_saver, value: true}
               - column: {name: location, value: "South east outlet"}
               - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: power_controllable, value: true}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 2}
               - column: {name: area_id, value: null}
@@ -36,6 +37,7 @@ databaseChangeLog:
               - column: {name: enable_data_saver, value: true}
               - column: {name: location, value: "North outlet"}
               - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: power_controllable, value: true}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 2}
               - column: {name: area_id, value: null}
@@ -56,6 +58,7 @@ databaseChangeLog:
               - column: {name: enable_data_saver, value: false}
               - column: {name: location, value: "South east corner"}
               - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: power_controllable, value: true}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 4}
@@ -73,6 +76,7 @@ databaseChangeLog:
               - column: {name: enable_data_saver, value: false}
               - column: {name: location, value: "South east corner"}
               - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: power_controllable, value: true}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 5}
@@ -90,6 +94,7 @@ databaseChangeLog:
               - column: {name: enable_data_saver, value: false}
               - column: {name: location, value: "By the long coffee table"}
               - column: {name: bridge, value: "TASMOTA"}
+              - column: {name: power_controllable, value: true}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 3}
@@ -107,6 +112,7 @@ databaseChangeLog:
               - column: {name: model, value: "S40ZBTPB Lite"}
               - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -124,6 +130,7 @@ databaseChangeLog:
               - column: {name: model, value: "S40ZBTPB Lite"}
               - column: {name: location, value: "On the north east coffee table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -141,6 +148,7 @@ databaseChangeLog:
               - column: {name: model, value: "S40ZBTPB Lite"}
               - column: {name: location, value: "On Tarif's bedside table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -158,6 +166,7 @@ databaseChangeLog:
               - column: {name: model, value: "Tretakt"}
               - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -211,6 +220,7 @@ databaseChangeLog:
               - column: {name: model, value: "Tretakt"}
               - column: {name: location, value: "On the center table"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -228,6 +238,7 @@ databaseChangeLog:
               - column: {name: model, value: "Tretakt"}
               - column: {name: location, value: "Under desk"}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -281,6 +292,7 @@ databaseChangeLog:
               - column: {name: model, value: "ZBMINIL2"}
               - column: {name: location, value: ""}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -350,6 +362,7 @@ databaseChangeLog:
               - column: {name: model, value: "ZBMINIL2"}
               - column: {name: location, value: ""}
               - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
               - column: {name: passive, value: false}
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
@@ -372,6 +385,45 @@ databaseChangeLog:
               - column: {name: is_managed, value: true}
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 6}
+              
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "Workshop Room-Ceiling light switch"}
+              - column: {name: address, value: "0x7c31fafffef27a22"}
+              - column: {name: lk, value: "0x7c31fafffef27a22"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Ceiling light switch"}
+              - column: {name: device_type, value: "WALL_SWITCH"}
+              - column: {name: make, value: "Sonoff"}
+              - column: {name: model, value: "ZBMINIL2"}
+              - column: {name: location, value: ""}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: power_controllable, value: true}
+              - column: {name: passive, value: false}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 7}
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "Workshop Room-Motion sensor"}
+              - column: {name: address, value: "0xb40e060fffe83919"}
+              - column: {name: lk, value: "0xb40e060fffe83919"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Sensor on workshop table"}
+              - column: {name: label, value: "Motion Sensor 7"}
+              - column: {name: device_type, value: "MOTION_SENSOR"}
+              - column: {name: make, value: "ThirdReality"}
+              - column: {name: model, value: "P1WMSA1"}
+              - column: {name: location, value: "On workshop table"}
+              - column: {name: bridge, value: "ZIGBEE2MQTT"}
+              - column: {name: passive, value: true}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 7}
+              
+              
 #      ESPresense
         - insert:
             tableName: device
