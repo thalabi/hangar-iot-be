@@ -76,7 +76,7 @@ public class EspresenseMessageListenerHandler extends AbstractMessageListenerHan
         // Schedule a new offline task 
         ScheduledFuture<?> newTimer = scheduler.schedule(
                 () -> setOfflineAndPublish(device), 
-                120, 
+                120, // two minutes
                 TimeUnit.SECONDS
             );
         activeTimers.put(device, newTimer);

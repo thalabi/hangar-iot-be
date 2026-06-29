@@ -438,7 +438,22 @@ databaseChangeLog:
               - column: {name: model, value: "S25 Ultra"}
               - column: {name: location, value: "Mobile"}
               - column: {name: bridge, value: "ESPRESENSE"}
-              - column: {name: is_managed, value: true}
+              - column: {name: is_managed, value: false} # set to true for testing
               - column: {name: zone_id, value: 1}
               - column: {name: area_id, value: 6}
-              
+        - insert:
+            tableName: device
+            columns:
+              - column: {name: name, value: "Chevy Volt"}
+              - column: {name: address, value: "iBeacon:426c7565-4368-6172-6d42-6561636f6e73-3838-4949"}
+              - column: {name: lk, value: "Chevy Volt"}
+              - column: {name: version, value: 0}
+              - column: {name: description, value: "Tarif's Chevy Volt"}
+              - column: {name: device_type, value: "ESPRESENSE_SENSOR"}
+              - column: {name: make, value: "Chevy"}
+              - column: {name: model, value: "Volt"}
+              - column: {name: location, value: "Usually in garage"}
+              - column: {name: bridge, value: "ESPRESENSE"}
+              - column: {name: is_managed, value: true}
+              - column: {name: zone_id, value: 1}
+              - column: {name: area_id, value: 6}              
